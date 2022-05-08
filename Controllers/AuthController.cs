@@ -19,7 +19,7 @@ namespace ProjectFTK.Controllers
                 GoogleDefaults.AuthenticationScheme,
                 new AuthenticationProperties
                 {
-                    RedirectUri = Url.Action(nameof(GoogleResponse), "Auth", new { isTeacher = isTeacher })
+                    RedirectUri = Url.Action(nameof(GoogleResponse), "Auth", new { returnUrl = "/", isTeacher = isTeacher })
                 });
         }
         
@@ -36,17 +36,23 @@ namespace ProjectFTK.Controllers
             claimsIdentity.AddClaim(authenticateResult.Principal.FindFirst(ClaimTypes.Email));
             claimsIdentity.AddClaim(authenticateResult.Principal.FindFirst(GoogleClaims.PictureUrl));
 
+            if (isTeacher)
+            {
+                //teacher claim logic here
+            }
+
             await HttpContext.SignInAsync(
                 IdentityConstants.ExternalScheme,
                 new ClaimsPrincipal(claimsIdentity),
                 new AuthenticationProperties { IsPersistent = true }); // IsPersistent will set a cookie that lasts for two weeks (by default).
 
-            return LocalRedirect("/");
+            return LocalRedirect(returnUrl);
         }
 
-        public IActionResult GoogleSignOut(string returnUrl)
+        public async Task<IActionResult> GoogleSignOut(string returnUrl)
         {
-            return SignOut(new AuthenticationProperties { RedirectUri = "/" }, IdentityConstants.ExternalScheme);
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            return LocalRedirect(returnUrl);
         }
     }
 }
