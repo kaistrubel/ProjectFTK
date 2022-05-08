@@ -7,23 +7,26 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ProjectFTK.Extensions;
 
 namespace ProjectFTK.Controllers
 {
     public class AuthController : Controller
     {
-        public IActionResult GoogleLogin(string returnUrl) =>
-        new ChallengeResult(
-            GoogleDefaults.AuthenticationScheme,
-            new AuthenticationProperties
-            {
-                RedirectUri = Url.Action(nameof(GoogleResponse), "Auth")
-            });
+        public IActionResult GoogleLogin(string returnUrl, bool isTeacher)
+        {
+            return new ChallengeResult(
+                GoogleDefaults.AuthenticationScheme,
+                new AuthenticationProperties
+                {
+                    RedirectUri = Url.Action(nameof(GoogleResponse), "Auth", new { isTeacher = isTeacher })
+                });
+        }
+        
 
-        public async Task<IActionResult> GoogleResponse(string returnUrl)
+        public async Task<IActionResult> GoogleResponse(string returnUrl, bool isTeacher = false)
         {
             var authenticateResult = await HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
-
             if (!authenticateResult.Succeeded)
                 return BadRequest();
 
@@ -31,13 +34,19 @@ namespace ProjectFTK.Controllers
 
             claimsIdentity.AddClaim(authenticateResult.Principal.FindFirst(ClaimTypes.Name));
             claimsIdentity.AddClaim(authenticateResult.Principal.FindFirst(ClaimTypes.Email));
+            claimsIdentity.AddClaim(authenticateResult.Principal.FindFirst(GoogleClaims.PictureUrl));
 
             await HttpContext.SignInAsync(
-                IdentityConstants.ApplicationScheme,
+                IdentityConstants.ExternalScheme,
                 new ClaimsPrincipal(claimsIdentity),
                 new AuthenticationProperties { IsPersistent = true }); // IsPersistent will set a cookie that lasts for two weeks (by default).
 
             return LocalRedirect("/");
+        }
+
+        public IActionResult GoogleSignOut(string returnUrl)
+        {
+            return SignOut(new AuthenticationProperties { RedirectUri = "/" }, IdentityConstants.ExternalScheme);
         }
     }
 }

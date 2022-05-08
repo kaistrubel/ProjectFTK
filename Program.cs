@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
-using ProjectFTK.Data;
+using ProjectFTK.Extensions;
 using ProjectFTK.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,16 +11,17 @@ var configuration = builder.Configuration;
 // Add services to the container.
 builder.Services.AddAuthentication(o =>
     {
-        o.DefaultScheme = IdentityConstants.ApplicationScheme;
+        o.DefaultScheme = IdentityConstants.ExternalScheme;
         o.DefaultSignInScheme = IdentityConstants.ExternalScheme;
     })
-    .AddCookie(IdentityConstants.ApplicationScheme)
     .AddCookie(IdentityConstants.ExternalScheme)
     .AddGoogle(googleOptions =>
     {
         googleOptions.ClientId = configuration["Authentication:Google:ClientId"];
         googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
         googleOptions.SignInScheme = IdentityConstants.ExternalScheme;
+
+        googleOptions.ClaimActions.MapJsonKey(GoogleClaims.PictureUrl, "picture", "url");
     });
 
 builder.Services.AddControllersWithViews();
