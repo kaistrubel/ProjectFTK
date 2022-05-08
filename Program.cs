@@ -11,25 +11,17 @@ var configuration = builder.Configuration;
 // Add services to the container.
 builder.Services.AddAuthentication(o =>
     {
-        o.DefaultScheme = "Application";
-        o.DefaultSignInScheme = "External";
+        o.DefaultScheme = IdentityConstants.ApplicationScheme;
+        o.DefaultSignInScheme = IdentityConstants.ExternalScheme;
     })
-    .AddCookie("Application")
-    .AddCookie("External")
+    .AddCookie(IdentityConstants.ApplicationScheme)
+    .AddCookie(IdentityConstants.ExternalScheme)
     .AddGoogle(googleOptions =>
     {
         googleOptions.ClientId = configuration["Authentication:Google:ClientId"];
         googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+        googleOptions.SignInScheme = IdentityConstants.ExternalScheme;
     });
-
-
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
