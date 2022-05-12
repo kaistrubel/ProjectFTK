@@ -37,10 +37,20 @@
     <None Remove="Microsoft.VisualStudio.Web.CodeGeneration.Design" />
     <None Remove="Swashbuckle.AspNetCore" />
     <None Remove="Extensions\" />
+    <None Remove="Mock_Blob\" />
+    <Content Remove="Mock_Blob\teachers.json" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Extensions\" />
+    <Folder Include="Mock_Blob\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Mock_Blob\teachers.json">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->

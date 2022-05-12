@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using ProjectFTK.Extensions;
 
 namespace ProjectFTK.Controllers
@@ -38,13 +39,16 @@ namespace ProjectFTK.Controllers
 
             if (isTeacher)
             {
-                //teacher claim logic here
+                if (ValidateTeacherEmail(authenticateResult.Principal.FindFirst(ClaimTypes.Email).Value))
+                {
+                    claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, CustomRoles.Teacher));
+                }
             }
 
             await HttpContext.SignInAsync(
                 IdentityConstants.ExternalScheme,
                 new ClaimsPrincipal(claimsIdentity),
-                new AuthenticationProperties { IsPersistent = true }); // IsPersistent will set a cookie that lasts for two weeks (by default).
+                new AuthenticationProperties { IsPersistent = true, ExpiresUtc = DateTimeOffset.MaxValue }); // IsPersistent will set a cookie that lasts for two weeks (by default).
 
             return LocalRedirect(returnUrl);
         }
@@ -53,6 +57,14 @@ namespace ProjectFTK.Controllers
         {
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
             return LocalRedirect(returnUrl);
+        }
+
+        private bool ValidateTeacherEmail(string email)
+        {
+            var json = System.IO.File.ReadAllText("Mock_Blob/teachers.json");
+            List<string> validatedTeachers = JsonConvert.DeserializeObject<List<string>>(json);
+
+            return validatedTeachers.Contains(email);
         }
     }
 }
