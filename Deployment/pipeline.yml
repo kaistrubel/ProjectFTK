@@ -13,5 +13,5 @@ steps:
     azureSubscription: '$(subscriptionId)'
     ScriptType: 'FilePath'
     ScriptPath: './Deploy-AzTemplate.ps1'
-    ScriptArguments: -Location 'westus' -ResourceGroupName 'demogroup' -TemplateFile arm.json
+    ScriptArguments: -Location 'westus' -ResourceGroupName 'ProjectFtk-Trial' -TemplateFile arm.json
     azurePowerShellVersion: 'LatestVersion'
