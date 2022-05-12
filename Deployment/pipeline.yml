@@ -1,9 +1,5 @@
 trigger: none
 
-variables:
-- name: subscriptionId
-  value: 9d2c0470-601c-4f53-9cd4-d4bfc213328a
-
 pool:
   vmImage: 'ubuntu-latest'
 
