@@ -1,0 +1,17 @@
+trigger: none
+
+variables:
+- name: subscriptionId
+  value: 9d2c0470-601c-4f53-9cd4-d4bfc213328a
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: AzurePowerShell@5
+  inputs:
+    azureSubscription: '$(subscriptionId)'
+    ScriptType: 'FilePath'
+    ScriptPath: './Deploy-AzTemplate.ps1'
+    ScriptArguments: -Location 'westus' -ResourceGroupName 'demogroup' -TemplateFile arm.json
+    azurePowerShellVersion: 'LatestVersion'

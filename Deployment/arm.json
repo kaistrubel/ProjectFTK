@@ -1,0 +1,86 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+
+    "parameters": {
+      "webAppName": {
+        "type": "string",
+        "defaultValue": "ProjectFTKReactApp-wus"
+      },
+      "location": {
+        "type": "string",
+        "defaultValue": "[resourceGroup().location]"
+      },
+      "sku": {
+        "type": "string",
+        "defaultValue": "F1"
+      },
+      "linuxFxVersion": {
+        "type": "string",
+        "defaultValue": "DOTNETCORE|6.0"
+      }
+    },
+    "variables": {
+      "appServicePlanPortalName": "[format('AppServicePlan-{0}', parameters('webAppName'))]"
+    },
+    "resources": [
+      {
+        "type": "Microsoft.Web/serverfarms",
+        "apiVersion": "2021-02-01",
+        "name": "[variables('appServicePlanPortalName')]",
+        "location": "[parameters('location')]",
+        "sku": {
+          "name": "[parameters('sku')]"
+        },
+        "kind": "linux",
+        "properties": {
+          "reserved": true
+        }
+      },
+      {
+        "type": "Microsoft.Web/sites",
+        "apiVersion": "2021-02-01",
+        "name": "[parameters('webAppName')]",
+        "location": "[parameters('location')]",
+        "properties": {
+          "httpsOnly": true,
+          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanPortalName'))]",
+          "siteConfig": {
+            "linuxFxVersion": "[parameters('linuxFxVersion')]",
+            "minTlsVersion": "1.2"
+          }
+        },
+        "identity": {
+          "type": "SystemAssigned"
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanPortalName'))]"
+        ]
+      },
+      {
+        "type": "Microsoft.Web/sites/slots",
+        "apiVersion": "2021-03-01",
+        "name": "[concat(parameters('webAppName'), '/staging')]",
+        "kind": "app",
+        "location": "[parameters('location')]",
+        "tags": {
+            "displayName": "Staging"
+          },
+        "properties": {
+          "httpsOnly": true,
+          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanPortalName'))]",
+          "siteConfig": {
+            "linuxFxVersion": "[parameters('linuxFxVersion')]",
+            "minTlsVersion": "1.2",
+            "autoSwapSlotName": "production"
+          }
+        },
+        "identity": {
+          "type": "SystemAssigned"
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/sties', parameters('webAppName'))]"
+        ]
+      }
+    ]
+  }
