@@ -6,7 +6,7 @@ pool:
 steps:
 - task: AzurePowerShell@5
   inputs:
-    azureSubscription: '$(subscriptionId)'
+    azureSubscription: '$(serviceConnectionName)'
     ScriptType: 'FilePath'
     ScriptPath: './Deploy-AzTemplate.ps1'
     ScriptArguments: -Location 'westus' -ResourceGroupName 'ProjectFtk-Trial' -TemplateFile arm.json
