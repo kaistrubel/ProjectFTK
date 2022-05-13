@@ -4,8 +4,10 @@ pool:
   vmImage: 'ubuntu-latest'
 
 parameters:
-  regions : ['West US']
-  globalRegion: 'West US'
+  -name: regions
+  default: ['West US']
+  -name: globalRegion
+  default: 'West US'
 
 steps:
   - task: AzureResourceManagerTemplateDeployment@3
