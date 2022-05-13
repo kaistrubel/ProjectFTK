@@ -46,7 +46,7 @@
             "displayName": "Staging"
           },
         "dependsOn": [
-          "[resourceId('Microsoft.Web/sties', variables('regionalWebAppName'))]"
+          "[resourceId('Microsoft.Web/sites', variables('regionalWebAppName'))]"
         ],
         "properties": {
           "httpsOnly": true,
