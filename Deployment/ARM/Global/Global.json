@@ -21,17 +21,18 @@
       }
     },
     "variables": {
-      "appServicePlanPortalName": "[format('Plan-{0}', parameters('webAppName'))]"
+      "appServicePlanPortalName": "[format(Plan-{0}', parameters('webAppName'))]"
     },
     "resources": [
       {
         "type": "Microsoft.Web/serverfarms",
         "apiVersion": "2021-02-01",
         "name": "[variables('appServicePlanPortalName')]",
-        "location": "centralus",
+        "location": "[parameters('location')]",
         "sku": {
           "name": "[parameters('webAppSku')]"
         },
+        "kind": "linux",
         "properties": {
           "reserved": true
         }
