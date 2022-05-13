@@ -28,7 +28,7 @@ steps:
   - ${{ each region in parameters.regions }}:
     - task: AzureResourceManagerTemplateDeployment@3
       - variables:
-        regionNoSpace: ${{ replace(region, 'US', '_') }}
+        regionNoSpace: ${{ replace(region, 'region', '_') }}
       displayName: 'Deploy ${{ region }} Infra'
       inputs:
         deploymentScope: 'Resource Group'
