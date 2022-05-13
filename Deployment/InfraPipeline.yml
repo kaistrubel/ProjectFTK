@@ -27,13 +27,15 @@ steps:
       deploymentMode: 'Incremental'
   - ${{ each region in parameters.regions }}:
     - task: AzureResourceManagerTemplateDeployment@3
+      -variables:
+        regionNoSpace: ${{ replace(region, ' ', '_') }}
       displayName: 'Deploy ${{ region }} Infra'
       inputs:
         deploymentScope: 'Resource Group'
         azureResourceManagerConnection: '$(serviceConnectionName)'
         subscriptionId: '$(subscriptionId)'
         action: 'Create Or Update Resource Group'
-        resourceGroupName: 'ProjectFtk-${{ replace(region, " ", "_") }}'
+        resourceGroupName: 'ProjectFtk-${{ regionNoSpace }}'
         location: '${{ region }}'
         templateLocation: 'Linked artifact'
         csmFile: '$(System.DefaultWorkingDirectory)/Deployment/ARM/Regional/Regional.json'
