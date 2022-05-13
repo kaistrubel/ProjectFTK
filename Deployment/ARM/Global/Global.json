@@ -28,7 +28,7 @@
         "type": "Microsoft.Web/serverfarms",
         "apiVersion": "2021-02-01",
         "name": "[variables('appServicePlanPortalName')]",
-        "location": "[parameters('location')]",
+        "location": "centralus",
         "sku": {
           "name": "[parameters('webAppSku')]"
         },
