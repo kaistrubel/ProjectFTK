@@ -57,7 +57,10 @@
           {
             "type": "blobServices/containers",
             "apiVersion": "2021-09-01",
-            "name": "[concat('default/', parameters('curriculumContainerName'))]"
+            "name": "[concat('default/', parameters('curriculumContainerName'))]",
+            "dependsOn": [
+              "[parameters('storageAccountName')]"
+            ]
           }
         ]
       }
