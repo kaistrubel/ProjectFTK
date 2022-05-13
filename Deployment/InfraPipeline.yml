@@ -3,25 +3,17 @@ trigger: none
 pool:
   vmImage: 'ubuntu-latest'
 
-parameters:
-  regions : ['westus']
-  globalRegion: 'westus'
-
 steps:
-  - task: AzurePowerShell@5
+  - task: AzureResourceManagerTemplateDeployment@3
     displayName: 'Deploy Global Infra'
     inputs:
-      azureSubscription: '$(serviceConnectionName)'
-      ScriptType: 'FilePath'
-      ScriptPath: './Deploy-AzTemplate.ps1'
-      ScriptArguments: -Location '${{ region }}' -ResourceGroupName 'ProjectFtk-${{ region }}' -TemplateFile ARM/Regional/Regional.json -TemplateParameterFile ARM/Regional/Regional.Parameters.json
-      azurePowerShellVersion: 'LatestVersion'
-- ${{ each region in parameters.regions }}:
-  - task: AzurePowerShell@5
-    displayName: 'Deploy ${{ region }} Infra'
-    inputs:
-      azureSubscription: '$(serviceConnectionName)'
-      ScriptType: 'FilePath'
-      ScriptPath: './Deploy-AzTemplate.ps1'
-      ScriptArguments: -Location '${{ region }}' -ResourceGroupName 'ProjectFtk-${{ region }}' -TemplateFile ARM/Regional/Regional.json -TemplateParameterFile ARM/Regional/Regional.Parameters.json
-      azurePowerShellVersion: 'LatestVersion'
+      deploymentScope: 'Resource Group'
+      azureResourceManagerConnection: '$(serviceConnectionName)'
+      subscriptionId: '$(subscriptionId)'
+      action: 'Create Or Update Resource Group'
+      resourceGroupName: 'ProjectFtk-Trial'
+      location: 'West US'
+      templateLocation: 'Linked artifact'
+      csmFile: '$(System.DefaultWorkingDirectory)/ARM/Global/Global.json'
+      csmParametersFile: '$(System.DefaultWorkingDirectory)/ARM/Global/Global.Parameters.json'
+      deploymentMode: 'Incremental'
