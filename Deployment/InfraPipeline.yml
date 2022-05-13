@@ -3,6 +3,10 @@ trigger: none
 pool:
   vmImage: 'ubuntu-latest'
 
+parameters:
+  regions : ['West US']
+  globalRegion: 'West US'
+
 steps:
   - task: AzureResourceManagerTemplateDeployment@3
     displayName: 'Deploy Global Infra'
@@ -11,9 +15,23 @@ steps:
       azureResourceManagerConnection: '$(serviceConnectionName)'
       subscriptionId: '$(subscriptionId)'
       action: 'Create Or Update Resource Group'
-      resourceGroupName: 'ProjectFtk-Trial'
-      location: 'West US'
+      resourceGroupName: 'ProjectFtk-Global'
+      location: '${{ parameters.globalRegion }}'
       templateLocation: 'Linked artifact'
       csmFile: '$(System.DefaultWorkingDirectory)/Deployment/ARM/Global/Global.json'
       csmParametersFile: '$(System.DefaultWorkingDirectory)/Deployment/ARM/Global/Global.Parameters.json'
+      deploymentMode: 'Incremental'
+  - ${{ each region in parameters.regions }}:
+    - task: AzureResourceManagerTemplateDeployment@3
+    displayName: 'Deploy ${{ region }} Infra'
+    inputs:
+      deploymentScope: 'Resource Group'
+      azureResourceManagerConnection: '$(serviceConnectionName)'
+      subscriptionId: '$(subscriptionId)'
+      action: 'Create Or Update Resource Group'
+      resourceGroupName: 'ProjectFtk-${{ region | replace: " ", "&nbsp;" }}'
+      location: '${{ region }}'
+      templateLocation: 'Linked artifact'
+      csmFile: '$(System.DefaultWorkingDirectory)/Deployment/ARM/Regional/Regional.json'
+      csmParametersFile: '$(System.DefaultWorkingDirectory)/Deployment/ARM/Regional/Regional.Parameters.json'
       deploymentMode: 'Incremental'
