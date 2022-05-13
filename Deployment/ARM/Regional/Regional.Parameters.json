@@ -8,6 +8,9 @@
     "webAppName": {
       "value": "ProjectFTKReactApp"
     },
+    "appServicePlanName": {
+      "value": "Plan-ProjectFTKReactApp"
+    },
     "linuxFxVersion": {
       "value": "DOTNETCORE|6.0"
     }
