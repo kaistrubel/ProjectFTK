@@ -6,10 +6,10 @@ pool:
 parameters:
 - name: regions
   type: object
-  default: ['West US 3']
+  default: ['Central US']
 - name: globalRegion
   type: string
-  default: 'West US 3'
+  default: 'Central US'
 
 steps:
   - task: AzureResourceManagerTemplateDeployment@3
