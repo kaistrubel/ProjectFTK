@@ -14,6 +14,6 @@ steps:
       resourceGroupName: 'ProjectFtk-Trial'
       location: 'West US'
       templateLocation: 'Linked artifact'
-      csmFile: '$(System.DefaultWorkingDirectory)/ARM/Global/Global.json'
-      csmParametersFile: '$(System.DefaultWorkingDirectory)/ARM/Global/Global.Parameters.json'
+      csmFile: '$(System.DefaultWorkingDirectory)/Deployment/ARM/Global/Global.json'
+      csmParametersFile: '$(System.DefaultWorkingDirectory)/Deployment/ARM/Global/Global.Parameters.json'
       deploymentMode: 'Incremental'
