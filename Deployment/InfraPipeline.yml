@@ -4,9 +4,11 @@ pool:
   vmImage: 'ubuntu-latest'
 
 parameters:
-  -name: regions
+  - name: regions
+  type: object
   default: ['West US']
-  -name: globalRegion
+  - name: globalRegion
+  type: string
   default: 'West US'
 
 steps:
