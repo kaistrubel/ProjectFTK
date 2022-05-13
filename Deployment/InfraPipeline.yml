@@ -26,9 +26,9 @@ steps:
       csmParametersFile: '$(System.DefaultWorkingDirectory)/Deployment/ARM/Global/Global.Parameters.json'
       deploymentMode: 'Incremental'
   - ${{ each region in parameters.regions }}:
+    - variables:
+      regionNoSpace: ${{ replace(region, ' ', '_') }}
     - task: AzureResourceManagerTemplateDeployment@3
-      - variables:
-        regionNoSpace: ${{ replace(region, 'region', '_') }}
       displayName: 'Deploy ${{ region }} Infra'
       inputs:
         deploymentScope: 'Resource Group'
