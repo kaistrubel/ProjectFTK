@@ -1,0 +1,65 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+
+    "parameters": {
+      "webAppName": {
+        "type": "string"
+      },
+      "location": {
+        "type": "string",
+        "defaultValue": "[resourceGroup().location]"
+      },
+      "webAppSku": {
+        "type": "string"
+      },
+      "storageAccountName": {
+        "type": "string"
+      },
+      "curriculumContainerName": {
+        "type": "string"
+      }
+    },
+    "variables": {
+      "appServicePlanPortalName": "[format('AppServicePlan-{0}', parameters('webAppName'))]"
+    },
+    "resources": [
+      {
+        "type": "Microsoft.Web/serverfarms",
+        "apiVersion": "2021-02-01",
+        "name": "[variables('appServicePlanPortalName')]",
+        "location": "[parameters('location')]",
+        "webAppSku": {
+          "name": "[parameters('webAppSku')]"
+        },
+        "kind": "linux",
+        "properties": {
+          "reserved": true
+        }
+      },
+      {
+        "type": "Microsoft.Storage/storageAccounts",
+        "apiVersion": "2021-09-01",
+        "name": "[parameters('storageAccountName')]",
+        "location": "[parameters('location')]",
+        "sku": {
+          "name": "Standard_LRS",
+          "tier": "Standard"
+        },
+        "kind": "StorageV2",
+        "identity": {
+          "type": "SystemAssigned"
+        },
+        "properties": {
+          "accessTier": "Hot"
+        },
+        "resources": [
+          {
+            "type": "blobServices/containers",
+            "apiVersion": "2021-09-01",
+            "name": "[concat('default/', parameters('curriculumContainerName'))]"
+          }
+        ]
+      }
+    ]
+  }

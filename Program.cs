@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using ProjectFTK.Extensions;
 using ProjectFTK.Models;
 
@@ -23,6 +24,12 @@ builder.Services.AddAuthentication(o =>
 
         googleOptions.ClaimActions.MapJsonKey(GoogleClaims.PictureUrl, "picture", "url");
     });
+
+builder.Services.AddAzureClients(cfg =>
+{
+    cfg.AddBlobServiceClient(configuration.GetSection("Blob")).WithCredential(new Azure.Identity.DefaultAzureCredential());
+
+});
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

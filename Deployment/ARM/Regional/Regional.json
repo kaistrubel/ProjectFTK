@@ -4,43 +4,25 @@
 
     "parameters": {
       "webAppName": {
-        "type": "string",
-        "defaultValue": "ProjectFTKReactApp-wus"
+        "type": "string"
       },
       "location": {
         "type": "string",
         "defaultValue": "[resourceGroup().location]"
       },
-      "sku": {
-        "type": "string",
-        "defaultValue": "F1"
-      },
       "linuxFxVersion": {
-        "type": "string",
-        "defaultValue": "DOTNETCORE|6.0"
+        "type": "string"
       }
     },
     "variables": {
-      "appServicePlanPortalName": "[format('AppServicePlan-{0}', parameters('webAppName'))]"
+      "appServicePlanPortalName": "[format('AppServicePlan-{0}', parameters('webAppName'))]",
+      "regionalWebAppName": "[format('{0}-{1}', parameters('webAppName'), parameters('location'))]"
     },
     "resources": [
       {
-        "type": "Microsoft.Web/serverfarms",
-        "apiVersion": "2021-02-01",
-        "name": "[variables('appServicePlanPortalName')]",
-        "location": "[parameters('location')]",
-        "sku": {
-          "name": "[parameters('sku')]"
-        },
-        "kind": "linux",
-        "properties": {
-          "reserved": true
-        }
-      },
-      {
         "type": "Microsoft.Web/sites",
         "apiVersion": "2021-02-01",
-        "name": "[parameters('webAppName')]",
+        "name": "[variables('regionalWebAppName')]",
         "location": "[parameters('location')]",
         "properties": {
           "httpsOnly": true,
@@ -52,15 +34,12 @@
         },
         "identity": {
           "type": "SystemAssigned"
-        },
-        "dependsOn": [
-          "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanPortalName'))]"
-        ]
+        }
       },
       {
         "type": "Microsoft.Web/sites/slots",
         "apiVersion": "2021-03-01",
-        "name": "[concat(parameters('webAppName'), '/staging')]",
+        "name": "[concat(variables('regionalWebAppName'), '/staging')]",
         "kind": "app",
         "location": "[parameters('location')]",
         "tags": {

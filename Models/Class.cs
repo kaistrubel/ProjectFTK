@@ -1,9 +1,9 @@
 ﻿using System;
 namespace ProjectFTK.Models;
 
-public class ClassModel
+public class Class
 {
-	public ClassModel()
+	public Class()
 	{
 	}
 }
