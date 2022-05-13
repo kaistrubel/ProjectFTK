@@ -45,6 +45,9 @@
         "tags": {
             "displayName": "Staging"
           },
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/sties', variables('regionalWebAppName'))]"
+        ],
         "properties": {
           "httpsOnly": true,
           "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanPortalName'))]",
@@ -56,10 +59,7 @@
         },
         "identity": {
           "type": "SystemAssigned"
-        },
-        "dependsOn": [
-          "[resourceId('Microsoft.Web/sties', variables('regionalWebAppName'))]"
-        ]
+        }
       }
     ]
   }
