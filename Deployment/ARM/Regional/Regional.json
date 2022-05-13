@@ -18,7 +18,7 @@
       }
     },
     "variables": {
-      "appServicePlanPortalName": "[format('AppServicePlan-{0}', parameters('webAppName'))]",
+      "appServicePlanPortalName": "[format('Plan-{0}', parameters('webAppName'))]",
       "regionalWebAppName": "[format('{0}-{1}', parameters('webAppName'), parameters('location'))]"
     },
     "resources": [
