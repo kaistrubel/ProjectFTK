@@ -32,7 +32,10 @@
         "sku": {
           "name": "[parameters('webAppSku')]"
         },
-        "kind": "linux"
+        "kind": "linux",
+        "properties": {
+          "reserved": true
+        }
       },
       {
         "type": "Microsoft.Storage/storageAccounts",
