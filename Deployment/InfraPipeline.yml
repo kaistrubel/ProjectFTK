@@ -27,15 +27,15 @@ steps:
       deploymentMode: 'Incremental'
   - ${{ each region in parameters.regions }}:
     - task: AzureResourceManagerTemplateDeployment@3
-    displayName: 'Deploy ${{ region }} Infra'
-    inputs:
-      deploymentScope: 'Resource Group'
-      azureResourceManagerConnection: '$(serviceConnectionName)'
-      subscriptionId: '$(subscriptionId)'
-      action: 'Create Or Update Resource Group'
-      resourceGroupName: 'ProjectFtk-${{ region }}'
-      location: '${{ region }}'
-      templateLocation: 'Linked artifact'
-      csmFile: '$(System.DefaultWorkingDirectory)/Deployment/ARM/Regional/Regional.json'
-      csmParametersFile: '$(System.DefaultWorkingDirectory)/Deployment/ARM/Regional/Regional.Parameters.json'
-      deploymentMode: 'Incremental'
+      displayName: 'Deploy ${{ region }} Infra'
+      inputs:
+        deploymentScope: 'Resource Group'
+        azureResourceManagerConnection: '$(serviceConnectionName)'
+        subscriptionId: '$(subscriptionId)'
+        action: 'Create Or Update Resource Group'
+        resourceGroupName: 'ProjectFtk-${{ region }}'
+        location: '${{ region }}'
+        templateLocation: 'Linked artifact'
+        csmFile: '$(System.DefaultWorkingDirectory)/Deployment/ARM/Regional/Regional.json'
+        csmParametersFile: '$(System.DefaultWorkingDirectory)/Deployment/ARM/Regional/Regional.Parameters.json'
+        deploymentMode: 'Incremental'
