@@ -58,7 +58,7 @@
           "type": "SystemAssigned"
         },
         "dependsOn": [
-          "[resourceId('Microsoft.Web/sties', parameters('regionalWebAppName'))]"
+          "[resourceId('Microsoft.Web/sties', variables('regionalWebAppName'))]"
         ]
       }
     ]
