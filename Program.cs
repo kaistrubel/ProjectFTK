@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using ProjectFTK.Extensions;
@@ -33,6 +34,9 @@ builder.Services.AddAzureClients(cfg =>
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+builder.Services.AddSpaStaticFiles(configuration => {
+        configuration.RootPath = "client-app/build";
+    });
 
 var app = builder.Build();
 
@@ -49,6 +53,7 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseSpaStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
@@ -58,6 +63,16 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}"); //rm =Home for react
 app.MapRazorPages();
+
+app.UseSpa(spa =>
+    {
+        spa.Options.SourcePath = "client-app";
+
+        if (app.Environment.IsDevelopment())
+        {
+            spa.UseReactDevelopmentServer(npmScript: "start");
+        }
+    });
 
 app.MapFallbackToFile("index.html");;
 
