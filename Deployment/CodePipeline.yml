@@ -11,29 +11,25 @@ variables:
   vmImageName: 'ubuntu-latest'
 
 steps:
-  - checkout: self
-  - task: Npm@1
-    displayName: npm install
+  - task: DotNetCoreCLI@2
+    displayName: dotnet restore
     inputs:
-      workingDir: client-app/
-      verbose: false
-  - task: Npm@1
-    displayName: npm run build
+      command: restore
+      projects: ProjectFTK.csproj
+  - task: DotNetCoreCLI@2
+    displayName: dotnet build
     inputs:
-      command: custom
-      workingDir: client-app/
-      verbose: false
-      customCommand: run build
-  - task: CmdLine@2
-    displayName: Command Line Script
-    inputs:
-      script: mv client-app/build wwwroot
+      command: build
+      projects: ProjectFTK.csproj
+      arguments: -c $(buildConfiguration)
   - task: DotNetCoreCLI@2
     displayName: dotnet publish
     inputs:
       command: publish
       projects: ProjectFTK.csproj
+      publishWebProjects: True
       arguments: -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/publish
+      zipAfterPublish: True
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: ProjectFTK'
     inputs:
