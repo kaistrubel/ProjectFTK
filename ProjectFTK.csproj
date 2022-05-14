@@ -29,6 +29,7 @@
     <PackageReference Include="Azure.Identity" Version="1.6.0" />
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.2.0" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.12.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.5" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,6 +45,8 @@
     <None Remove="Azure.Identity" />
     <None Remove="Microsoft.Extensions.Azure" />
     <None Remove="Azure.Storage.Blobs" />
+    <None Remove="Microsoft.AspNetCore.SpaServices" />
+    <None Remove="Microsoft.AspNetCore.SpaServices.Extensions" />
   </ItemGroup>
 
   <ItemGroup>
