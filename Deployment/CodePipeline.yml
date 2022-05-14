@@ -7,62 +7,21 @@ trigger:
 - main
 
 variables:
-
-  # Azure Resource Manager connection created during pipeline creation
-  azureSubscription: '464a4a12-b4c6-4c32-9662-0a8f5e2b0c12'
-
-  # Web app name
-  webAppName: 'ProjectFTKReactApp-centralus'
-
-  # Environment name
-  environmentName: 'ProjectFTKReactApp-centralus'
-
-  # Agent VM image name
+  buildConfiguration: 'Release'
   vmImageName: 'ubuntu-latest'
 
-stages:
-- stage: Build
-  displayName: Build stage
-  jobs:
-  - job: Job_1
-    displayName: Agent job 1
-    pool:
-      vmImage: $(vmImageName)
-    steps:
-    - checkout: self
-    - task: Npm@1
-      displayName: npm install
-      inputs:
-        workingDir: client-app/
-        verbose: false
-    - task: Npm@1
-      displayName: npm run build
-      inputs:
-        command: custom
-        workingDir: client-app/
-        verbose: false
-        customCommand: run build
-    - task: CmdLine@2
-      displayName: Command Line Script
-      inputs:
-        script: mv client-app/build wwwroot
-    - task: DotNetCoreCLI@2
-      displayName: dotnet restore
-      inputs:
-        command: restore
-        projects: ProjectFTK.csproj
-    - task: DotNetCoreCLI@2
-      displayName: dotnet build
-      inputs:
-        projects: ProjectFTK.csproj
-    - task: DotNetCoreCLI@2
-      displayName: dotnet publish
-      inputs:
-        command: publish
-        projects: ProjectFTK.csproj
-        arguments: -c Release -o $(Build.ArtifactStagingDirectory)/publish
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: ProjectFTK'
-      inputs:
-        PathtoPublish: $(Build.ArtifactStagingDirectory)/publish
-        ArtifactName: ProjectFTK
+steps:
+  - task: DotNetCoreCLI@2
+    displayName: dotnet publish
+    inputs:
+      command: publish
+      publishWebProjects: false
+      projects: ProjectFTK.csproj
+      arguments: -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/publish
+      modifyOutputPath: false
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: ProjectFTK'
+    inputs:
+      PathtoPublish: $(Build.ArtifactStagingDirectory)/publish
+      ArtifactName: ProjectFTK
+      publishLocation: 'Container'
