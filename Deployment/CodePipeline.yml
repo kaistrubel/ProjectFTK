@@ -11,6 +11,23 @@ variables:
   vmImageName: 'ubuntu-latest'
 
 steps:
+  - checkout: self
+  - task: Npm@1
+    displayName: npm install
+    inputs:
+      workingDir: client-app/
+      verbose: false
+  - task: Npm@1
+    displayName: npm run build
+    inputs:
+      command: custom
+      workingDir: client-app/
+      verbose: false
+      customCommand: run build
+  - task: CmdLine@2
+    displayName: Command Line Script
+    inputs:
+      script: mv client-app/build wwwroot
   - task: DotNetCoreCLI@2
     displayName: dotnet publish
     inputs:
