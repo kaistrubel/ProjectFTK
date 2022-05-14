@@ -15,9 +15,6 @@
       },
       "appServicePlanName": {
         "type": "string"
-      },
-      "linuxFxVersion": {
-        "type": "string"
       }
     },
     "variables": {
@@ -33,7 +30,6 @@
           "httpsOnly": true,
           "serverFarmId": "[resourceId(parameters('globalResourceGroupName'), 'Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
           "siteConfig": {
-            "linuxFxVersion": "[parameters('linuxFxVersion')]",
             "minTlsVersion": "1.2"
           }
         },

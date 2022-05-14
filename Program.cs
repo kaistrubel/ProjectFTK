@@ -33,7 +33,6 @@ builder.Services.AddAzureClients(cfg =>
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-builder.Services.AddSpaStaticFiles();
 
 var app = builder.Build();
 
@@ -54,8 +53,6 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseSpaStaticFiles(new StaticFileOptions { RequestPath = "/client-app/build" });
 
 app.MapControllerRoute(
     name: "default",

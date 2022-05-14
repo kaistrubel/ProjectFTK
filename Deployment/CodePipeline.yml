@@ -35,4 +35,3 @@ steps:
     inputs:
       PathtoPublish: $(Build.ArtifactStagingDirectory)/publish
       ArtifactName: ProjectFTK
-      publishLocation: 'Container'
