@@ -45,21 +45,21 @@ stages:
     - task: CmdLine@2
       displayName: Command Line Script
       inputs:
-        script: mv client-app/build ProjectFTK/wwwroot
+        script: mv client-app/build wwwroot
     - task: DotNetCoreCLI@2
       displayName: dotnet restore
       inputs:
         command: restore
-        projects: ProjectFTK/ProjectFTK.csproj
+        projects: ProjectFTK.csproj
     - task: DotNetCoreCLI@2
       displayName: dotnet build
       inputs:
-        projects: ProjectFTK/ProjectFTK.csproj
+        projects: ProjectFTK.csproj
     - task: DotNetCoreCLI@2
       displayName: dotnet publish
       inputs:
         command: publish
-        projects: ProjectFTK/ProjectFTK.csproj
+        projects: ProjectFTK.csproj
         arguments: -c Release -o $(Build.ArtifactStagingDirectory)/publish
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: ProjectFTK'
