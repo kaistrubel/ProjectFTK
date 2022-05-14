@@ -32,10 +32,8 @@ steps:
     displayName: dotnet publish
     inputs:
       command: publish
-      publishWebProjects: false
       projects: ProjectFTK.csproj
       arguments: -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/publish
-      modifyOutputPath: false
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: ProjectFTK'
     inputs:
