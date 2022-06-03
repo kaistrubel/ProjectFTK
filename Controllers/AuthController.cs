@@ -20,7 +20,7 @@ namespace ProjectFTK.Controllers
                 GoogleDefaults.AuthenticationScheme,
                 new AuthenticationProperties
                 {
-                    RedirectUri = Url.Action(nameof(GoogleResponse), "Auth", new { returnUrl = "/", isTeacher = isTeacher })
+                    RedirectUri = Url.Action(nameof(GoogleResponse), "Auth", new { returnUrl = "/Home/Index", isTeacher = isTeacher })
                 });
         }
         
