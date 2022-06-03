@@ -8,8 +8,16 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Yo yo yo, we got some react in this bith. If I knew any front end, I would've hooked up google auth here lol
+          Yo yo yo, we got some react in this bitch. If I knew any front end, I would've hooked up google auth here lol
         </p>
+        <a
+          className="App-link"
+          href="https://projectftk.com/Home/Index"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Try logging in here with my sick backend UI!!
+        </a>
       </header>
     </div>
   );
