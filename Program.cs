@@ -61,7 +61,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}"); //rm =Home for react
+    pattern: "{controller}/{action}/{id?}"); //rm =Home for react
 app.MapRazorPages();
 
 /*
