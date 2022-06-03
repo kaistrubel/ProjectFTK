@@ -61,7 +61,7 @@ namespace ProjectFTK.Controllers
 
         private bool ValidateTeacherEmail(string email)
         {
-            var json = System.IO.File.ReadAllText("Mock_Blob/teachers.json");
+            var json = System.IO.File.ReadAllText("DataJson/teachers.json");
             List<string> validatedTeachers = JsonConvert.DeserializeObject<List<string>>(json);
 
             return validatedTeachers.Contains(email);

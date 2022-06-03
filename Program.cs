@@ -35,7 +35,7 @@ builder.Services.AddAzureClients(cfg =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddSpaStaticFiles(configuration => {
-        configuration.RootPath = "client-app/build";
+        configuration.RootPath = "ReactApp/build";
     });
 
 var app = builder.Build();
@@ -64,16 +64,17 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}"); //rm =Home for react
 app.MapRazorPages();
 
+/*
 app.UseSpa(spa =>
     {
-        spa.Options.SourcePath = "client-app";
+        spa.Options.SourcePath = "ReactApp";
 
         if (app.Environment.IsDevelopment())
         {
             spa.UseReactDevelopmentServer(npmScript: "start");
         }
     });
-
+*/
 app.MapFallbackToFile("index.html");;
 
 app.Run();

@@ -31,6 +31,10 @@
         "location": "[parameters('location')]",
         "sku": {
           "name": "[parameters('webAppSku')]"
+        },
+        "kind": "linux",
+        "properties": {
+          "reserved": true
         }
       },
       {
