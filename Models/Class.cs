@@ -1,20 +1,17 @@
 ﻿using System;
 namespace ProjectFTK.Models;
 
-public class Class
+
+public class Class : GenericClass
 {
-	public Class()
-	{
-	}
+	public string ClassId { get; set; }
+
+	public string DisplayName { get; set; }
 }
 
-public enum Subject
+public class GenericClass
 {
-	Math,
-	Science,
-	English,
-	History,
-	ComputerScience,
-	Electives
-}
+	public string Slug { get; set; }
 
+	public string DisplayName { get; set; }
+}

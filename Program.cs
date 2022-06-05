@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
+using MySql.Data.MySqlClient;
 using ProjectFTK.Extensions;
 using ProjectFTK.Models;
 
@@ -32,13 +33,13 @@ builder.Services.AddAzureClients(cfg =>
 
 });
 
+builder.Services.AddTransient<MySqlConnection>(cfg =>
+    new MySqlConnection(configuration["MySQLConnection"])
+);
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-/*
-builder.Services.AddSpaStaticFiles(configuration => {
-        configuration.RootPath = "ReactApp/build";
-    });
-*/
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -63,25 +64,11 @@ app.MapRazorPages();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-//app.UseSpaStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-
-
-/*
-app.UseSpa(spa =>
-    {
-        spa.Options.SourcePath = "ReactApp";
-
-        if (app.Environment.IsDevelopment())
-        {
-            spa.UseReactDevelopmentServer(npmScript: "start");
-        }
-    });
-*/
 app.MapFallbackToFile("index.html");;
 
 app.Run();

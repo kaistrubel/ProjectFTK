@@ -1,10 +1,37 @@
-﻿{
-  "Math": [
-    "ap-calc-bc"
-  ],
-  "Science": [],
-  "English": [],
-  "History": [],
-  "Computer Science": [],
-  "Electives": []
-}
+﻿[
+  {
+    "slug": "math",
+    "displayName": "Math",
+    "classes": [
+      {
+        "Slug": "algebra-2",
+        "DisplayName": "Algebra 2"
+      }
+    ]
+  },
+  {
+    "slug": "science",
+    "displayName": "Science",
+    "classes": []
+  },
+  {
+    "slug": "english",
+    "displayName": "English",
+    "classes": []
+  },
+  {
+    "slug": "history",
+    "displayName": "History",
+    "classes": []
+  },
+  {
+    "slug": "computer-science",
+    "displayName": "Computer Science",
+    "classes": []
+  },
+  {
+    "slug": "electives",
+    "displayName": "Electives",
+    "classes": []
+  }
+]
