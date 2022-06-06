@@ -44,9 +44,6 @@ public class MySQLDbServices
         using var command = _mySqlConnection.CreateCommand();
         await command.Connection.OpenAsync();
 
-        //teacher_email, code, id
-        //teacher_email = '{email}' AND code = '{code}'
-
         command.CommandText = $"SELECT {columns} FROM {tableName} WHERE {sqlWhereFilter}";
 
         using var reader = await command.ExecuteReaderAsync();
@@ -60,16 +57,28 @@ public class MySQLDbServices
         return JsonConvert.DeserializeObject<T>(json);
     }
 
+    public async Task UpdateData(string tableName, string setValues, string sqlWhereFilter)
+    {
+        using var command = _mySqlConnection.CreateCommand();
+        await command.Connection.OpenAsync();
+
+        command.CommandText = $"UPDATE {tableName} SET {setValues} WHERE {sqlWhereFilter}";
+
+        await command.Connection.CloseAsync();
+    }
+
     public async Task<int> GetCount(string tableName, string sqlWhereFilter, string column)
     {
         using var command = _mySqlConnection.CreateCommand();
         await command.Connection.OpenAsync();
 
-        command.CommandText = $"SELECT COUNT {column} FROM {tableName} WHERE {sqlWhereFilter}";
+        command.CommandText = $"SELECT COUNT({column}) FROM {tableName} WHERE {sqlWhereFilter}";
 
         using var reader = await command.ExecuteReaderAsync();
+        await reader.ReadAsync();
+        var retval = reader.GetInt32(0);
         await command.Connection.CloseAsync();
 
-        return reader.GetInt32(0);
+        return retval;
     }
 }

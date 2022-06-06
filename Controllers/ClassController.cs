@@ -39,6 +39,11 @@ public class ClassController : Controller
         return subjects;
     }
 
+
+
+    //I DONT KNOW IF IT MAKES SENSE TO CONSTANTLY OPEN AND CLOSE FUNCTIONS IN BET FUNCTION. MAYBE ONE MAIN OPEN, AND ONE MAIN CLOSE. STILL KEEP SERVICE, JUST NOT OPEN AND CLOSE IN IT
+
+
     [Authorize(Roles = CustomRoles.Teacher)]
     public async Task CreateClass(string classSlug, string period) //-> adds class object to db.Checks if guid exists
     {
@@ -60,7 +65,7 @@ public class ClassController : Controller
             throw new Exception("Class not supported");
         }
 
-        //scale by creating a db per school, or district or something like that
+        //scale by creating a table per school, or district or something like that
         var classData = await _mySQLDbServices.GetData<List<Class>>(classesTable, $"teacheremail = '{identity.Email()}' AND period = '{period}'");
 
         if (classData.Any())
@@ -76,7 +81,6 @@ public class ClassController : Controller
 
     public async Task<int> JoinClass(string teacherEmail, string code) //. Max 50 students.Links email to db
     {
-
         //remove!!
         teacherEmail = "philipedat@gmail.com";
         code = "X8DLS5FA";
@@ -87,20 +91,41 @@ public class ClassController : Controller
         var identity = User.Identity;
 
         var classData = await _mySQLDbServices.GetData<List<Class>>(classesTable, $"teacheremail = '{teacherEmail}' AND code = '{code}'");
-        var classId = classData.Single().Slug;
+        var classId = classData.Single().Id;
 
         //Remove commented line below to delete and recreate table
-        await _mySQLDbServices.DeleteAndCreateTable("students", "email varchar(256), classids json");
+        //await _mySQLDbServices.DeleteAndCreateTable(studentsTable, "email varchar(256), classids json");
 
-        if (await _mySQLDbServices.GetCount("students", $"classids LIKE '{classId}'", "email") > maxStudentsInAClass)
+        if (await _mySQLDbServices.GetCount(studentsTable, $"classids LIKE '{classId}'", "email") > maxStudentsInAClass)    //should we save a classid to students list?
         {
             throw new Exception($"This class already contains the maximum {maxStudentsInAClass} number of students");
         }
 
-        return await _mySQLDbServices.GetCount("students", $"classids LIKE '{classId}'", "email");
+        var classIds = await _mySQLDbServices.GetData<List<string>>(studentsTable, $"email = '{identity.Email()}'", "classids");
+
+        if (classIds.Count == 0)
+        {
+            await _mySQLDbServices.InsertValues(studentsTable, $"'{identity.Email()}', '[\"{classId}\"]'");
+
+            return await _mySQLDbServices.GetCount(studentsTable, $"classids LIKE '{classId}'", "email");
+        }
+
+        if (classIds.Contains(classId))
+        {
+            throw new Exception("You already have this class registered");
+        }
+
+        classIds.Add(classId);
+
+        await _mySQLDbServices.UpdateData(studentsTable, $"classids = '[\"{string.Join("\",\"", classIds)}\"]'", $"email = '{identity.Email()}'");
+
+        //remove return void class
+        return await _mySQLDbServices.GetCount(studentsTable, $"classids LIKE '{classId}'", "email");
     }
 
     //GetCurrentClasses
+
+    //Delte Class
 
     private string CreateRandomCode()
     {

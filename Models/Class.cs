@@ -6,6 +6,8 @@ public class Class : GenericClass
 {
 	public string Period { get; set; }
 
+	public string Id { get; set; }
+
 	public string Code { get; set; }
 
 	public string TeacherEmail { get; set; }
