@@ -14,6 +14,10 @@ namespace ProjectFTK.Controllers;
 
 public class ClassController : Controller
 {
+    private const int maxStudentsInAClass = 50;
+    private const string classesTable = "classes";
+    private const string studentsTable = "students";
+
     private readonly MySQLDbServices _mySQLDbServices;
 
     public ClassController(MySQLDbServices mySQLDbServices)
@@ -30,9 +34,9 @@ public class ClassController : Controller
     public List<Subject> GetSupportedClasses()
     {
         var subjectsJson = System.IO.File.ReadAllText("DataJson/subjects.json");
-        List<Subject> validatedTeachers = JsonConvert.DeserializeObject<List<Subject>>(subjectsJson);
+        List<Subject> subjects = JsonConvert.DeserializeObject<List<Subject>>(subjectsJson);
 
-        return validatedTeachers;
+        return subjects;
     }
 
     [Authorize(Roles = CustomRoles.Teacher)]
@@ -44,35 +48,56 @@ public class ClassController : Controller
         classSlug = "algebra-2";
         period = "2";
 
+        //check value (below) char lengths in front end
+
         if (string.IsNullOrEmpty(identity?.Email()))
         {
             throw new Exception("Teacher's email cannot be null when creating a class");
         }
 
-        //check if classslug exists here
+        if (GetSupportedClasses().Any(x => x.Classes.Any(y => y.Slug == classSlug)) == false)
+        {
+            throw new Exception("Class not supported");
+        }
 
-        //check if teacher already has this class for this period, and report error if they do
+        //scale by creating a db per school, or district or something like that
+        var classData = await _mySQLDbServices.GetData<List<Class>>(classesTable, $"teacheremail = '{identity.Email()}' AND period = '{period}'");
 
-        //check value (below) char lengths in front end
+        if (classData.Any())
+        {
+            throw new Exception("This class already exists for this time period.");
+        }
 
-        //Remove comments to delete and recreate table
-        await _mySQLDbServices.DeleteAndCreateTable("classes", "id varchar(36), slug varchar(50), period varchar(20), teacheremail varchar(256), code varchar(8)");
+        //Remove commented line below to delete and recreate table
+        //await _mySQLDbServices.DeleteAndCreateTable(classesTable, "id varchar(36), slug varchar(50), period varchar(20), teacheremail varchar(256), code varchar(8)");
 
-        await _mySQLDbServices.InsertValues("classes", $"uuid(), '{classSlug}', '{period}', '{identity.Email()}', '{CreateRandomCode()}'");
-
+        await _mySQLDbServices.InsertValues(classesTable, $"uuid(), '{classSlug}', '{period}', '{identity.Email()}', '{CreateRandomCode()}'");
     }
 
-    public async Task<List<Class>> JoinClass(string email, string code) //. Max 50 students.Links email to db
+    public async Task<int> JoinClass(string teacherEmail, string code) //. Max 50 students.Links email to db
     {
 
         //remove!!
-        email = "philipedat@gmail.com";
-        code = "NCNS4RI3";
+        teacherEmail = "philipedat@gmail.com";
+        code = "X8DLS5FA";
 
+        //check if student already in class
+        //check number of students in class
 
-        var classData = await _mySQLDbServices.GetData<List<Class>>("classes", $"teacheremail = '{email}' ");
+        var identity = User.Identity;
 
-        return classData;
+        var classData = await _mySQLDbServices.GetData<List<Class>>(classesTable, $"teacheremail = '{teacherEmail}' AND code = '{code}'");
+        var classId = classData.Single().Slug;
+
+        //Remove commented line below to delete and recreate table
+        await _mySQLDbServices.DeleteAndCreateTable("students", "email varchar(256), classids json");
+
+        if (await _mySQLDbServices.GetCount("students", $"classids LIKE '{classId}'", "email") > maxStudentsInAClass)
+        {
+            throw new Exception($"This class already contains the maximum {maxStudentsInAClass} number of students");
+        }
+
+        return await _mySQLDbServices.GetCount("students", $"classids LIKE '{classId}'", "email");
     }
 
     //GetCurrentClasses

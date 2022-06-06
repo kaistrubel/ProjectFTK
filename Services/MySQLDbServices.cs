@@ -59,4 +59,17 @@ public class MySQLDbServices
         var json = JsonConvert.SerializeObject(datatable);
         return JsonConvert.DeserializeObject<T>(json);
     }
+
+    public async Task<int> GetCount(string tableName, string sqlWhereFilter, string column)
+    {
+        using var command = _mySqlConnection.CreateCommand();
+        await command.Connection.OpenAsync();
+
+        command.CommandText = $"SELECT COUNT {column} FROM {tableName} WHERE {sqlWhereFilter}";
+
+        using var reader = await command.ExecuteReaderAsync();
+        await command.Connection.CloseAsync();
+
+        return reader.GetInt32(0);
+    }
 }
