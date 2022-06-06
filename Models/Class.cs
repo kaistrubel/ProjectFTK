@@ -4,9 +4,11 @@ namespace ProjectFTK.Models;
 
 public class Class : GenericClass
 {
-	public string ClassId { get; set; }
+	public string Period { get; set; }
 
-	public string DisplayName { get; set; }
+	public string Code { get; set; }
+
+	public string TeacherEmail { get; set; }
 }
 
 public class GenericClass

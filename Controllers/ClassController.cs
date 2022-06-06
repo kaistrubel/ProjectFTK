@@ -8,16 +8,17 @@ using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using ProjectFTK.Extensions;
 using ProjectFTK.Models;
+using ProjectFTK.Services;
 
 namespace ProjectFTK.Controllers;
 
 public class ClassController : Controller
 {
-    private readonly MySqlConnection _mySqlConnection;
+    private readonly MySQLDbServices _mySQLDbServices;
 
-    public ClassController(MySqlConnection mySqlConnection)
+    public ClassController(MySQLDbServices mySQLDbServices)
     {
-        _mySqlConnection = mySqlConnection;
+        _mySQLDbServices = mySQLDbServices;
     }
 
     // GET: /<controller>/
@@ -48,28 +49,20 @@ public class ClassController : Controller
             throw new Exception("Teacher's email cannot be null when creating a class");
         }
 
-        //check if classslug exists
+        //check if classslug exists here
 
-        using var command = _mySqlConnection.CreateCommand();
-        await command.Connection.OpenAsync();
+        //check if teacher already has this class for this period, and report error if they do
+
+        //check value (below) char lengths in front end
 
         //Remove comments to delete and recreate table
-        ///*
-        command.CommandText = "DROP TABLE IF EXISTS classes;";
-        await command.ExecuteNonQueryAsync();
+        await _mySQLDbServices.DeleteAndCreateTable("classes", "id varchar(36), slug varchar(50), period varchar(20), teacheremail varchar(256), code varchar(8)");
 
-        command.CommandText = "CREATE TABLE classes (id varchar(36), class varchar(50), period varchar(20), teacher_email varchar(256), code varchar(8));"; //check char lengths in front end
-        await command.ExecuteNonQueryAsync();
-        //*/
-
-        command.CommandText = $"INSERT INTO classes VALUES (uuid(), '{classSlug}', '{period}', '{identity.Email()}', '{CreateRandomCode()}')";
-        await command.ExecuteNonQueryAsync();
-
-        await command.Connection.CloseAsync();
+        await _mySQLDbServices.InsertValues("classes", $"uuid(), '{classSlug}', '{period}', '{identity.Email()}', '{CreateRandomCode()}'");
 
     }
 
-    public async Task<List<string>> JoinClass(string email, string code) //. Max 50 students.Links email to db
+    public async Task<List<Class>> JoinClass(string email, string code) //. Max 50 students.Links email to db
     {
 
         //remove!!
@@ -77,23 +70,9 @@ public class ClassController : Controller
         code = "NCNS4RI3";
 
 
-        List<string> retval = new List<string>();
-        using var command = _mySqlConnection.CreateCommand();
-        await command.Connection.OpenAsync();
+        var classData = await _mySQLDbServices.GetData<List<Class>>("classes", $"teacheremail = '{email}' ");
 
-        command.CommandText = $"SELECT teacher_email, code, id FROM classes WHERE teacher_email = '{email}' AND code = '{code}'";
-
-        using var reader = await command.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            retval.Add(reader.GetString(0));
-            retval.Add(reader.GetString(1));
-            retval.Add(reader.GetString(2));
-        }
-
-        await command.Connection.CloseAsync();
-
-        return retval;
+        return classData;
     }
 
     //GetCurrentClasses
