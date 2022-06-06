@@ -35,9 +35,8 @@ public class ClassController : Controller
     }
 
     [Authorize(Roles = CustomRoles.Teacher)]
-    public async Task<List<string>> CreateClass(string classSlug, string period) //-> adds class object to db.Checks if guid exists
+    public async Task CreateClass(string classSlug, string period) //-> adds class object to db.Checks if guid exists
     {
-        List<string> retval = new List<string>();
         var identity = User.Identity;
 
         //remove!!!
@@ -55,69 +54,46 @@ public class ClassController : Controller
         await command.Connection.OpenAsync();
 
         //Remove comments to delete and recreate table
-        /*
+        ///*
         command.CommandText = "DROP TABLE IF EXISTS classes;";
         await command.ExecuteNonQueryAsync();
 
-        command.CommandText = "CREATE TABLE classes (id binary(16), class varchar(50), period varchar(20), teacher_email varchar(256), code varchar(8));"; //check char lengths in front end
+        command.CommandText = "CREATE TABLE classes (id varchar(36), class varchar(50), period varchar(20), teacher_email varchar(256), code varchar(8));"; //check char lengths in front end
         await command.ExecuteNonQueryAsync();
-        */
+        //*/
 
-        command.CommandText = $"INSERT INTO classes VALUES (unhex(replace(uuid(),'-','')), '{classSlug}', '{period}', '{identity.Email()}', '{CreateRandomCode()}')";
+        command.CommandText = $"INSERT INTO classes VALUES (uuid(), '{classSlug}', '{period}', '{identity.Email()}', '{CreateRandomCode()}')";
         await command.ExecuteNonQueryAsync();
 
-        command.CommandText = "SELECT * FROM classes;";
+        await command.Connection.CloseAsync();
+
+    }
+
+    public async Task<List<string>> JoinClass(string email, string code) //. Max 50 students.Links email to db
+    {
+
+        //remove!!
+        email = "philipedat@gmail.com";
+        code = "NCNS4RI3";
+
+
+        List<string> retval = new List<string>();
+        using var command = _mySqlConnection.CreateCommand();
+        await command.Connection.OpenAsync();
+
+        command.CommandText = $"SELECT teacher_email, code, id FROM classes WHERE teacher_email = '{email}' AND code = '{code}'";
 
         using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
             retval.Add(reader.GetString(0));
             retval.Add(reader.GetString(1));
+            retval.Add(reader.GetString(2));
         }
 
         await command.Connection.CloseAsync();
 
         return retval;
-        /*
-        using var command = new MySqlCommand("SELECT field FROM table;", _mySqlConnection);
-        var ne = command.ExecuteNonQueryAsync();
-
-        using var reader = await command.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            var value = reader.GetValue(0);
-            // do something with 'value'
-        }
-        */
-    }
-
-    public async Task JoinClass(string email, string code) //. Max 50 students.Links email to db
-    {
-        using var command = _mySqlConnection.CreateCommand();
-        await command.Connection.OpenAsync();
-
-        //Remove comments to delete and recreate table
-        /*
-        command.CommandText = "DROP TABLE IF EXISTS classes;";
-        await command.ExecuteNonQueryAsync();
-
-        command.CommandText = "CREATE TABLE classes (id binary(16), class varchar(50), period varchar(20), teacher_email varchar(256), code varchar(8));"; //check char lengths in front end
-        await command.ExecuteNonQueryAsync();
-        */
-
-        command.CommandText = $"INSERT INTO classes VALUES (unhex(replace(uuid(),'-','')), '{classSlug}', '{period}', '{identity.Email()}', '{CreateRandomCode()}')";
-        await command.ExecuteNonQueryAsync();
-
-        command.CommandText = "SELECT * FROM classes;";
-
-        using var reader = await command.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            retval.Add(reader.GetString(0));
-            retval.Add(reader.GetString(1));
-        }
-
-        await command.Connection.CloseAsync();
     }
 
     //GetCurrentClasses
