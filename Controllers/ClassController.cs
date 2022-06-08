@@ -16,12 +16,14 @@ public class ClassController : Controller
 {
     private const int maxStudentsInAClass = 50;
     private const string classesTable = "classes";
-    private const string studentsTable = "students";
+    private const string classes_studentsTable = "classes_students";
 
+    private readonly MySqlConnection _mySqlConnection;
     private readonly MySQLDbServices _mySQLDbServices;
 
-    public ClassController(MySQLDbServices mySQLDbServices)
+    public ClassController(MySqlConnection mySqlConnection, MySQLDbServices mySQLDbServices)
     {
+        _mySqlConnection = mySqlConnection;
         _mySQLDbServices = mySQLDbServices;
     }
 
@@ -65,8 +67,11 @@ public class ClassController : Controller
             throw new Exception("Class not supported");
         }
 
+        using var command = _mySqlConnection.CreateCommand();
+        await command.Connection.OpenAsync();
+
         //scale by creating a table per school, or district or something like that
-        var classData = await _mySQLDbServices.GetData<List<Class>>(classesTable, $"teacheremail = '{identity.Email()}' AND period = '{period}'");
+        var classData = await _mySQLDbServices.GetData<List<Class>>(command, classesTable, $"teacheremail = '{identity.Email()}' AND period = '{period}'");
 
         if (classData.Any())
         {
@@ -76,10 +81,11 @@ public class ClassController : Controller
         //Remove commented line below to delete and recreate table
         //await _mySQLDbServices.DeleteAndCreateTable(classesTable, "id varchar(36), slug varchar(50), period varchar(20), teacheremail varchar(256), code varchar(8)");
 
-        await _mySQLDbServices.InsertValues(classesTable, $"uuid(), '{classSlug}', '{period}', '{identity.Email()}', '{CreateRandomCode()}'");
+        await _mySQLDbServices.InsertValues(command, classesTable, $"uuid(), '{classSlug}', '{period}', '{identity.Email()}', '{CreateRandomCode()}'");
+        await command.Connection.CloseAsync();
     }
 
-    public async Task<int> JoinClass(string teacherEmail, string code) //. Max 50 students.Links email to db
+    public async Task JoinClass(string teacherEmail, string code) //. Max 50 students.Links email to db
     {
         //remove!!
         teacherEmail = "philipedat@gmail.com";
@@ -90,37 +96,29 @@ public class ClassController : Controller
 
         var identity = User.Identity;
 
-        var classData = await _mySQLDbServices.GetData<List<Class>>(classesTable, $"teacheremail = '{teacherEmail}' AND code = '{code}'");
-        var classId = classData.Single().Id;
+        using var command = _mySqlConnection.CreateCommand();
+        await command.Connection.OpenAsync();
+
+        var classData = await _mySQLDbServices.GetData<List<Class>>(command, classesTable, $"teacheremail = '{teacherEmail}' AND code = '{code}'");
+        var classId = classData.SingleOrDefault()?.Id ?? throw new Exception("No Class Found with this teacher Email and Code");
 
         //Remove commented line below to delete and recreate table
-        //await _mySQLDbServices.DeleteAndCreateTable(studentsTable, "email varchar(256), classids json");
+        await _mySQLDbServices.DeleteAndCreateTable(command, classes_studentsTable, "id varchar(36), email varchar(256)");
 
-        if (await _mySQLDbServices.GetCount(studentsTable, $"classids LIKE '{classId}'", "email") > maxStudentsInAClass)    //should we save a classid to students list?
+        if (await _mySQLDbServices.GetCount(command, classes_studentsTable, $"id = '{classId}'", "email") > maxStudentsInAClass)    //should we save a classid to students list?
         {
             throw new Exception($"This class already contains the maximum {maxStudentsInAClass} number of students");
         }
 
-        var classIds = await _mySQLDbServices.GetData<List<string>>(studentsTable, $"email = '{identity.Email()}'", "classids");
-
-        if (classIds.Count == 0)
-        {
-            await _mySQLDbServices.InsertValues(studentsTable, $"'{identity.Email()}', '[\"{classId}\"]'");
-
-            return await _mySQLDbServices.GetCount(studentsTable, $"classids LIKE '{classId}'", "email");
-        }
+        var classIds = await _mySQLDbServices.GetData<List<string>>(command, classes_studentsTable, $"email = '{identity.Email()}'", "id");
 
         if (classIds.Contains(classId))
         {
-            throw new Exception("You already have this class registered");
+            throw new Exception("You are already registered for this class registered");
         }
 
-        classIds.Add(classId);
-
-        await _mySQLDbServices.UpdateData(studentsTable, $"classids = '[\"{string.Join("\",\"", classIds)}\"]'", $"email = '{identity.Email()}'");
-
-        //remove return void class
-        return await _mySQLDbServices.GetCount(studentsTable, $"classids LIKE '{classId}'", "email");
+        await _mySQLDbServices.InsertValues(command, classes_studentsTable, $"'{classId}', '{identity.Email()}'");
+        await command.Connection.CloseAsync();
     }
 
     //GetCurrentClasses
