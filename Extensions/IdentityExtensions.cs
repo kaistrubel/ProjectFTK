@@ -21,6 +21,11 @@ public static class IdentityExtensions
 		return claimIdentity.Claims.Where(x=>x.Type == ClaimTypes.Role).Select(x=>x.Value).ToArray();
 	}
 
+	public static bool IsInRole(this IIdentity identity, string role)
+	{
+		return identity.Roles().Contains(role);
+	}
+
 	public static string ClaimValue(this IIdentity identity, string claimType)
 	{
 		return (identity as ClaimsIdentity)?.Claims?.FirstOrDefault(x => string.Equals(x.Type, claimType))?.Value ?? string.Empty;

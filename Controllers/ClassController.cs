@@ -41,11 +41,7 @@ public class ClassController : Controller
         return subjects;
     }
 
-
-
-    //I DONT KNOW IF IT MAKES SENSE TO CONSTANTLY OPEN AND CLOSE FUNCTIONS IN BET FUNCTION. MAYBE ONE MAIN OPEN, AND ONE MAIN CLOSE. STILL KEEP SERVICE, JUST NOT OPEN AND CLOSE IN IT
-
-
+    [HttpGet]
     [Authorize(Roles = CustomRoles.Teacher)]
     public async Task CreateClass(string classSlug, string period) //-> adds class object to db.Checks if guid exists
     {
@@ -85,6 +81,7 @@ public class ClassController : Controller
         await command.Connection.CloseAsync();
     }
 
+    [HttpGet]
     public async Task JoinClass(string teacherEmail, string code) //. Max 50 students.Links email to db
     {
         //remove!!
@@ -103,16 +100,16 @@ public class ClassController : Controller
         var classId = classData.SingleOrDefault()?.Id ?? throw new Exception("No Class Found with this teacher Email and Code");
 
         //Remove commented line below to delete and recreate table
-        await _mySQLDbServices.DeleteAndCreateTable(command, classes_studentsTable, "id varchar(36), email varchar(256)");
+        //await _mySQLDbServices.DeleteAndCreateTable(command, classes_studentsTable, "id varchar(36), email varchar(256)");
 
         if (await _mySQLDbServices.GetCount(command, classes_studentsTable, $"id = '{classId}'", "email") > maxStudentsInAClass)    //should we save a classid to students list?
         {
             throw new Exception($"This class already contains the maximum {maxStudentsInAClass} number of students");
         }
 
-        var classIds = await _mySQLDbServices.GetData<List<string>>(command, classes_studentsTable, $"email = '{identity.Email()}'", "id");
+        var classes = await _mySQLDbServices.GetData<List<Class>>(command, classes_studentsTable, $"email = '{identity.Email()}'", "id");
 
-        if (classIds.Contains(classId))
+        if (classes.Any(x=>x.Id == classId))
         {
             throw new Exception("You are already registered for this class registered");
         }
@@ -121,8 +118,70 @@ public class ClassController : Controller
         await command.Connection.CloseAsync();
     }
 
-    //GetCurrentClasses
+    [HttpGet]
+    public async Task<List<Class>> GetCurrentClasses(string email)
+    {
+        //remove!!
+        email = "philipedat@gmail.com";
 
+        var identity = User.Identity;
+        var currentClasses = new List<Class>();
+
+        using var command = _mySqlConnection.CreateCommand();
+        await command.Connection.OpenAsync();
+
+        var classes = await _mySQLDbServices.GetData<List<Class>>(command, classes_studentsTable, $"email = '{identity.Email()}'", "id");
+        var supportedClasses = GetSupportedClasses().SelectMany(x=>x.Classes);
+
+        foreach (var id in classes.Select(x=>x.Id))
+        {
+            var classInfo = await _mySQLDbServices.GetData<List<Class>>(command, classesTable, $"id = '{id}'", "period, id, slug");
+            classInfo.Single().DisplayName = supportedClasses.Where(y => y.Slug == classInfo.Single().Slug).Single().DisplayName + (identity.IsInRole(CustomRoles.Teacher) ? $" (P: {classInfo.Single().Period})" : String.Empty);
+            currentClasses.Add(classInfo.Single());
+        }
+
+        await command.Connection.CloseAsync();
+        return currentClasses;
+    }
+
+    [HttpGet]
+    public async Task RemoveStudent(string teacherEmail, string code) //. Max 50 students.Links email to db
+    {
+        //remove!!
+        teacherEmail = "philipedat@gmail.com";
+        code = "X8DLS5FA";
+
+        //check if student already in class
+        //check number of students in class
+
+        var identity = User.Identity;
+
+        using var command = _mySqlConnection.CreateCommand();
+        await command.Connection.OpenAsync();
+
+        var classData = await _mySQLDbServices.GetData<List<Class>>(command, classesTable, $"teacheremail = '{teacherEmail}' AND code = '{code}'");
+        var classId = classData.SingleOrDefault()?.Id ?? throw new Exception("No Class Found with this teacher Email and Code");
+
+        //Remove commented line below to delete and recreate table
+        //await _mySQLDbServices.DeleteAndCreateTable(command, classes_studentsTable, "id varchar(36), email varchar(256)");
+
+        if (await _mySQLDbServices.GetCount(command, classes_studentsTable, $"id = '{classId}'", "email") > maxStudentsInAClass)    //should we save a classid to students list?
+        {
+            throw new Exception($"This class already contains the maximum {maxStudentsInAClass} number of students");
+        }
+
+        var classes = await _mySQLDbServices.GetData<List<Class>>(command, classes_studentsTable, $"email = '{identity.Email()}'", "id");
+
+        if (classes.Any(x => x.Id == classId))
+        {
+            throw new Exception("You are already registered for this class registered");
+        }
+
+        await _mySQLDbServices.InsertValues(command, classes_studentsTable, $"'{classId}', '{identity.Email()}'");
+        await command.Connection.CloseAsync();
+    }
+
+    //Remove Student
     //Delte Class
 
     private string CreateRandomCode()
