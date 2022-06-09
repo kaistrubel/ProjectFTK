@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using Azure.Identity;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Azure;
 using MySql.Data.MySqlClient;
 using ProjectFTK.Extensions;
@@ -26,18 +28,29 @@ builder.Services.AddAuthentication(o =>
 
 builder.Services.AddAzureClients(cfg =>
 {
-    cfg.AddBlobServiceClient(configuration.GetSection("Blob")).WithCredential(new Azure.Identity.DefaultAzureCredential());
+    cfg.AddBlobServiceClient(configuration.GetSection("Blob")).WithCredential(new DefaultAzureCredential());
 
 });
 
+/*
 builder.Services.AddTransient<MySqlConnection>(cfg =>
     new MySqlConnection(configuration["MySQLConnection"])
 );
+*/
+builder.Services.AddSingleton(s =>
+{
+    CosmosClientOptions cosmosClientOptions = new CosmosClientOptions
+    {
+        MaxRetryAttemptsOnRateLimitedRequests = 3,
+        MaxRetryWaitTimeOnRateLimitedRequests = TimeSpan.FromSeconds(60)
+    };
+    return new CosmosClient(configuration["CosmosDbConnection"]);
+});
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
-builder.Services.AddScoped<MySQLDbServices>();
+//builder.Services.AddScoped<MySQLDbServices>();
 
 var app = builder.Build();
 

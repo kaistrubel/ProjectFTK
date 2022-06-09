@@ -1,4 +1,6 @@
 ﻿using System;
+using Newtonsoft.Json;
+
 namespace ProjectFTK.Models;
 
 
@@ -6,7 +8,8 @@ public class Class : GenericClass
 {
 	public string Period { get; set; }
 
-	public string Id { get; set; }
+	[JsonProperty("id")]
+	public Guid Id { get; set; }
 
 	public string Code { get; set; }
 
