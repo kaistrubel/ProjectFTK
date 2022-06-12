@@ -5,7 +5,6 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Azure;
 using MySql.Data.MySqlClient;
 using ProjectFTK.Extensions;
-using ProjectFTK.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;

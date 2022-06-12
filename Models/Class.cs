@@ -14,6 +14,10 @@ public class Class : GenericClass
 	public string Code { get; set; }
 
 	public string TeacherEmail { get; set; }
+
+	public List<string> Students { get; set; }
+
+	public int StudentCount() => Students.Count();
 }
 
 public class GenericClass

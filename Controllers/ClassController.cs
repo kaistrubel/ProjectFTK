@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
-using MySql.Data.MySqlClient;
+using Microsoft.Azure.Cosmos.Linq;
 using Newtonsoft.Json;
 using ProjectFTK.Extensions;
 using ProjectFTK.Models;
-using ProjectFTK.Services;
 
 namespace ProjectFTK.Controllers;
 
@@ -17,8 +16,8 @@ public class ClassController : Controller
 {
     private const int maxStudentsInAClass = 50;
     private const string PPHS = "PPHS";
-    private const string classesContainer = "classes";
-    private const string studentsContainer = "students";
+    private const string classesContainerName = "classes";
+    private const string studentsContainerName = "students";
 
     private readonly CosmosClient _cosmosClient;
 
@@ -41,6 +40,25 @@ public class ClassController : Controller
         return subjects;
     }
 
+
+
+    //Should be using FeedIterate to Query cosmos async. Make this into a helper function
+    /// using (FeedIterator<Book> setIterator = container.GetItemLinqQueryable<Book>()
+    ///                      .Where(b => b.Title == "War and Peace")
+    ///                      .ToFeedIterator())
+    /// {                   
+    ///     //Asynchronous query execution
+    ///     while (setIterator.HasMoreResults)
+    ///     {
+    ///         foreach(var item in await setIterator.ReadNextAsync())
+    ///         {
+    ///             Console.WriteLine(item.Price); 
+    ///         }
+    ///     }
+    /// }
+
+
+
     [HttpGet]
     [Authorize(Roles = CustomRoles.Teacher)]
     public async Task CreateClass(string classSlug, string period) //-> adds class object to db.Checks if guid exists
@@ -63,11 +81,11 @@ public class ClassController : Controller
             throw new Exception("Class not supported");
         }
 
-        //scale by creating a databse per school, or district or something like that
+        //scale by creating a databse per school, or district or state? or something like that
         //var databaseResp = await _cosmosClient.CreateDatabaseIfNotExistsAsync(PPHS);
         //var containerResp = await databaseResp.Database.CreateContainerIfNotExistsAsync(new ContainerProperties(classesContainer, "/period"));
 
-        var container = _cosmosClient.GetContainer(PPHS, classesContainer);
+        var container = _cosmosClient.GetContainer(PPHS, classesContainerName);
         var classData = container.GetItemLinqQueryable<Class>(true).Where(x=>x.TeacherEmail == identity.Email() && x.Period == period).ToList();
 
         if (classData.Any())
@@ -75,154 +93,91 @@ public class ClassController : Controller
             throw new Exception("This class already exists for this time period.");
         }
 
-        await container.CreateItemAsync(new Class {Id = Guid.NewGuid(), Slug = classSlug, Period = period, TeacherEmail = identity.Email(), Code = CreateRandomCode() });
+        await container.CreateItemAsync(new Class {Id = Guid.NewGuid(), Slug = classSlug, Period = period, TeacherEmail = identity.Email(), Code = CreateRandomCode(), Students = new List<string>() });
     }
 
-
-    /*
-
-    [HttpGet]
-    [Authorize(Roles = CustomRoles.Teacher)]
-    public async Task CreateClass(string classSlug, string period) //-> adds class object to db.Checks if guid exists
-    {
-        var identity = User.Identity;
-
-        //remove!!!
-        classSlug = "algebra-2";
-        period = "2";
-
-        //check value (below) char lengths in front end
-
-        if (string.IsNullOrEmpty(identity?.Email()))
-        {
-            throw new Exception("Teacher's email cannot be null when creating a class");
-        }
-
-        if (GetSupportedClasses().Any(x => x.Classes.Any(y => y.Slug == classSlug)) == false)
-        {
-            throw new Exception("Class not supported");
-        }
-
-        using var command = _mySqlConnection.CreateCommand();
-        await command.Connection.OpenAsync();
-
-        //Remove commented line below to delete and recreate table
-        //await _mySQLDbServices.DeleteAndCreateTable(classesTable, "id varchar(36), slug varchar(50), period varchar(20), teacheremail varchar(256), code varchar(8)");
-
-        //scale by creating a table per school, or district or something like that
-        var classData = await _mySQLDbServices.GetData<List<Class>>(command, classesTable, $"teacheremail = '{identity.Email()}' AND period = '{period}'");
-
-        if (classData.Any())
-        {
-            throw new Exception("This class already exists for this time period.");
-        }
-
-        await _mySQLDbServices.InsertValues(command, classesTable, $"uuid(), '{classSlug}', '{period}', '{identity.Email()}', '{CreateRandomCode()}'");
-        await command.Connection.CloseAsync();
-    }
 
     //See https://docs.microsoft.com/en-us/azure/cosmos-db/sql/modeling-data on many-to-many modeling
-
-    [HttpGet]
     public async Task JoinClass(string teacherEmail, string code) //. Max 50 students.Links email to db
     {
         //remove!!
         teacherEmail = "philipedat@gmail.com";
-        code = "X8DLS5FA";
-
-        //check if student already in class
-        //check number of students in class
+        code ??=  "V6O7A4PT";
 
         var identity = User.Identity;
 
-        using var command = _mySqlConnection.CreateCommand();
-        await command.Connection.OpenAsync();
+        var classesContainer = _cosmosClient.GetContainer(PPHS, classesContainerName);
+        var classData = classesContainer.GetItemLinqQueryable<Class>(true).Where(x => x.TeacherEmail == identity.Email() && x.Code == code).ToList();
+        var matchedClass = classData.SingleOrDefault() ?? throw new Exception("No Class Found with this teacher Email and Code");
 
-        var classData = await _mySQLDbServices.GetData<List<Class>>(command, classesTable, $"teacheremail = '{teacherEmail}' AND code = '{code}'");
-        var classId = classData.SingleOrDefault()?.Id ?? throw new Exception("No Class Found with this teacher Email and Code");
-
-        //Remove commented line below to delete and recreate table
-        //await _mySQLDbServices.DeleteAndCreateTable(command, classes_studentsTable, "id varchar(36), email varchar(256)");
-
-        if (await _mySQLDbServices.GetCount(command, classes_studentsTable, $"id = '{classId}'", "email") > maxStudentsInAClass)    //should we save a classid to students list?
+        if (matchedClass.StudentCount() >= maxStudentsInAClass)
         {
             throw new Exception($"This class already contains the maximum {maxStudentsInAClass} number of students");
         }
 
-        var classes = await _mySQLDbServices.GetData<List<Class>>(command, classes_studentsTable, $"email = '{identity.Email()}'", "id");
+        //Remove commented line below to create studens container
+        var databaseResp = await _cosmosClient.CreateDatabaseIfNotExistsAsync(PPHS);
 
-        if (classes.Any(x=>x.Id == classId))
+        //NEED TO GET A BETTER PARTITION KEY FOR STUDENT
+        var containerResp = await databaseResp.Database.CreateContainerIfNotExistsAsync(new ContainerProperties(studentsContainerName, "/email"));
+
+        var studentsContainer = _cosmosClient.GetContainer(PPHS, studentsContainerName);
+        var studentData = studentsContainer.GetItemLinqQueryable<Student>(true).Where(x => x.Email == identity.Email()).ToList();
+
+        if (matchedClass.Students.Contains(identity.Email()) == false)
+        {
+            matchedClass.Students.Add(identity.Email());
+            await classesContainer.ReplaceItemAsync(matchedClass, matchedClass.Id.ToString());
+        }
+
+        var matchedStudent = studentData?.FirstOrDefault();
+        if (matchedStudent == null)
+        {
+            await studentsContainer.UpsertItemAsync(new Student() { Email = identity.Email(), ClassIds = new List<Guid>() { matchedClass.Id } });
+        }
+        else if (matchedStudent?.ClassIds.Contains(matchedClass.Id) == false)
+        {
+            matchedStudent.ClassIds.Add(matchedClass.Id);
+            await studentsContainer.ReplaceItemAsync(matchedStudent, matchedStudent.Email);
+        }
+        else
         {
             throw new Exception("You are already registered for this class registered");
         }
-
-        await _mySQLDbServices.InsertValues(command, classes_studentsTable, $"'{classId}', '{identity.Email()}'");
-        await command.Connection.CloseAsync();
     }
 
-    [HttpGet]
-    public async Task<List<Class>> GetCurrentClasses(string email)
+    public List<Class> GetCurrentClasses(string email)
     {
         //remove!!
         email = "philipedat@gmail.com";
 
         var identity = User.Identity;
         var currentClasses = new List<Class>();
+        var supportedClasses = GetSupportedClasses().SelectMany(x => x.Classes);
+        List<Class> classData;
 
-        using var command = _mySqlConnection.CreateCommand();
-        await command.Connection.OpenAsync();
-
-        var classes = await _mySQLDbServices.GetData<List<Class>>(command, classes_studentsTable, $"email = '{identity.Email()}'", "id");
-        var supportedClasses = GetSupportedClasses().SelectMany(x=>x.Classes);
-
-        foreach (var id in classes.Select(x=>x.Id))
+        var classesContainer = _cosmosClient.GetContainer(PPHS, classesContainerName);
+        if (identity.IsInRole(CustomRoles.Teacher))
         {
-            var classInfo = await _mySQLDbServices.GetData<List<Class>>(command, classesTable, $"id = '{id}'", "period, id, slug");
-            classInfo.Single().DisplayName = supportedClasses.Where(y => y.Slug == classInfo.Single().Slug).Single().DisplayName + (identity.IsInRole(CustomRoles.Teacher) ? $" (P: {classInfo.Single().Period})" : String.Empty);
-            currentClasses.Add(classInfo.Single());
+            classData = classesContainer.GetItemLinqQueryable<Class>(true).Where(x => x.TeacherEmail == identity.Email()).ToList();
+        }
+        else
+        {
+            var studentsContainer = _cosmosClient.GetContainer(PPHS, studentsContainerName);
+            var studentData = studentsContainer.GetItemLinqQueryable<Student>(true).Where(x => x.Email == identity.Email()).ToList();
+            classData = classesContainer.GetItemLinqQueryable<Class>(true).Where(x => studentData.First().ClassIds.Contains(x.Id)).ToList();
+
         }
 
-        await command.Connection.CloseAsync();
+        foreach (var classInfo in classData)
+        {
+            classInfo.DisplayName = supportedClasses.Where(y => y.Slug == classInfo.Slug).Single().DisplayName + (identity.IsInRole(CustomRoles.Teacher) ? $" (P: {classInfo.Period})" : String.Empty);
+            currentClasses.Add(classInfo);
+        }
+
         return currentClasses;
     }
 
-    [HttpGet]
-    public async Task RemoveStudent(string teacherEmail, string code) //. Max 50 students.Links email to db
-    {
-        //remove!!
-        teacherEmail = "philipedat@gmail.com";
-        code = "X8DLS5FA";
-
-        //check if student already in class
-        //check number of students in class
-
-        var identity = User.Identity;
-
-        using var command = _mySqlConnection.CreateCommand();
-        await command.Connection.OpenAsync();
-
-        var classData = await _mySQLDbServices.GetData<List<Class>>(command, classesTable, $"teacheremail = '{teacherEmail}' AND code = '{code}'");
-        var classId = classData.SingleOrDefault()?.Id ?? throw new Exception("No Class Found with this teacher Email and Code");
-
-        //Remove commented line below to delete and recreate table
-        //await _mySQLDbServices.DeleteAndCreateTable(command, classes_studentsTable, "id varchar(36), email varchar(256)");
-
-        if (await _mySQLDbServices.GetCount(command, classes_studentsTable, $"id = '{classId}'", "email") > maxStudentsInAClass)    //should we save a classid to students list?
-        {
-            throw new Exception($"This class already contains the maximum {maxStudentsInAClass} number of students");
-        }
-
-        var classes = await _mySQLDbServices.GetData<List<Class>>(command, classes_studentsTable, $"email = '{identity.Email()}'", "id");
-
-        if (classes.Any(x => x.Id == classId))
-        {
-            throw new Exception("You are already registered for this class registered");
-        }
-
-        await _mySQLDbServices.InsertValues(command, classes_studentsTable, $"'{classId}', '{identity.Email()}'");
-        await command.Connection.CloseAsync();
-    }
-    */
     //Remove Student
     //Delte Class
 
@@ -235,5 +190,25 @@ public class ClassController : Controller
         var randomString = new string(Enumerable.Repeat(chars, length)
                                                 .Select(s => s[random.Next(s.Length)]).ToArray());
         return randomString;
+    }
+
+    private async Task<List<T>> GetCosmosItem<T>(Container container, Func<T, bool> where)
+    {
+        var itemList = new List<T>();
+        using (FeedIterator<T> setIterator = container.GetItemLinqQueryable<T>()
+                            .Where(where)
+                            .AsQueryable()
+                            .ToFeedIterator())
+        {                   
+            //Asynchronous query execution
+            while (setIterator.HasMoreResults)
+            {
+                foreach(var item in await setIterator.ReadNextAsync())
+                {
+                    itemList.Add(item);
+                }
+            }
+        }
+        return container.GetItemLinqQueryable<T>(true).Where(where).ToList();
     }
 }
