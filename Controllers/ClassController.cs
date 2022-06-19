@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -86,7 +87,7 @@ public class ClassController : Controller
         //var containerResp = await databaseResp.Database.CreateContainerIfNotExistsAsync(new ContainerProperties(classesContainer, "/period"));
 
         var container = _cosmosClient.GetContainer(PPHS, classesContainerName);
-        var classData = container.GetItemLinqQueryable<Class>(true).Where(x=>x.TeacherEmail == identity.Email() && x.Period == period).ToList();
+        var classData = await GetCosmosItem<Class>(container, x => x.TeacherEmail == identity.Email() && x.Period == period);
 
         if (classData.Any())
         {
@@ -107,7 +108,7 @@ public class ClassController : Controller
         var identity = User.Identity;
 
         var classesContainer = _cosmosClient.GetContainer(PPHS, classesContainerName);
-        var classData = classesContainer.GetItemLinqQueryable<Class>(true).Where(x => x.TeacherEmail == identity.Email() && x.Code == code).ToList();
+        var classData = await GetCosmosItem<Class>(classesContainer, x => x.TeacherEmail == identity.Email());
         var matchedClass = classData.SingleOrDefault() ?? throw new Exception("No Class Found with this teacher Email and Code");
 
         if (matchedClass.StudentCount() >= maxStudentsInAClass)
@@ -122,7 +123,7 @@ public class ClassController : Controller
         var containerResp = await databaseResp.Database.CreateContainerIfNotExistsAsync(new ContainerProperties(studentsContainerName, "/email"));
 
         var studentsContainer = _cosmosClient.GetContainer(PPHS, studentsContainerName);
-        var studentData = studentsContainer.GetItemLinqQueryable<Student>(true).Where(x => x.Email == identity.Email()).ToList();
+        var studentData = await GetCosmosItem<Student>(studentsContainer, x => x.Email == identity.Email());
 
         if (matchedClass.Students.Contains(identity.Email()) == false)
         {
@@ -166,7 +167,6 @@ public class ClassController : Controller
             var studentsContainer = _cosmosClient.GetContainer(PPHS, studentsContainerName);
             var studentData = studentsContainer.GetItemLinqQueryable<Student>(true).Where(x => x.Email == identity.Email()).ToList();
             classData = classesContainer.GetItemLinqQueryable<Class>(true).Where(x => studentData.First().ClassIds.Contains(x.Id)).ToList();
-
         }
 
         foreach (var classInfo in classData)
@@ -192,12 +192,11 @@ public class ClassController : Controller
         return randomString;
     }
 
-    private async Task<List<T>> GetCosmosItem<T>(Container container, Func<T, bool> where)
+    private async Task<List<T>> GetCosmosItem<T>(Container container, Expression<Func<T, bool>> predicate)
     {
         var itemList = new List<T>();
         using (FeedIterator<T> setIterator = container.GetItemLinqQueryable<T>()
-                            .Where(where)
-                            .AsQueryable()
+                            .Where(predicate)
                             .ToFeedIterator())
         {                   
             //Asynchronous query execution
@@ -209,6 +208,6 @@ public class ClassController : Controller
                 }
             }
         }
-        return container.GetItemLinqQueryable<T>(true).Where(where).ToList();
+        return itemList;
     }
 }
