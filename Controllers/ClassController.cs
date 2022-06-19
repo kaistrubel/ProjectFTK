@@ -27,7 +27,6 @@ public class ClassController : Controller
         _cosmosClient = cosmosClient;
     }
 
-    // GET: /<controller>/
     public IActionResult Index()
     {
         return View();
@@ -41,25 +40,6 @@ public class ClassController : Controller
         return subjects;
     }
 
-
-
-    //Should be using FeedIterate to Query cosmos async. Make this into a helper function
-    /// using (FeedIterator<Book> setIterator = container.GetItemLinqQueryable<Book>()
-    ///                      .Where(b => b.Title == "War and Peace")
-    ///                      .ToFeedIterator())
-    /// {                   
-    ///     //Asynchronous query execution
-    ///     while (setIterator.HasMoreResults)
-    ///     {
-    ///         foreach(var item in await setIterator.ReadNextAsync())
-    ///         {
-    ///             Console.WriteLine(item.Price); 
-    ///         }
-    ///     }
-    /// }
-
-
-
     [HttpGet]
     [Authorize(Roles = CustomRoles.Teacher)]
     public async Task CreateClass(string classSlug, string period) //-> adds class object to db.Checks if guid exists
@@ -69,8 +49,6 @@ public class ClassController : Controller
         //remove!!!
         classSlug = "algebra-2";
         period = "2";
-
-        //check value (below) char lengths in front end
 
         if (string.IsNullOrEmpty(identity?.Email()))
         {
@@ -84,7 +62,7 @@ public class ClassController : Controller
 
         //scale by creating a databse per school, or district or state? or something like that
         //var databaseResp = await _cosmosClient.CreateDatabaseIfNotExistsAsync(PPHS);
-        //var containerResp = await databaseResp.Database.CreateContainerIfNotExistsAsync(new ContainerProperties(classesContainer, "/period"));
+        //var containerResp = await databaseResp.Database.CreateContainerIfNotExistsAsync(new ContainerProperties(classesContainerName, "/period"));
 
         var container = _cosmosClient.GetContainer(PPHS, classesContainerName);
         var classData = await GetCosmosItem<Class>(container, x => x.TeacherEmail == identity.Email() && x.Period == period);
@@ -97,8 +75,81 @@ public class ClassController : Controller
         await container.CreateItemAsync(new Class {Id = Guid.NewGuid(), Slug = classSlug, Period = period, TeacherEmail = identity.Email(), Code = CreateRandomCode(), Students = new List<string>() });
     }
 
+    [HttpGet]
+    [Authorize(Roles = CustomRoles.Teacher)]
+    public async Task DeleteClass(Guid classId, string period)
+    {
+        var classContainer = _cosmosClient.GetContainer(PPHS, classesContainerName);
+        var classData = await GetCosmosItem<Class>(classContainer, x => x.Id == classId);
 
-    //See https://docs.microsoft.com/en-us/azure/cosmos-db/sql/modeling-data on many-to-many modeling
+        await classContainer.DeleteItemAsync<Class>(classId.ToString(), new PartitionKey(period));
+
+        var studentsContainer = _cosmosClient.GetContainer(PPHS, studentsContainerName);
+        var studentData = await GetCosmosItem<Student>(studentsContainer, x => x.ClassIds.Contains(classId));
+
+        foreach (var student in studentData)
+        {
+            if (student.ClassIds.Contains(classId))
+            {
+                student.ClassIds.Remove(classId);
+                await studentsContainer.ReplaceItemAsync(student, student.Email);
+            }
+        }
+
+        if (classData.Any())
+        {
+            throw new Exception("This class has already been deleted.");
+        }
+    }
+
+    [HttpGet]
+    [Authorize(Roles = CustomRoles.Teacher)]
+    public async Task<string> GetCodeForClass(Guid classId) //-> adds class object to db.Checks if guid exists
+    {
+        var container = _cosmosClient.GetContainer(PPHS, classesContainerName);
+        var classData = await GetCosmosItem<Class>(container, x => x.Id == classId);
+
+        if (classData.Any())
+        {
+            throw new Exception("This class cannot be found.");
+        }
+
+        return classData.Single().Code;
+    }
+
+    [HttpGet]
+    [Authorize(Roles = CustomRoles.Teacher)]
+    public async Task RemoveStudentFromClass(Guid classId, string studentEmail)
+    {
+        //remove!!
+        studentEmail = "philipedat@gmail.com";
+
+        var classesContainer = _cosmosClient.GetContainer(PPHS, classesContainerName);
+        var classData = await GetCosmosItem<Class>(classesContainer, x => x.Id == classId);
+        var classMatch = classData.SingleOrDefault() ?? throw new Exception("No Class Found with this teacher Email and Code");
+
+        var studentsContainer = _cosmosClient.GetContainer(PPHS, studentsContainerName);
+        var studentData = await GetCosmosItem<Student>(studentsContainer, x => x.Email == studentEmail);
+
+        if (classMatch.Students.Contains(studentEmail))
+        {
+            classMatch.Students.Remove(studentEmail);
+            await classesContainer.ReplaceItemAsync(classMatch, classMatch.Id.ToString());
+        }
+
+        var studentMatch = studentData?.FirstOrDefault();
+        if (studentMatch?.ClassIds.Contains(classMatch.Id) == true)
+        {
+            studentMatch.ClassIds.Remove(classMatch.Id);
+            await studentsContainer.ReplaceItemAsync(studentMatch, studentMatch.Email);
+        }
+        else
+        {
+            throw new Exception("You have already been removed from this class");
+        }
+    }
+
+    [HttpGet]
     public async Task JoinClass(string teacherEmail, string code) //. Max 50 students.Links email to db
     {
         //remove!!
@@ -109,37 +160,37 @@ public class ClassController : Controller
 
         var classesContainer = _cosmosClient.GetContainer(PPHS, classesContainerName);
         var classData = await GetCosmosItem<Class>(classesContainer, x => x.TeacherEmail == identity.Email());
-        var matchedClass = classData.SingleOrDefault() ?? throw new Exception("No Class Found with this teacher Email and Code");
+        var classMatch = classData.SingleOrDefault() ?? throw new Exception("No Class Found with this teacher Email and Code");
 
-        if (matchedClass.StudentCount() >= maxStudentsInAClass)
+        if (classMatch.StudentCount() >= maxStudentsInAClass)
         {
             throw new Exception($"This class already contains the maximum {maxStudentsInAClass} number of students");
         }
 
         //Remove commented line below to create studens container
-        var databaseResp = await _cosmosClient.CreateDatabaseIfNotExistsAsync(PPHS);
+        //var databaseResp = await _cosmosClient.CreateDatabaseIfNotExistsAsync(PPHS);
 
         //NEED TO GET A BETTER PARTITION KEY FOR STUDENT
-        var containerResp = await databaseResp.Database.CreateContainerIfNotExistsAsync(new ContainerProperties(studentsContainerName, "/email"));
+        //var containerResp = await databaseResp.Database.CreateContainerIfNotExistsAsync(new ContainerProperties(studentsContainerName, "/email"));
 
         var studentsContainer = _cosmosClient.GetContainer(PPHS, studentsContainerName);
         var studentData = await GetCosmosItem<Student>(studentsContainer, x => x.Email == identity.Email());
 
-        if (matchedClass.Students.Contains(identity.Email()) == false)
+        if (classMatch.Students.Contains(identity.Email()) == false)
         {
-            matchedClass.Students.Add(identity.Email());
-            await classesContainer.ReplaceItemAsync(matchedClass, matchedClass.Id.ToString());
+            classMatch.Students.Add(identity.Email());
+            await classesContainer.ReplaceItemAsync(classMatch, classMatch.Id.ToString());
         }
 
-        var matchedStudent = studentData?.FirstOrDefault();
-        if (matchedStudent == null)
+        var studentMatch = studentData?.FirstOrDefault();
+        if (studentMatch == null)
         {
-            await studentsContainer.UpsertItemAsync(new Student() { Email = identity.Email(), ClassIds = new List<Guid>() { matchedClass.Id } });
+            await studentsContainer.UpsertItemAsync(new Student() { Email = identity.Email(), ClassIds = new List<Guid>() { classMatch.Id } });
         }
-        else if (matchedStudent?.ClassIds.Contains(matchedClass.Id) == false)
+        else if (studentMatch?.ClassIds.Contains(classMatch.Id) == false)
         {
-            matchedStudent.ClassIds.Add(matchedClass.Id);
-            await studentsContainer.ReplaceItemAsync(matchedStudent, matchedStudent.Email);
+            studentMatch.ClassIds.Add(classMatch.Id);
+            await studentsContainer.ReplaceItemAsync(studentMatch, studentMatch.Email);
         }
         else
         {
@@ -147,6 +198,7 @@ public class ClassController : Controller
         }
     }
 
+    [HttpGet]
     public List<Class> GetCurrentClasses(string email)
     {
         //remove!!
@@ -167,6 +219,8 @@ public class ClassController : Controller
             var studentsContainer = _cosmosClient.GetContainer(PPHS, studentsContainerName);
             var studentData = studentsContainer.GetItemLinqQueryable<Student>(true).Where(x => x.Email == identity.Email()).ToList();
             classData = classesContainer.GetItemLinqQueryable<Class>(true).Where(x => studentData.First().ClassIds.Contains(x.Id)).ToList();
+
+            //probable should remove code for student response
         }
 
         foreach (var classInfo in classData)
@@ -177,9 +231,6 @@ public class ClassController : Controller
 
         return currentClasses;
     }
-
-    //Remove Student
-    //Delte Class
 
     private string CreateRandomCode()
     {
