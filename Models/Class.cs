@@ -11,7 +11,7 @@ public class Class : GenericClass
 	[JsonProperty("id")]
 	public Guid Id { get; set; }
 
-	public string Code { get; set; }
+	public string? Code { get; set; }
 
 	public string TeacherEmail { get; set; }
 

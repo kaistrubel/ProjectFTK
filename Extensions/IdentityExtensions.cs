@@ -39,6 +39,6 @@ public class GoogleClaims
 
 public class CustomRoles
 {
+	public const string Admin = "Admin";
 	public const string Teacher = "Teacher";
 }
-

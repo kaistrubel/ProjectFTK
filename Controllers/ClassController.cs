@@ -10,6 +10,7 @@ using Microsoft.Azure.Cosmos.Linq;
 using Newtonsoft.Json;
 using ProjectFTK.Extensions;
 using ProjectFTK.Models;
+using ProjectFTK.Services;
 
 namespace ProjectFTK.Controllers;
 
@@ -32,14 +33,6 @@ public class ClassController : Controller
         return View();
     }
 
-    public List<Subject> GetSupportedClasses()
-    {
-        var subjectsJson = System.IO.File.ReadAllText("DataJson/subjects.json");
-        List<Subject> subjects = JsonConvert.DeserializeObject<List<Subject>>(subjectsJson);
-
-        return subjects;
-    }
-
     [HttpGet]
     [Authorize(Roles = CustomRoles.Teacher)]
     public async Task CreateClass(string classSlug, string period) //-> adds class object to db.Checks if guid exists
@@ -55,7 +48,7 @@ public class ClassController : Controller
             throw new Exception("Teacher's email cannot be null when creating a class");
         }
 
-        if (GetSupportedClasses().Any(x => x.Classes.Any(y => y.Slug == classSlug)) == false)
+        if (SubjectServices.GetSupportedSubjects().Any(x => x.Classes.Any(y => y.Slug == classSlug)) == false)
         {
             throw new Exception("Class not supported");
         }
@@ -206,7 +199,7 @@ public class ClassController : Controller
 
         var identity = User.Identity;
         var currentClasses = new List<Class>();
-        var supportedClasses = GetSupportedClasses().SelectMany(x => x.Classes);
+        var supportedSubjects = SubjectServices.GetSupportedSubjects().SelectMany(x => x.Classes);
         List<Class> classData;
 
         var classesContainer = _cosmosClient.GetContainer(PPHS, classesContainerName);
@@ -219,13 +212,12 @@ public class ClassController : Controller
             var studentsContainer = _cosmosClient.GetContainer(PPHS, studentsContainerName);
             var studentData = studentsContainer.GetItemLinqQueryable<Student>(true).Where(x => x.Email == identity.Email()).ToList();
             classData = classesContainer.GetItemLinqQueryable<Class>(true).Where(x => studentData.First().ClassIds.Contains(x.Id)).ToList();
-
-            //probable should remove code for student response
         }
 
         foreach (var classInfo in classData)
         {
-            classInfo.DisplayName = supportedClasses.Where(y => y.Slug == classInfo.Slug).Single().DisplayName + (identity.IsInRole(CustomRoles.Teacher) ? $" (P: {classInfo.Period})" : String.Empty);
+            classInfo.Code = null;
+            classInfo.DisplayName = supportedSubjects.Where(y => y.Slug == classInfo.Slug).Single().DisplayName + (identity.IsInRole(CustomRoles.Teacher) ? $" (P: {classInfo.Period})" : String.Empty);
             currentClasses.Add(classInfo);
         }
 
