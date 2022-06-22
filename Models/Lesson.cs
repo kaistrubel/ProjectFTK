@@ -9,10 +9,16 @@ public class Lesson
 
 	public string Unit { get; set; }
 
-	public Dictionary<int, Guid> Examples { get; set; }
+	public string CourseSlug { get; set; }
 
-	public Guid Concept { get; set; }
+	//map concept to 0
+	public Dictionary<int, Guid> Lectures { get; set; }
 
 	[JsonProperty("id")]
-	public string Slug => Name.ToLower().Replace(" ", "-");
+	public string LessonSlug => Name.ToLower().Replace(" ", "-");
+}
+
+public class LessonsJson
+{
+	public Dictionary<string, List<string>> Units;
 }

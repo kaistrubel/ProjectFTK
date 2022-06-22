@@ -5,6 +5,7 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Azure;
 using MySql.Data.MySqlClient;
 using ProjectFTK.Extensions;
+using ProjectFTK.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -45,6 +46,8 @@ builder.Services.AddSingleton(s =>
     };
     return new CosmosClient(configuration["CosmosDbConnection"]);
 });
+
+builder.Services.AddScoped<CosmosServices>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

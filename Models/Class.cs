@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace ProjectFTK.Models;
 
 
-public class Class : GenericClass
+public class Class : Course
 {
 	public string Period { get; set; }
 
@@ -20,9 +20,11 @@ public class Class : GenericClass
 	public int StudentCount() => Students.Count();
 }
 
-public class GenericClass
+public class Course
 {
-	public string Slug { get; set; }
+	public string CourseSlug { get; set; }
+
+	public string SubjectSlug { get; set; }
 
 	public string DisplayName { get; set; }
 }
