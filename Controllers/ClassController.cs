@@ -235,6 +235,11 @@ public class ClassController : Controller
         return currentClasses;
     }
 
+    public List<Subject> GetSupportedSubjects()
+    {
+        return SubjectServices.GetSupportedSubjects();
+    }
+
     private string CreateRandomCode()
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

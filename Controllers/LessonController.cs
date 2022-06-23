@@ -14,7 +14,7 @@ using ProjectFTK.Services;
 namespace ProjectFTK.Controllers;
 
 //Puts Cirriculum into Blob
-[Authorize(Roles = CustomRoles.Admin)]
+//[Authorize(Roles = CustomRoles.Teacher)]
 public class LessonController : Controller
 {
     private readonly ILogger<LessonController> _logger;
@@ -33,9 +33,9 @@ public class LessonController : Controller
 
     //might need to rework based on how we get json body, but should be able to deseralize and then same
 
-    //pick subject, pick course, upload json of format 
-    [HttpGet]
-    public async Task CreateCourseCirriculum(string courseSlug, string json)
+    //pick subject, pick course, upload json of format
+    [HttpPost] //Expecting json body of format
+    public async Task CreateCourseCirriculum(string courseSlug, [FromBody] Dictionary<string, List<string>> unitsToLessonsJson)
     {
         var subject = SubjectServices.GetSupportedSubjects().FirstOrDefault(x => x.Classes.Any(y => y.CourseSlug == courseSlug));
 
@@ -50,14 +50,12 @@ public class LessonController : Controller
 
         var container = _cosmosClient.GetContainer(LessonsDatabase, subject.SubjectSlug);
 
-        var units = JsonConvert.DeserializeObject<LessonsJson>(json)?.Units;
-
-        if (units == null)
+        if (unitsToLessonsJson == null)
         {
             throw new Exception("Json File is not formatted correctly");
         }
 
-        foreach (var unit in units)
+        foreach (var unit in unitsToLessonsJson)
         {
             foreach (var lesson in unit.Value)
             {
@@ -81,8 +79,8 @@ public class LessonController : Controller
         return lessonData.ToDictionary(x => x.Unit, x => x);
     }
 
-    [HttpGet]
-    public async Task UploadLectures(string subjectSlug, Lesson lesson, int level, bool insertLevelAsNew, string json)
+    [HttpPost] //split these into three uploads. Problems, Notes, Videos
+    public async Task UploadLectures(string subjectSlug, Lesson lesson, int level, bool insertLevelAsNew, [FromBody] Lecture newLecturesJson)
     {
         //scale by creating a databse per course
         var databaseResp = await _cosmosClient.CreateDatabaseIfNotExistsAsync(LecturesDatabase);
@@ -114,19 +112,17 @@ public class LessonController : Controller
         var lectureData = await _cosmosServices.GetCosmosItem<Lecture>(lecturesContainer, x => x.Id == lectureId);
         var lecture = lectureData.SingleOrDefault();
 
-        var newLectures = JsonConvert.DeserializeObject<Lecture>(json);
-
         if (lecture == null)
         {
-            lecture = newLectures;
+            lecture = newLecturesJson;
             lecture.Id = lectureId;
             lecture.Level = level;
         }
         else
         {
-            lecture.Notes.AddRange(newLectures.Notes);
-            lecture.Videos.AddRange(newLectures.Videos);
-            lecture.Problems.AddRange(newLectures.Problems);
+            lecture.Notes.AddRange(newLecturesJson.Notes);
+            lecture.Videos.AddRange(newLecturesJson.Videos);
+            lecture.Problems.AddRange(newLecturesJson.Problems);
         }
 
         await lecturesContainer.UpsertItemAsync(lecture, new PartitionKey(level));
