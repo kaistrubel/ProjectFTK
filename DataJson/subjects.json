@@ -1,37 +1,12 @@
 ﻿[
   {
-    "slug": "math",
-    "displayName": "Math",
+    "subjectSlug": "computer-science",
+    "displayName": "Computer Science",
     "classes": [
       {
-        "Slug": "algebra-2",
-        "DisplayName": "Algebra 2"
+        "classSlug": "intro-to-cs",
+        "DisplayName": "Introduction to Computer Science"
       }
     ]
-  },
-  {
-    "slug": "science",
-    "displayName": "Science",
-    "classes": []
-  },
-  {
-    "slug": "english",
-    "displayName": "English",
-    "classes": []
-  },
-  {
-    "slug": "history",
-    "displayName": "History",
-    "classes": []
-  },
-  {
-    "slug": "computer-science",
-    "displayName": "Computer Science",
-    "classes": []
-  },
-  {
-    "slug": "electives",
-    "displayName": "Electives",
-    "classes": []
   }
 ]

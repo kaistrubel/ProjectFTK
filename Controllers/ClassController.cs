@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
-using Microsoft.Azure.Cosmos.Linq;
-using Newtonsoft.Json;
 using ProjectFTK.Extensions;
 using ProjectFTK.Models;
 using ProjectFTK.Services;
@@ -17,9 +10,7 @@ namespace ProjectFTK.Controllers;
 public class ClassController : Controller
 {
     private const int maxStudentsInAClass = 50;
-    private const string PPHS = "PPHS";
-    private const string classesContainerName = "classes";
-    private const string studentsContainerName = "students";
+
 
     private readonly CosmosClient _cosmosClient;
     private readonly CosmosServices _cosmosServices;
@@ -37,30 +28,22 @@ public class ClassController : Controller
 
     [HttpGet]
     [Authorize(Roles = CustomRoles.Teacher)]
-    public async Task CreateClass(string classSlug, string period) //-> adds class object to db.Checks if guid exists
+    public async Task CreateClass(string classSlug, string period)
     {
         var identity = User.Identity;
-
-        //remove!!!
-        classSlug = "algebra-2";
-        period = "2";
 
         if (string.IsNullOrEmpty(identity?.Email()))
         {
             throw new Exception("Teacher's email cannot be null when creating a class");
         }
 
-        var subjectSlug = SubjectServices.GetSupportedSubjects().FirstOrDefault(x => x.Classes.Any(y => y.CourseSlug == classSlug))?.SubjectSlug;
+        var subjectSlug = Constants.GetSupportedSubjects().FirstOrDefault(x => x.Courses.Any(y => y.CourseSlug == classSlug))?.SubjectSlug;
         if (subjectSlug == null)
         {
             throw new Exception($"The Class {classSlug} is currently not supported");
         }
 
-        //scale by creating a databse per school, or district or state? or something like that
-        //var databaseResp = await _cosmosClient.CreateDatabaseIfNotExistsAsync(PPHS);
-        //var containerResp = await databaseResp.Database.CreateContainerIfNotExistsAsync(new ContainerProperties(classesContainerName, "/period"));
-
-        var classContainer = _cosmosClient.GetContainer(PPHS, classesContainerName);
+        var classContainer = _cosmosClient.GetContainer(Constants.PPHS, Constants.ClassesContainerName);
         var classData = await _cosmosServices.GetCosmosItem<Class>(classContainer, x => x.TeacherEmail == identity.Email() && x.Period == period);
 
         if (classData.Any())
@@ -83,12 +66,12 @@ public class ClassController : Controller
     [Authorize(Roles = CustomRoles.Teacher)]
     public async Task DeleteClass(Guid classId, string period)
     {
-        var classContainer = _cosmosClient.GetContainer(PPHS, classesContainerName);
+        var classContainer = _cosmosClient.GetContainer(Constants.PPHS, Constants.ClassesContainerName);
         var classData = await _cosmosServices.GetCosmosItem<Class>(classContainer, x => x.Id == classId);
 
         await classContainer.DeleteItemAsync<Class>(classId.ToString(), new PartitionKey(period));
 
-        var studentsContainer = _cosmosClient.GetContainer(PPHS, studentsContainerName);
+        var studentsContainer = _cosmosClient.GetContainer(Constants.PPHS, Constants.ClassesContainerName);
         var studentData = await _cosmosServices.GetCosmosItem<Student>(studentsContainer, x => x.ClassIds.Contains(classId));
 
         foreach (var student in studentData)
@@ -108,9 +91,9 @@ public class ClassController : Controller
 
     [HttpGet]
     [Authorize(Roles = CustomRoles.Teacher)]
-    public async Task<string> GetCodeForClass(Guid classId) //-> adds class object to db.Checks if guid exists
+    public async Task<string> GetCodeForClass(Guid classId)
     {
-        var container = _cosmosClient.GetContainer(PPHS, classesContainerName);
+        var container = _cosmosClient.GetContainer(Constants.PPHS, Constants.ClassesContainerName);
         var classData = await _cosmosServices.GetCosmosItem<Class>(container, x => x.Id == classId);
 
         if (classData.Any())
@@ -128,11 +111,11 @@ public class ClassController : Controller
         //remove!!
         studentEmail = "philipedat@gmail.com";
 
-        var classesContainer = _cosmosClient.GetContainer(PPHS, classesContainerName);
+        var classesContainer = _cosmosClient.GetContainer(Constants.PPHS, Constants.ClassesContainerName);
         var classData = await _cosmosServices.GetCosmosItem<Class>(classesContainer, x => x.Id == classId);
         var classMatch = classData.SingleOrDefault() ?? throw new Exception("No Class Found with this teacher Email and Code");
 
-        var studentsContainer = _cosmosClient.GetContainer(PPHS, studentsContainerName);
+        var studentsContainer = _cosmosClient.GetContainer(Constants.PPHS, Constants.StudentsContainerName);
         var studentData = await _cosmosServices.GetCosmosItem<Student>(studentsContainer, x => x.Email == studentEmail);
 
         if (classMatch.Students.Contains(studentEmail))
@@ -156,28 +139,18 @@ public class ClassController : Controller
     [HttpGet]
     public async Task JoinClass(string teacherEmail, string code) //. Max 50 students.Links email to db
     {
-        //remove!!
-        teacherEmail = "philipedat@gmail.com";
-        code ??=  "V6O7A4PT";
-
         var identity = User.Identity;
 
-        var classesContainer = _cosmosClient.GetContainer(PPHS, classesContainerName);
-        var classData = await _cosmosServices.GetCosmosItem<Class>(classesContainer, x => x.TeacherEmail == identity.Email());
-        var classMatch = classData.SingleOrDefault() ?? throw new Exception("No Class Found with this teacher Email and Code");
+        var classesContainer = _cosmosClient.GetContainer(Constants.PPHS, Constants.StudentsContainerName);
+        var classData = await _cosmosServices.GetCosmosItem<Class>(classesContainer, x => x.TeacherEmail == teacherEmail && x.Code == code);
+        var classMatch = classData.SingleOrDefault() ?? throw new Exception("No Class Found with this teacher email and code combination");
 
         if (classMatch.StudentCount() >= maxStudentsInAClass)
         {
             throw new Exception($"This class already contains the maximum {maxStudentsInAClass} number of students");
         }
 
-        //Remove commented line below to create studens container
-        //var databaseResp = await _cosmosClient.CreateDatabaseIfNotExistsAsync(PPHS);
-
-        //NEED TO GET A BETTER PARTITION KEY FOR STUDENT
-        //var containerResp = await databaseResp.Database.CreateContainerIfNotExistsAsync(new ContainerProperties(studentsContainerName, "/email"));
-
-        var studentsContainer = _cosmosClient.GetContainer(PPHS, studentsContainerName);
+        var studentsContainer = _cosmosClient.GetContainer(Constants.PPHS, Constants.StudentsContainerName);
         var studentData = await _cosmosServices.GetCosmosItem<Student>(studentsContainer, x => x.Email == identity.Email());
 
         if (classMatch.Students.Contains(identity.Email()) == false)
@@ -203,24 +176,21 @@ public class ClassController : Controller
     }
 
     [HttpGet]
-    public List<Class> GetCurrentClasses(string email)
+    public List<Class> GetCurrentClasses()
     {
-        //remove!!
-        email = "philipedat@gmail.com";
-
         var identity = User.Identity;
         var currentClasses = new List<Class>();
-        var supportedSubjects = SubjectServices.GetSupportedSubjects().SelectMany(x => x.Classes);
+        var supportedCourses = Constants.GetSupportedSubjects().SelectMany(x => x.Courses);
         List<Class> classData;
 
-        var classesContainer = _cosmosClient.GetContainer(PPHS, classesContainerName);
+        var classesContainer = _cosmosClient.GetContainer(Constants.PPHS, Constants.ClassesContainerName);
         if (identity.IsInRole(CustomRoles.Teacher))
         {
             classData = classesContainer.GetItemLinqQueryable<Class>(true).Where(x => x.TeacherEmail == identity.Email()).ToList();
         }
         else
         {
-            var studentsContainer = _cosmosClient.GetContainer(PPHS, studentsContainerName);
+            var studentsContainer = _cosmosClient.GetContainer(Constants.PPHS, Constants.StudentsContainerName);
             var studentData = studentsContainer.GetItemLinqQueryable<Student>(true).Where(x => x.Email == identity.Email()).ToList();
             classData = classesContainer.GetItemLinqQueryable<Class>(true).Where(x => studentData.First().ClassIds.Contains(x.Id)).ToList();
         }
@@ -228,7 +198,7 @@ public class ClassController : Controller
         foreach (var classInfo in classData)
         {
             classInfo.Code = null;
-            classInfo.DisplayName = supportedSubjects.Where(y => y.CourseSlug == classInfo.CourseSlug).Single().DisplayName + (identity.IsInRole(CustomRoles.Teacher) ? $" (P: {classInfo.Period})" : String.Empty);
+            classInfo.DisplayName = supportedCourses.Where(y => y.CourseSlug == classInfo.CourseSlug).Single().DisplayName + (identity.IsInRole(CustomRoles.Teacher) ? $" (P: {classInfo.Period})" : String.Empty);
             currentClasses.Add(classInfo);
         }
 
@@ -237,7 +207,35 @@ public class ClassController : Controller
 
     public List<Subject> GetSupportedSubjects()
     {
-        return SubjectServices.GetSupportedSubjects();
+        return Constants.GetSupportedSubjects();
+    }
+
+    [HttpGet]
+    [Authorize(Roles = CustomRoles.Teacher)]
+    public async Task InitializeDatabase()
+    {
+        //scale by creating a databse per school, or district or state? or something like that
+        var classDbResp = await _cosmosClient.CreateDatabaseIfNotExistsAsync(Constants.PPHS);
+        await classDbResp.Database.CreateContainerIfNotExistsAsync(new ContainerProperties(Constants.ClassesContainerName, "/period"));
+
+        //Remove commented line below to create studens container
+        var studentDbResp = await _cosmosClient.CreateDatabaseIfNotExistsAsync(Constants.PPHS);
+        await studentDbResp.Database.CreateContainerIfNotExistsAsync(new ContainerProperties(Constants.ClassesContainerName, "/email")); //NEED TO GET A BETTER PARTITION KEY FOR STUDENT
+
+        //scale by creating a databse per subject
+        var lessonsDbResp = await _cosmosClient.CreateDatabaseIfNotExistsAsync(Constants.LessonsDbName);
+
+        var lectureDbResp = await _cosmosClient.CreateDatabaseIfNotExistsAsync(Constants.LecturesDbName);
+
+        foreach (var subject in Constants.GetSupportedSubjects())
+        {
+            await lessonsDbResp.Database.CreateContainerIfNotExistsAsync(new ContainerProperties(subject.SubjectSlug, "/courseSlug"));
+
+            foreach (var clas in subject.Courses)
+            {
+                await lectureDbResp.Database.CreateContainerIfNotExistsAsync(new ContainerProperties(clas.CourseSlug, "/level"));
+            }
+        }
     }
 
     private string CreateRandomCode()

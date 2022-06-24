@@ -21,8 +21,7 @@ public class LessonController : Controller
     private readonly CosmosClient _cosmosClient;
     private readonly CosmosServices _cosmosServices;
 
-    private const string LessonsDatabase = "Lessons";
-    private const string LecturesDatabase = "Lectures";
+
 
     public LessonController(ILogger<LessonController> logger, CosmosClient cosmosClient, CosmosServices cosmosServices)
     {
@@ -31,24 +30,17 @@ public class LessonController : Controller
         _cosmosServices = cosmosServices;
     }
 
-    //might need to rework based on how we get json body, but should be able to deseralize and then same
-
-    //pick subject, pick course, upload json of format
     [HttpPost] //Expecting json body of format
     public async Task CreateCourseCirriculum(string courseSlug, [FromBody] Dictionary<string, List<string>> unitsToLessonsJson)
     {
-        var subject = SubjectServices.GetSupportedSubjects().FirstOrDefault(x => x.Classes.Any(y => y.CourseSlug == courseSlug));
+        var subject = Constants.GetSupportedSubjects().FirstOrDefault(x => x.Courses.Any(y => y.CourseSlug == courseSlug));
 
         if (subject == null)
         {
             throw new Exception($"The class slug {courseSlug} cannot be found.");
         }
 
-        //scale by creating a databse per subject
-        var databaseResp = await _cosmosClient.CreateDatabaseIfNotExistsAsync(LessonsDatabase);
-        var containerResp = await databaseResp.Database.CreateContainerIfNotExistsAsync(new ContainerProperties(subject.SubjectSlug, "/courseSlug"));
-
-        var container = _cosmosClient.GetContainer(LessonsDatabase, subject.SubjectSlug);
+        var container = _cosmosClient.GetContainer(Constants.LessonsDbName, subject.SubjectSlug);
 
         if (unitsToLessonsJson == null)
         {
@@ -73,7 +65,7 @@ public class LessonController : Controller
     public async Task<Dictionary<string, Lesson>> GetCirriculumn(string subjectSlug, string courseSlug)
     {
         //scale by creating a databse per subject, or district or state? or something like that
-        var container = _cosmosClient.GetContainer(LessonsDatabase, subjectSlug);
+        var container = _cosmosClient.GetContainer(Constants.LessonsDbName, subjectSlug);
         var lessonData = await _cosmosServices.GetCosmosItem<Lesson>(container, x => x.CourseSlug == courseSlug);
 
         return lessonData.ToDictionary(x => x.Unit, x => x);
@@ -82,11 +74,7 @@ public class LessonController : Controller
     [HttpPost] //split these into three uploads. Problems, Notes, Videos
     public async Task UploadLectures(string subjectSlug, Lesson lesson, int level, bool insertLevelAsNew, [FromBody] Lecture newLecturesJson)
     {
-        //scale by creating a databse per course
-        var databaseResp = await _cosmosClient.CreateDatabaseIfNotExistsAsync(LecturesDatabase);
-        var containerResp = await databaseResp.Database.CreateContainerIfNotExistsAsync(new ContainerProperties(lesson.CourseSlug, "/level"));
-
-        var lecturesContainer = _cosmosClient.GetContainer(LecturesDatabase, lesson.CourseSlug);
+        var lecturesContainer = _cosmosClient.GetContainer(Constants.LecturesDbName, lesson.CourseSlug);
         var updateLectureInDb = false;
 
         if (lesson.Lectures == null)
@@ -129,7 +117,7 @@ public class LessonController : Controller
 
         if (updateLectureInDb)
         {
-            var lessonContainer = _cosmosClient.GetContainer(LessonsDatabase, subjectSlug);
+            var lessonContainer = _cosmosClient.GetContainer(Constants.LessonsDbName, subjectSlug);
             await lessonContainer.ReplaceItemAsync(lesson, lesson.LessonSlug);
         }
     }

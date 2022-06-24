@@ -7,6 +7,6 @@ namespace ProjectFTK.Models
 
 		public string DisplayName { get; set; }
 
-		public List<Course> Classes { get; set; }
+		public List<Course> Courses { get; set; }
 	}
 }

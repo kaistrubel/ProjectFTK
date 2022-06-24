@@ -4,7 +4,7 @@ using ProjectFTK.Models;
 
 namespace ProjectFTK.Services;
 
-public static class SubjectServices
+public static class Constants
 {
     public static List<Subject> GetSupportedSubjects()
     {
@@ -13,4 +13,10 @@ public static class SubjectServices
 
         return subjects;
     }
+
+    public static readonly string PPHS = "PPHS";
+    public static readonly string LessonsDbName = "Lessons";
+    public static readonly string LecturesDbName = "Lectures";
+    public static readonly string ClassesContainerName = "Classes";
+    public static readonly string StudentsContainerName = "Students";
 }
