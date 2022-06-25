@@ -5,8 +5,8 @@ import SignUp from './components/SignUp';
 
 function App() {
   return (
-    //<SignUp />
-    <Comic />
+    <SignUp />
+    //<Comic />
   );
 }
 
