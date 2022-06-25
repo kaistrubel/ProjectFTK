@@ -1,21 +1,12 @@
 ﻿import React from 'react';
 import './App.css';
+import Comic from './components/Comic';
+import SignUp from './components/SignUp';
 
 function App() {
   return (
-    <div className="App">
-      <div className="bubble">
-        Welcome to <strong>Project FTK.</strong>
-      </div>
-      <a
-        className="bubble bubble--highlight"
-        href="https://projectftk.com/Home/Index"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Login via Backend
-      </a>
-    </div>
+    //<SignUp />
+    <Comic />
   );
 }
 
