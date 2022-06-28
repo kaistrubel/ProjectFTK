@@ -2,11 +2,6 @@
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
 .comic-border {
   border: 10px solid #eee;
 }
@@ -15,30 +10,9 @@
   border-left: 0px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
 
 @import url("https://fonts.googleapis.com/css?family=Dekko|Lato:900|Rock+Salt");
 
@@ -59,6 +33,19 @@ body {
   background: url('data:image/svg+xml;utf8,<svg width="100" height="100" transform="rotate(0)" opacity="0.2" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g  fill="%23250E17"><circle cx="25" cy="25" r="12.5"/><circle cx="75" cy="75" r="12.5"/><circle cx="75" cy="25" r="12.5"/><circle cx="25" cy="75" r="12.5"/></g></svg>'),
     #20085f;
   background-size: 10px, 100%;
+}
+
+.title {
+  /* cap the width */
+  max-width: 500px;
+  /* give ample whitespace around and inside of the container */
+  padding: 0.2rem 1.25rem;
+  text-align: center;
+  text-shadow: -1px 2px 0px #000;
+  font-family: "Dekko";
+  font-size: 2rem;
+  letter-spacing: 0.2rem;
+  color: #eee;
 }
 
 /* .bubble containers: add the texture above a solid background */
@@ -107,13 +94,4 @@ body {
   background-size: 12px, 100%;
   border: 0.4rem solid #000;
   z-index: -5;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
