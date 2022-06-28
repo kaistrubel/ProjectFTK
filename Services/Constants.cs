@@ -15,8 +15,8 @@ public static class Constants
     }
 
     public static readonly string PPHS = "PPHS";
-    public static readonly string LessonsDbName = "Lessons";
-    public static readonly string LecturesDbName = "Lectures";
-    public static readonly string ClassesContainerName = "Classes";
-    public static readonly string StudentsContainerName = "Students";
+    public static readonly string LessonsDbName = "lessons";
+    public static readonly string LecturesDbName = "lectures";
+    public static readonly string ClassesContainerName = "classes";
+    public static readonly string StudentsContainerName = "students";
 }

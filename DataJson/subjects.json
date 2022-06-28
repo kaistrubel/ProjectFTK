@@ -2,9 +2,9 @@
   {
     "subjectSlug": "computer-science",
     "displayName": "Computer Science",
-    "classes": [
+    "courses": [
       {
-        "classSlug": "intro-to-cs",
+        "courseSlug": "intro-to-cs",
         "DisplayName": "Introduction to Computer Science"
       }
     ]

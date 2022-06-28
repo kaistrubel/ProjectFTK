@@ -45,21 +45,21 @@ public class ClassController : Controller
 
         var classContainer = _cosmosClient.GetContainer(Constants.PPHS, Constants.ClassesContainerName);
         var classData = await _cosmosServices.GetCosmosItem<Class>(classContainer, x => x.TeacherEmail == identity.Email() && x.Period == period);
-
         if (classData.Any())
         {
             throw new Exception("This class already exists for this time period.");
         }
 
-        await classContainer.CreateItemAsync(new Class {
-            Id = Guid.NewGuid(),
-            CourseSlug = classSlug,
-            SubjectSlug = subjectSlug,
-            Period = period,
-            TeacherEmail = identity.Email(),
-            Code = CreateRandomCode(),
-            Students = new List<string>()
-        });
+        await classContainer.CreateItemAsync(
+            new Class
+            {
+                Id = Guid.NewGuid(),
+                CourseSlug = classSlug,
+                Period = period,
+                TeacherEmail = identity.Email(),
+                Code = CreateRandomCode(),
+                Students = new List<string>()
+            });
     }
 
     [HttpGet]
@@ -181,7 +181,7 @@ public class ClassController : Controller
         var identity = User.Identity;
         var currentClasses = new List<Class>();
         var supportedCourses = Constants.GetSupportedSubjects().SelectMany(x => x.Courses);
-        List<Class> classData;
+        List<Class> classData = new List<Class>();
 
         var classesContainer = _cosmosClient.GetContainer(Constants.PPHS, Constants.ClassesContainerName);
         if (identity.IsInRole(CustomRoles.Teacher))
@@ -192,7 +192,10 @@ public class ClassController : Controller
         {
             var studentsContainer = _cosmosClient.GetContainer(Constants.PPHS, Constants.StudentsContainerName);
             var studentData = studentsContainer.GetItemLinqQueryable<Student>(true).Where(x => x.Email == identity.Email()).ToList();
-            classData = classesContainer.GetItemLinqQueryable<Class>(true).Where(x => studentData.First().ClassIds.Contains(x.Id)).ToList();
+            if (studentData.Any())
+            {
+                classData = classesContainer.GetItemLinqQueryable<Class>(true).Where(x => studentData.First().ClassIds.Contains(x.Id)).ToList();
+            }
         }
 
         foreach (var classInfo in classData)

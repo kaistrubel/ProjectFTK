@@ -10,19 +10,27 @@ public class CosmosServices
     public async Task<List<T>> GetCosmosItem<T>(Container container, Expression<Func<T, bool>> predicate)
     {
         var itemList = new List<T>();
-        using (FeedIterator<T> setIterator = container.GetItemLinqQueryable<T>()
-                            .Where(predicate)
-                            .ToFeedIterator())
+        try
         {
-            //Asynchronous query execution
-            while (setIterator.HasMoreResults)
+            using (FeedIterator<T> setIterator = container.GetItemLinqQueryable<T>()
+                    .Where(predicate)
+                    .ToFeedIterator())
             {
-                foreach (var item in await setIterator.ReadNextAsync())
+                //Asynchronous query execution
+                while (setIterator.HasMoreResults)
                 {
-                    itemList.Add(item);
+                    foreach (var item in await setIterator.ReadNextAsync())
+                    {
+                        itemList.Add(item);
+                    }
                 }
             }
         }
+        catch
+        {
+            //most likely item doesn't exist
+        }
+
         return itemList;
     }
 }

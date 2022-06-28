@@ -24,7 +24,5 @@ public class Course
 {
 	public string CourseSlug { get; set; }
 
-	public string SubjectSlug { get; set; }
-
 	public string DisplayName { get; set; }
 }
