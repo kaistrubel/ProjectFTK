@@ -11,8 +11,10 @@ public class Lesson
 
 	public string CourseSlug { get; set; }
 
+	public Dictionary<int, Lecture> Lectures { get; set; }
+
 	//map concept to 0
-	public Dictionary<int, Guid> Lectures { get; set; }
+	//public Dictionary<int, Guid> Lectures { get; set; }
 
 	[JsonProperty("id")]
 	public string LessonSlug => Name.ToLower().Replace(" ", "-");
