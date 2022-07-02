@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export default axios.create({
-  baseURL: "https://localhost:7066/",
+  baseURL: "https://projectftk.com/",
   headers: {
     "Content-type": "application/json"
   },

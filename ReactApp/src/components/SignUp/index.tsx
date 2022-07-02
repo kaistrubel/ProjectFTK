@@ -32,6 +32,12 @@ const SignUp = () => {
           Welcome to <strong>Project FTK.</strong>
           <p> Is this {user.name}?</p>
         </div>
+        <div className="row-span-4">
+              <a
+                className="bubble bubble--highlight"
+                href="https://projectftk.com/Auth/GoogleSignOut"
+              >SignOut</a>
+            </div>
       </div>
   );
   }

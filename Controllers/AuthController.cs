@@ -14,7 +14,7 @@ namespace ProjectFTK.Controllers
 {
     public class AuthController : Controller
     {
-        public IActionResult GoogleLogin(string returnUrl, bool isTeacher)
+        public IActionResult GoogleLogin(bool isTeacher)
         {
             return new ChallengeResult(
                 GoogleDefaults.AuthenticationScheme,
@@ -53,10 +53,10 @@ namespace ProjectFTK.Controllers
             return LocalRedirect(returnUrl);
         }
 
-        public async Task<IActionResult> GoogleSignOut(string returnUrl)
+        public async Task<IActionResult> GoogleSignOut()
         {
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-            return LocalRedirect(returnUrl);
+            return LocalRedirect("/");
         }
 
         private bool ValidateTeacherEmail(string email)
