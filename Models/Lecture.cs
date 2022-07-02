@@ -9,7 +9,7 @@ public class Lecture
 
 	public List<string> Videos { get; set; }
 
-	public List<string> Notes { get; set; }
+	public string NotesBlobPath { get; set; }
 }
 /*
 public class Lecture

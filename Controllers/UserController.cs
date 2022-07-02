@@ -15,9 +15,11 @@ namespace ProjectFTK.Controllers
             var identity = User.Identity;
             var userDate = new JsonResult(new
             {
-                Name = identity.Name,
+                identity.Name,
                 Email = identity.Email(),
-                Roles = identity.Roles()
+                PictureUrl = identity.PictureUrl(),
+                Roles = identity.Roles(),
+                identity.IsAuthenticated
             });
 
             return userDate;

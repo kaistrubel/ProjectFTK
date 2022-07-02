@@ -82,6 +82,8 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseResponseCaching();
+
 app.MapFallbackToFile("index.html");;
 
 app.Run();

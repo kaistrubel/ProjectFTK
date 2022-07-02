@@ -30,6 +30,21 @@ public class LessonController : Controller
         _cosmosServices = cosmosServices;
     }
 
+    /*
+    {
+      "Blockly" : 
+        [ "Intro",
+          "Entry Level Loops + Conditionals",
+          "Deep Dive Conditionals",
+          "Deep Dive Loops",
+          "Math Equations",
+          "Functions",
+          "Javascript",
+          "Open Lab"
+        ]
+    }
+    */
+
     [HttpPost] 
     [Authorize(Roles = CustomRoles.Teacher)] //Expecting json body of format
     public async Task CreateCourseCirriculum(string courseSlug, [FromBody] Dictionary<string, List<string>> unitsToLessonsJson)
@@ -63,6 +78,7 @@ public class LessonController : Controller
     }
 
     [HttpGet]
+    [ResponseCache(Duration = 86400, VaryByQueryKeys = new[] { "courseSlug" })]
     public async Task<Dictionary<string, List<Lesson>>> GetCirriculumn(string courseSlug)
     {
         //scale by creating a databse per subject, or district or state? or something like that
@@ -72,8 +88,14 @@ public class LessonController : Controller
         return lessonData.GroupBy(x=>x.Unit).ToDictionary(x => x.Key, x => x.ToList());
     }
 
+    /*
+        {
+            "Problems": ["https://blockly.games/puzzle?lang=en"],
+            "Videos":   ["https://www.youtube.com/watch?v=Rs1GZjbNY4E"]
+        }
+    */
     [HttpPost]
-    public async Task AddProblems(string courseSlug, string unit, string lesson, int level, [FromBody] Lecture lecture)
+    public async Task AddLectures(string courseSlug, string unit, string lesson, int level, [FromBody] Lecture lecture)
     {
         var blocklyUnitName = "Blockly";
         //scale by creating a databse per subject, or district or state? or something like that
@@ -96,8 +118,14 @@ public class LessonController : Controller
         }
         else
         {
-            lessonItem.Lectures[level].Videos.AddRange(lecture.Videos);
-            lessonItem.Lectures[level].Problems.AddRange(lecture.Problems);
+            if (lecture.Videos != null)
+            {
+                lessonItem.Lectures[level].Videos.AddRange(lecture.Videos); //should check if this video is already there. Same check for everything  
+            }
+            if (lecture.Problems != null)
+            {
+                lessonItem.Lectures[level].Problems.AddRange(lecture.Problems);
+            }
         }
 
         await container.ReplaceItemAsync(lessonItem, lessonItem.LessonSlug);
