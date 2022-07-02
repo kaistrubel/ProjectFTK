@@ -1,6 +1,6 @@
 import IUserInfo from '../../types/User';
 import { useState, useEffect } from "react";
-import { UserInfo } from '../../api';
+import UserService from '../../apis/user';
 
 const SignUp = () => {
   const initialUserState = {
@@ -8,27 +8,39 @@ const SignUp = () => {
     email: "",
     pictureUrl: "",
     roles: [""],
-    IsAuthenticated: false,
+    isAuthenticated: false,
   };
 
   const [user, setUser] = useState<IUserInfo>(initialUserState);
 
 
   useEffect(() => {
-    UserInfo.getInfo()
+    UserService.get()
     .then((response) => {
-      setUser(response);
+      setUser(response.data);
     })
     .catch((e: Error) => {
       console.log(e);
     });
   }, []);
 
-  return (
+  if(user.isAuthenticated == true)
+  {
+    return (
       <div className="grid place-items-center pt-16">
         <div className="bubble bubble-header">
           Welcome to <strong>Project FTK.</strong>
-          <p>Is this {user.name}?</p>
+          <p> Is this {user.name}?</p>
+        </div>
+      </div>
+  );
+  }
+  else
+  {
+    return (
+      <div className="grid place-items-center pt-16">
+        <div className="bubble bubble-header">
+          Welcome to <strong>Project FTK.</strong>
         </div>
         <div className="container flex items-start justify-between flex-col lg:flex-row" id="signup">
           <div className="flex-1 w-full lg:w-1/2 bg-[url('assets/images/teacher_signin.png')] comic-border bg-cover h-96 w-384">
@@ -57,5 +69,7 @@ const SignUp = () => {
         </div>
       </div>
   );
+  }
+
 };
 export default SignUp;
