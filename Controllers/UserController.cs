@@ -22,7 +22,7 @@ namespace ProjectFTK.Controllers
                 identity.IsAuthenticated
             });
 
-            return userDate;
+            return Json(userDate);
         }
     }
 }

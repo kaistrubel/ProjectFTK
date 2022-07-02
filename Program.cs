@@ -37,6 +37,16 @@ builder.Services.AddTransient<MySqlConnection>(cfg =>
     new MySqlConnection(configuration["MySQLConnection"])
 );
 */
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "LocalHost",
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:3000");
+                          policy.AllowCredentials();
+                      });
+});
+
 builder.Services.AddSingleton(s =>
 {
     CosmosClientOptions cosmosClientOptions = new CosmosClientOptions
@@ -59,6 +69,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseCors("LocalHost");
+
     app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}"); //rm =Home for react
