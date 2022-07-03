@@ -35,6 +35,10 @@ body {
   background-size: 10px, 100%;
 }
 
+.signup {
+  width: 90rem;
+}
+
 .title {
   /* cap the width */
   max-width: 500px;
