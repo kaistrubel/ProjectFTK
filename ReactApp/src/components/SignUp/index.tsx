@@ -49,7 +49,7 @@ const SignUp = () => {
           Welcome to <strong>Project FTK.</strong>
         </div>
         <div className="container flex items-start justify-between flex-col lg:flex-row signup" id="signup">
-          <div className="flex-1 w-full lg:w-1/2 bg-[url('assets/images/teacher_signin.png')] comic-border bg-cover lg:h-96">
+          <div className="flex-1 w-full lg:w-1/2 bg-[url('assets/images/teacher_signin.png')] comic-border bg-contain lg:h-96">
           <div className="grid grid-rows-[100px_minmax(300px,_1fr)_100px] place-items-center">
             <div className="title">Teachers</div>
             <div className="row-span-4">
@@ -61,7 +61,7 @@ const SignUp = () => {
           </div>
 
           </div>
-          <div className="flex-1 w-full lg:w-1/2 bg-[url('assets/images/student_signin.png')] comic-border bg-cover lg:h-96">
+          <div className="flex-1 w-full lg:w-1/2 bg-[url('assets/images/student_signin.png')] comic-border bg-contain lg:h-96">
             <div className="grid grid-rows-[100px_minmax(300px,_1fr)_100px] place-items-center">
               <div className="row-span-1 title">Students</div>
               <div className="row-span-4 ...">
