@@ -3,46 +3,6 @@ import { useState, useEffect } from "react";
 import UserService from '../../apis/user';
 
 const SignUp = () => {
-  const initialUserState = {
-    name: "",
-    email: "",
-    pictureUrl: "",
-    roles: [""],
-    isAuthenticated: false,
-  };
-
-  const [user, setUser] = useState<IUserInfo>(initialUserState);
-
-
-  useEffect(() => {
-    UserService.get()
-    .then((response) => {
-      setUser(response.data);
-    })
-    .catch((e: Error) => {
-      console.log(e);
-    });
-  }, []);
-
-  if(user.isAuthenticated == true)
-  {
-    return (
-      <div className="grid place-items-center pt-16">
-        <div className="bubble bubble-header">
-          Welcome to <strong>Project FTK.</strong>
-          <p> Is this {user.name}?</p>
-        </div>
-        <div className="row-span-4">
-              <a
-                className="bubble bubble--highlight"
-                href="https://projectftk.com/Auth/GoogleSignOut"
-              >SignOut</a>
-            </div>
-      </div>
-  );
-  }
-  else
-  {
     return (
       <div className="grid place-items-center pt-16">
         <div className="bubble bubble-header">
@@ -75,7 +35,6 @@ const SignUp = () => {
         </div>
       </div>
   );
-  }
-
 };
+
 export default SignUp;
