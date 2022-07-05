@@ -1,7 +1,3 @@
-import IUserInfo from '../../types/User';
-import { useState, useEffect } from "react";
-import UserService from '../../apis/user';
-
 const SignUp = () => {
     return (
       <div className="grid place-items-center pt-16">
