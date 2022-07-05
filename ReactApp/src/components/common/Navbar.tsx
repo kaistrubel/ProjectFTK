@@ -69,7 +69,7 @@ export default function Navbar(props: any) {
                       <span className="sr-only">Open user menu</span>
                       <img
                         className="h-8 w-8 rounded-full"
-                        src={props.pictureUrl}
+                        src={props.user.pictureUrl}
                         alt=""
                       />
                     </Menu.Button>

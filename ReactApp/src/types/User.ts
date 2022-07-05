@@ -4,4 +4,5 @@ export default interface IUserInfo {
     pictureUrl: string,
     roles: string[],
     isAuthenticated: boolean,
+    isTeacher: boolean,
   }

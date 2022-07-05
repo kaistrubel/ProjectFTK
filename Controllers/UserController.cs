@@ -19,7 +19,8 @@ namespace ProjectFTK.Controllers
                 Email = identity.Email(),
                 PictureUrl = identity.PictureUrl(),
                 Roles = identity.Roles(),
-                identity.IsAuthenticated
+                identity.IsAuthenticated,
+                isTeacher = identity.IsInRole(CustomRoles.Teacher)
             });
 
             return userDate;

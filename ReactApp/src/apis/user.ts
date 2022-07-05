@@ -5,8 +5,8 @@ const get = () => {
     return http.get<IUserInfo>(`user/info/`);
     };
 
-const UserService = {
+const UserApi = {
     get,
   };
   
-  export default UserService;
+  export default UserApi;
