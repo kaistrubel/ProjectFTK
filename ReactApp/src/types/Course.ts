@@ -1,4 +1,4 @@
-export default interface IClass {
+export default interface ICourse {
     id: string,
     code: string,
     teacherEmail: string,

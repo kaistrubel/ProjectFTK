@@ -5,20 +5,8 @@ import IUserInfo from "../../types/User";
 import NoClasses from "./NoClasses";
 
 const Lectures = (props: any) => {
-
-  const [course, setCourse] = useState<ICourse[]>([]);
-
-  useEffect(() => {
-    ClassApi.getCurrentClasses()
-    .then((response) => {
-      setCourse(response.data);
-    })
-    .catch((e: Error) => {
-      console.log(e);
-    });
-  }, []);
   
-  if(course.length == 0)
+  if(props.courses.length == 0)
   {
     return(
       <NoClasses isTeacher={props.user.isTeacher}/>
