@@ -42,11 +42,13 @@ export default function Navbar(props: any) {
               </div>
               <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
                 <div className="flex-shrink-0 flex items-center">
-                  <img
-                    className="block h-8 w-auto"
-                    src={ftkLogo}
-                    alt="Workflow"
-                  />
+                  <a href="/">
+                    <img
+                      className="block h-8 w-auto"
+                      src={ftkLogo}
+                      alt="Workflow"
+                    />
+                  </a>
                 </div>
                 <div className="hidden sm:block sm:ml-6">
                   <div className="flex space-x-4">
