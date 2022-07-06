@@ -35,8 +35,10 @@ body {
   background-size: 10px, 100%;
 }
 
-.signup {
-  width: 90rem;
+@layer components {
+  .signup {
+    @apply w-screen h-full;
+  }
 }
 
 .title {

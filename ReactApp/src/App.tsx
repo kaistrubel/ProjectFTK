@@ -47,12 +47,15 @@ function App() {
 
   return (
     <>
-      <Navbar user={user} courses={courses}/>
-      <Routes>
+      {
+      user.isAuthenticated
+      ? <Navbar user={user} courses={courses}/>
+      : <Routes>
         <Route path="/" element={<Landing user={user} courses={courses}/>} />
         <Route path="/createClass" element={<CreateClass />} />
         <Route path="/joinClass" element={<JoinClass />} />
-      </Routes>
+        </Routes>
+      }
     </>
   );
 }
