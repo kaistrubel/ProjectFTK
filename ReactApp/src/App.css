@@ -105,3 +105,8 @@ body {
   border: 0.4rem solid #000;
   z-index: -5;
 }
+
+.class-dropdown
+{
+  z-index: 5;
+}

@@ -10,9 +10,14 @@ const getSupportedSubjects = () => {
     return http.get<ISubject[]>(`class/getsupportedsubjects/`);
     };
 
+const createClass = (courseSlug: string, period:string) => {
+return http.get<string>(`class/createclass/?courseSlug=${courseSlug}&period=${period}`);
+};
+
 const ClassApi = {
     getCurrentClasses,
-    getSupportedSubjects
+    getSupportedSubjects,
+    createClass
   };
   
   export default ClassApi;

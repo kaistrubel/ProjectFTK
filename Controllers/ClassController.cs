@@ -28,7 +28,7 @@ public class ClassController : Controller
 
     [HttpGet]
     [Authorize(Roles = CustomRoles.Teacher)]
-    public async Task CreateClass(string classSlug, string period)
+    public async Task CreateClass(string courseSlug, string period)
     {
         var identity = User.Identity;
 
@@ -37,10 +37,10 @@ public class ClassController : Controller
             throw new Exception("Teacher's email cannot be null when creating a class");
         }
 
-        var subjectSlug = Constants.GetSupportedSubjects().FirstOrDefault(x => x.Courses.Any(y => y.CourseSlug == classSlug))?.SubjectSlug;
+        var subjectSlug = Constants.GetSupportedSubjects().FirstOrDefault(x => x.Courses.Any(y => y.CourseSlug == courseSlug))?.SubjectSlug;
         if (subjectSlug == null)
         {
-            throw new Exception($"The Class {classSlug} is currently not supported");
+            throw new Exception($"The Class {courseSlug} is currently not supported");
         }
 
         var classContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassStudentsContainer);
@@ -54,7 +54,7 @@ public class ClassController : Controller
             new Class
             {
                 Id = Guid.NewGuid(),
-                CourseSlug = classSlug,
+                CourseSlug = courseSlug,
                 Period = period,
                 TeacherEmail = identity.Email(),
                 Code = CreateRandomCode(),
