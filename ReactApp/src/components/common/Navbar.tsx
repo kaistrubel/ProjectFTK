@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { Disclosure, Listbox, Menu, Transition } from '@headlessui/react'
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
@@ -22,6 +22,11 @@ function classNames(...classes: string[]) {
 export default function Navbar(props: any) {
     
   const [selectedCourse, setSelectedCourse] = useState<ICourse>(props.courses[0])
+
+  useEffect(() => {
+    setSelectedCourse(props.courses[0]);
+    console.log(selectedCourse)
+  }, [props.courses])
 
   return (
     <Disclosure as="nav" className="w-screen bg-gray-800">
