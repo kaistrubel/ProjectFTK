@@ -2,7 +2,7 @@ import ClassApi from "../../apis/class";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 
-const JoinClass = () => {
+const JoinClass = (props: any) => {
   
   const navigate = useNavigate();
 
@@ -13,11 +13,18 @@ const JoinClass = () => {
     event.preventDefault();
     ClassApi.joinClass(teacherEmail, code)
     .then((response) => {
-      if(response.status != 200){
+      if(response.status !== 200){
         window.confirm('An Error Occured')
       }
       else
       {
+        ClassApi.getCurrentClasses()
+        .then((response) => {
+          props.setCourses(response.data);
+        })
+        .catch((e: Error) => {
+          console.log(e);
+        });
         navigate('/');
       }
 

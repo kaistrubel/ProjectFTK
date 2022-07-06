@@ -34,6 +34,8 @@ function App() {
   }, []);
 
   const [courses, setCourses] = useState<ICourse[]>([]);
+  const [selectedCourse, setSelectedCourse] = useState<ICourse>()
+
 
   useEffect(() => {
     ClassApi.getCurrentClasses()
@@ -48,12 +50,12 @@ function App() {
   return (
     <>
       { user.isAuthenticated &&
-        <Navbar user={user} courses={courses}/>
+        <Navbar user={user} courses={courses} selectedCourse={selectedCourse} setSelectedCourse={setSelectedCourse} />
       }
       <Routes>
-        <Route path="/" element={<Landing user={user} courses={courses}/>} />
-        <Route path="/createClass" element={<CreateClass />} />
-        <Route path="/joinClass" element={<JoinClass />} />
+        <Route path="/" element={<Landing user={user} courses={courses} selectedCourse={selectedCourse}/>} />
+        <Route path="/createClass" element={<CreateClass setCourses={setCourses} />} />
+        <Route path="/joinClass" element={<JoinClass setCourses={setCourses} />} />
         </Routes>
     </>
   );

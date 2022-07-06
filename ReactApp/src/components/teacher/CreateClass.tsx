@@ -4,7 +4,7 @@ import ISubject from "../../types/Subject";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 
-const CreateClass = () => {
+const CreateClass = (props: any) => {
 
   const navigate = useNavigate();
 
@@ -29,11 +29,18 @@ const CreateClass = () => {
     event.preventDefault();
     ClassApi.createClass(selectedCourse, selectedPeriod)
     .then((response) => {
-      if(response.status != 200){
+      if(response.status !== 200){
         window.confirm('An Error Occured')
       }
       else
       {
+        ClassApi.getCurrentClasses()
+        .then((response) => {
+          props.setCourses(response.data);
+        })
+        .catch((e: Error) => {
+          console.log(e);
+        });
         navigate('/');
       }
 
@@ -85,7 +92,7 @@ const CreateClass = () => {
                         onChange={(e) => setSelectedSubject(e.target.value)}
                         className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       >
-                        {subjects.find((x) => x.subjectSlug == selectedSubject)?.courses.map((course) => 
+                        {subjects.find((x) => x.subjectSlug === selectedSubject)?.courses.map((course) => 
                           <option key={course.courseSlug} value={course.courseSlug}>{course.displayName}</option>
                         )}
                       </select>

@@ -1,8 +1,7 @@
 import NoClasses from "./NoClasses";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const Lectures = (props: any) => {
-  
     return(
       <>
         <div className="px-4 text-right sm:px-6">
@@ -16,12 +15,12 @@ const Lectures = (props: any) => {
           </Link>
         </div>
       {
-        props.courses.length == 0
+        props.courses.length === 0
         ? <NoClasses isTeacher={props.user.isTeacher}/>
         : 
         <div className="grid place-items-center pt-16">
           <div className="bubble bubble-header">
-          This view to be used as cards showing lectures to click into.
+          In Development. Going to see lectures for {props.selectedCourse?.displayName}
           </div>
         </div>
       }
