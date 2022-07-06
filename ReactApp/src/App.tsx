@@ -47,10 +47,8 @@ function App() {
 
   return (
     <>
-      {
-      user.isAuthenticated
-      ? <Navbar user={user} courses={courses}/>
-      : <></>
+      { user.isAuthenticated &&
+        <Navbar user={user} courses={courses}/>
       }
       <Routes>
         <Route path="/" element={<Landing user={user} courses={courses}/>} />
