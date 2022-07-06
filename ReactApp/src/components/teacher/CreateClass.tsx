@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import ClassApi from "../../apis/class";
-import ISubject from "../../types/subject";
+import ISubject from "../../types/Subject";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 

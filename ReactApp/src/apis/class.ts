@@ -1,6 +1,6 @@
 import http from "../http";
 import IClass from "../types/Course";
-import ISubject from "../types/subject";
+import ISubject from "../types/Subject";
 
 const getCurrentClasses = () => {
     return http.get<IClass[]>(`class/getcurrentclasses/`);
