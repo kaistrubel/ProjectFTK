@@ -1,10 +1,33 @@
+import { useEffect, useState } from "react";
+import ClassApi from "../../apis/class";
+import ISubject from "../../types/subject";
+import * as React from "react";
+
 const CreateClass = () => {
+
+  const [subjects, setSubjects] = useState<ISubject[]>([]);
+  const [selectedSubject, setSelectedSubject] = React.useState("");
+
+  const changeSelectSubject = (event: { target: { value: any; }; }) => {
+    setSelectedSubject(event.target.value);
+  };
+  useEffect(() => {
+    ClassApi.getSupportedSubjects()
+    .then((response) => {
+      setSubjects(response.data);
+      setSelectedSubject(response.data[0].subjectSlug)
+    })
+    .catch((e: Error) => {
+      console.log(e);
+    });
+  }, []);
+
     return (
       <>
       <div>
         <div className="md:grid md:grid-cols-3 md:gap-6">
           <div className="mt-5 md:mt-0 md:col-span-2">
-            <form action="#" method="POST">
+            <form action="/class/createclass" method="GET">
               <div className="shadow sm:rounded-md sm:overflow-hidden">
                 <div className="px-4 py-5 space-y-6 sm:p-6">
                   <div className = "bubble bubble-header bubble-align-start">
@@ -21,27 +44,28 @@ const CreateClass = () => {
                         autoComplete="subject-name"
                         className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       >
-                        <option>Math</option>
-                        <option>Canada</option>
-                        <option>Mexico</option>
+                        {subjects.map((subject) => 
+                          <option value={subject.subjectSlug}>{subject.displayName}</option>
+                        )}
                       </select>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-3 gap-6">
                   <div className="col-span-6 sm:col-span-3">
-                      <label htmlFor="class" className="block text-sm font-medium text-white">
+                      <label htmlFor="classSlug" className="block text-sm font-medium text-white">
                         Class
                       </label>
                       <select
-                        id="class"
-                        name="class"
+                        id="classSlug"
+                        name="classSlug"
                         autoComplete="class-name"
+                        onChange={changeSelectSubject}
                         className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       >
-                        <option>Intro</option>
-                        <option>Canada</option>
-                        <option>Mexico</option>
+                        {subjects.find((x) => x.subjectSlug == selectedSubject)?.courses.map((course) => 
+                          <option value={course.courseSlug}>{course.displayName}</option>
+                        )}
                       </select>
                     </div>
                   </div>
