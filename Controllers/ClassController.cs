@@ -194,14 +194,15 @@ public class ClassController : Controller
             var studentData = studentsContainer.GetItemLinqQueryable<Student>(true).Where(x => x.Email == identity.Email()).ToList();
             if (studentData.Any())
             {
-                classData = classesContainer.GetItemLinqQueryable<Class>(true).Where(x => studentData.First().ClassIds.Contains(x.Id)).ToList();
+                var studentClassIds = studentData.First().ClassIds;
+                classData = classesContainer.GetItemLinqQueryable<Class>(true).Where(x => studentClassIds.Contains(x.Id)).ToList();
             }
         }
 
         foreach (var classInfo in classData)
         {
             classInfo.Code = null;
-            classInfo.DisplayName = supportedCourses.Where(y => y.CourseSlug == classInfo.CourseSlug).Single().DisplayName + (identity.IsInRole(CustomRoles.Teacher) ? $" (P: {classInfo.Period})" : String.Empty);
+            classInfo.DisplayName = $"(P: {classInfo.Period}) " + supportedCourses.Where(y => y.CourseSlug == classInfo.CourseSlug).Single().DisplayName;
             currentClasses.Add(classInfo);
         }
 
