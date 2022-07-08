@@ -41,7 +41,7 @@ const Lessons = (props: any) => {
         : 
         <>
 
-        <div className="grid pl-10">
+        <div className="grid pl-10 pb-10">
           <Listbox value={selectedunit} onChange={setSelectedUnit}>
             <div className="relative mt-1">
               <Listbox.Button className="relative cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
@@ -96,8 +96,8 @@ const Lessons = (props: any) => {
 
           {
             lessons?.sort(l=>l.order).filter(l => l.unit == selectedunit)?.map((lesson: ILesson) => (
-            <div className="pl-10">
-              <div className="bubble bubble-header">
+            <div key={lesson.name} className="pl-10">
+              <div className="bubble bubble-card hover:bg-indigo-700 hover:text-white">
                 {lesson.name}
               </div>
             </div>
