@@ -64,8 +64,8 @@ public class LessonController : Controller
     }
 
     [HttpGet]
-    [ResponseCache(Duration = 86400, VaryByQueryKeys = new[] { "courseSlug" })]
-    public async Task<List<Lesson>> GetCirriculumn(string courseSlug)
+    //[ResponseCache(Duration = 86400, VaryByQueryKeys = new[] { "courseSlug" })]
+    public async Task<List<Lesson>> GetLessons(string courseSlug)
     {
         //scale by creating a databse per subject, or district or state? or something like that
         var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);

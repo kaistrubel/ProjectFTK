@@ -53,7 +53,7 @@ function App() {
         <Navbar user={user} courses={courses} selectedCourse={selectedCourse} setSelectedCourse={setSelectedCourse} />
       }
       <Routes>
-        <Route path="/" element={<Landing user={user} courses={courses} selectedCourse={selectedCourse}/>} />
+        <Route path="/" element={<Landing user={user} selectedCourse={selectedCourse}/>} />
         <Route path="/createClass" element={<CreateClass setCourses={setCourses} />} />
         <Route path="/joinClass" element={<JoinClass setCourses={setCourses} />} />
         </Routes>

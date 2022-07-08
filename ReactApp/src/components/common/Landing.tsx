@@ -1,5 +1,5 @@
 import SignUp from '../../components/common/SignUp';
-import Lectures from '../../components/common/Lectures';
+import Lessons from './Lessons';
 
 
 function Landing(props: any) {
@@ -9,7 +9,7 @@ function Landing(props: any) {
     {
         props.user.isAuthenticated === false
         ? <SignUp />
-        : <Lectures user={props.user} courses={props.courses} selectedCourse={props.selectedCourse} />
+        : <Lessons user={props.user} selectedCourse={props.selectedCourse} />
     }
     </>
   );
