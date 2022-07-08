@@ -34,7 +34,7 @@ public class LessonController : Controller
     {
       "Blockly" : 
         [ "Intro",
-          "Entry Level Loops + Conditionals",
+          "Entry Level Loops and Conditionals",
           "Deep Dive Conditionals",
           "Deep Dive Loops",
           "Math Equations",
@@ -47,147 +47,30 @@ public class LessonController : Controller
 
     [HttpPost] 
     [Authorize(Roles = CustomRoles.Teacher)] //Expecting json body of format
-    public async Task CreateCourseCirriculum(string courseSlug, [FromBody] Dictionary<string, List<string>> unitsToLessonsJson)
+    public async Task CreateCourseCirriculum(string courseSlug, [FromBody] List<Lesson> lessons)
     {
-        var subject = Constants.GetSupportedSubjects().FirstOrDefault(x => x.Courses.Any(y => y.CourseSlug == courseSlug));
-
-        if (subject == null)
+        var courseSupported = Constants.GetSupportedSubjects().Any(x => x.Courses.Any(y => y.CourseSlug == courseSlug));
+        if (courseSupported == false)
         {
             throw new Exception($"The class slug {courseSlug} cannot be found.");
         }
 
         var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
-
-        if (unitsToLessonsJson == null)
+        foreach (var lesson in lessons)
         {
-            throw new Exception("Json File is not formatted correctly");
-        }
-
-        foreach (var unit in unitsToLessonsJson)
-        {
-            foreach (var lesson in unit.Value)
-            {
-                await container.CreateItemAsync(new Lesson()
-                {
-                    Name = lesson,
-                    Unit = unit.Key,
-                    CourseSlug = courseSlug
-                });
-            }
+            lesson.CourseSlug = courseSlug;
+            await container.UpsertItemAsync(lesson);
         }
     }
 
     [HttpGet]
     [ResponseCache(Duration = 86400, VaryByQueryKeys = new[] { "courseSlug" })]
-    public async Task<Dictionary<string, List<Lesson>>> GetCirriculumn(string courseSlug)
+    public async Task<List<Lesson>> GetCirriculumn(string courseSlug)
     {
         //scale by creating a databse per subject, or district or state? or something like that
         var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
         var lessonData = await _cosmosServices.GetCosmosItem<Lesson>(container, x => x.CourseSlug == courseSlug);
 
-        return lessonData.GroupBy(x=>x.Unit).ToDictionary(x => x.Key, x => x.ToList());
+        return lessonData;
     }
-
-    /*
-        {
-            "Problems": ["https://blockly.games/puzzle?lang=en"],
-            "Videos":   ["https://www.youtube.com/watch?v=Rs1GZjbNY4E"]
-        }
-    */
-    [HttpPost]
-    public async Task AddLectures(string courseSlug, string unit, string lesson, int level, [FromBody] Lecture lecture)
-    {
-        var blocklyUnitName = "Blockly";
-        //scale by creating a databse per subject, or district or state? or something like that
-        var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
-        var lessonData = await _cosmosServices.GetCosmosItem<Lesson>(container, x => x.CourseSlug == courseSlug && x.Unit == blocklyUnitName && x.LessonSlug == lesson);
-        var lessonItem = lessonData.SingleOrDefault();
-
-        if (lessonItem == null)
-        {
-            throw new Exception($"The lesson {lesson} does not exist in {unit} for the {courseSlug} cirriculumn");
-        }
-
-        if (lessonItem.Lectures == null)
-        {
-            lessonItem.Lectures = new Dictionary<int, Lecture>() { { 1, lecture } };
-        }
-        else if (lessonItem.Lectures.ContainsKey(level) == false)
-        {
-            lessonItem.Lectures.Add(level, lecture) ;
-        }
-        else
-        {
-            if (lecture.Videos != null)
-            {
-                lessonItem.Lectures[level].Videos.AddRange(lecture.Videos); //should check if this video is already there. Same check for everything  
-            }
-            if (lecture.Problems != null)
-            {
-                lessonItem.Lectures[level].Problems.AddRange(lecture.Problems);
-            }
-        }
-
-        await container.ReplaceItemAsync(lessonItem, lessonItem.LessonSlug);
-
-        //Add notes by createing a blob items in folder courseslug/unit_lesson_level/*.pdf
-    }
-
-    /*
-    [HttpPost] //split these into three uploads. Problems, Notes, Videos
-    public async Task UploadLectures(string subjectSlug, Lesson lesson, int level, bool insertLevelAsNew, [FromBody] Lecture newLecturesJson)
-    {
-        var lecturesContainer = _cosmosClient.GetContainer(Constants.LecturesDbName, lesson.CourseSlug);
-        var updateLectureInDb = false;
-
-        if (level > 10)
-        {
-            throw new Exception("Level cannot exceed 10 at the momemt");
-        }
-
-        if (lesson.Lectures == null)
-        {
-            lesson.Lectures = new Dictionary<int, Guid>() { { 0, Guid.NewGuid() }, {1, Guid.NewGuid() } };
-            updateLectureInDb = true;
-        }
-        else if (insertLevelAsNew)
-        {
-            var newMaxIndex = lesson.Lectures.Keys.Max();
-
-            lesson.Lectures.Add(newMaxIndex, lesson.Lectures[newMaxIndex - 1]);
-            for (int i = newMaxIndex - 1 ; i > level; i--)
-            {
-                lesson.Lectures[i] = lesson.Lectures[i - 1];
-            }
-            lesson.Lectures[level] = Guid.NewGuid();
-
-            updateLectureInDb = true;
-        }
-
-        var lectureId = lesson.Lectures.First(x => x.Key == level).Value;
-        var lectureData = await _cosmosServices.GetCosmosItem<Lecture>(lecturesContainer, x => x.Id == lectureId);
-        var lecture = lectureData.SingleOrDefault();
-
-        if (lecture == null)
-        {
-            lecture = newLecturesJson;
-            lecture.Id = lectureId;
-            lecture.Level = level;
-        }
-        else
-        {
-            lecture.Notes.AddRange(newLecturesJson.Notes);
-            lecture.Videos.AddRange(newLecturesJson.Videos);
-            lecture.Problems.AddRange(newLecturesJson.Problems);
-        }
-
-        await lecturesContainer.UpsertItemAsync(lecture, new PartitionKey(level));
-
-        if (updateLectureInDb)
-        {
-            var lessonContainer = _cosmosClient.GetContainer(Constants.LessonsDbName, subjectSlug);
-            await lessonContainer.ReplaceItemAsync(lesson, lesson.LessonSlug);
-        }
-    }
-    */
 }

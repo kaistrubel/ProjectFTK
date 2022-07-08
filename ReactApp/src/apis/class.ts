@@ -11,11 +11,11 @@ const getSupportedSubjects = () => {
     };
 
 const createClass = (courseSlug: string, period:string) => {
-return http.get<string>(`class/createclass/?courseSlug=${courseSlug}&period=${period}`);
+return http.post<string>(`class/createclass/?courseSlug=${courseSlug}&period=${period}`);
 };
 
 const joinClass = (teacherEmail: string, code:string) => {
-    return http.get<string>(`class/joinclass/?teacherEmail=${teacherEmail}&code=${code}`);
+    return http.post<string>(`class/joinclass/?teacherEmail=${teacherEmail}&code=${code}`);
     };
 
 const ClassApi = {

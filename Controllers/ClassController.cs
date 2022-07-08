@@ -26,7 +26,7 @@ public class ClassController : Controller
         return View();
     }
 
-    [HttpGet]
+    [HttpPost]
     [Authorize(Roles = CustomRoles.Teacher)]
     public async Task CreateClass(string courseSlug, string period)
     {
@@ -62,7 +62,7 @@ public class ClassController : Controller
             });
     }
 
-    [HttpGet]
+    [HttpPost]
     [Authorize(Roles = CustomRoles.Teacher)]
     public async Task DeleteClass(Guid classId, string period)
     {
@@ -136,10 +136,13 @@ public class ClassController : Controller
         }
     }
 
-    [HttpGet]
+    [HttpPost]
     public async Task JoinClass(string teacherEmail, string code) //. Max 50 students.Links email to db
     {
         var identity = User.Identity;
+
+        teacherEmail = teacherEmail.Trim();
+        code = code.Trim();
 
         var classesContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassStudentsContainer);
         var classData = await _cosmosServices.GetCosmosItem<Class>(classesContainer, x => x.TeacherEmail == teacherEmail && x.Code == code);
