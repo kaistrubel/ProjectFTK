@@ -9,6 +9,7 @@ import Navbar from './components/common/Navbar';
 import { useState, useEffect } from "react";
 import UserApi from './apis/user';
 import IUserInfo from './types/User';
+import Problem from './components/student/Problem';
 
 function App() {
 
@@ -36,6 +37,8 @@ function App() {
   const [courses, setCourses] = useState<ICourse[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<ICourse>()
 
+  const [problemUrl, setProblemUrl] = useState<string>();
+  const [videoUrl, setVideoUrl] = useState<string>();
 
   useEffect(() => {
     ClassApi.getCurrentClasses()
@@ -53,9 +56,10 @@ function App() {
         <Navbar user={user} courses={courses} selectedCourse={selectedCourse} setSelectedCourse={setSelectedCourse} />
       }
       <Routes>
-        <Route path="/" element={<Landing user={user} selectedCourse={selectedCourse}/>} />
+        <Route path="/" element={<Landing user={user} selectedCourse={selectedCourse} setProblemUrl={setProblemUrl} setVideoUrl={setVideoUrl}/>} />
         <Route path="/createClass" element={<CreateClass setCourses={setCourses} />} />
         <Route path="/joinClass" element={<JoinClass setCourses={setCourses} />} />
+        <Route path="/problem" element={<Problem problemUrl={problemUrl} videoUrl={videoUrl} />} />
         </Routes>
     </>
   );

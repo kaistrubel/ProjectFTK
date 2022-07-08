@@ -9,7 +9,7 @@ function Landing(props: any) {
     {
         props.user.isAuthenticated === false
         ? <SignUp />
-        : <Lessons user={props.user} selectedCourse={props.selectedCourse} />
+        : <Lessons user={props.user} selectedCourse={props.selectedCourse} setProblemUrl={props.setProblemUrl} setVideoUrl={props.setVideoUrl} />
     }
     </>
   );

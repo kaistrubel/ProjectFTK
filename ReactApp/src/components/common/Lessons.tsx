@@ -11,7 +11,6 @@ const Lessons = (props: any) => {
   const [lessons, setLessons] = useState<ILesson[]>([]);
   const [selectedunit, setSelectedUnit] = useState<string>()
 
-
   useEffect(() => {
     props.selectedCourse && LessonApi.getLessons(props.selectedCourse?.courseSlug)
     .then((response) => {
@@ -26,7 +25,7 @@ const Lessons = (props: any) => {
     return(
       <>
         <div className="px-4 text-right sm:px-6">
-          <Link to= {props.user.isTeacher? "/createClass": "/joinClass"} replace={true}>
+          <Link to= {props.user.isTeacher? "/createClass": "/joinClass"}>
             <button
               type="submit"
               className="text-black bubble bubble--highlight hover:bg-indigo-700 hover:text-white"
@@ -97,9 +96,14 @@ const Lessons = (props: any) => {
           {
             lessons?.sort(l=>l.order).filter(l => l.unit == selectedunit)?.map((lesson: ILesson) => (
             <div key={lesson.name} className="pl-10">
-              <div className="bubble bubble-card hover:bg-indigo-700 hover:text-white">
-                {lesson.name}
-              </div>
+              <Link to= "/problem" onClick={() => {
+                                            props.setVideoUrl(lesson.problems[0].videos[0].url);
+                                            props.setProblemUrl(lesson.problems[0].url);
+                                          }}>
+                <div className="bubble bubble-card hover:bg-indigo-700 hover:text-white">
+                    {lesson.name}
+                </div>
+              </Link>
             </div>
             ))
           }
