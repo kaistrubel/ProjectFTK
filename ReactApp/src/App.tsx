@@ -6,7 +6,7 @@ import ClassApi from './apis/class';
 import ICourse from './types/Course';
 import CreateClass from './components/teacher/CreateClass';
 import Navbar from './components/common/Navbar';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import UserApi from './apis/user';
 import IUserInfo from './types/User';
 import Problem from './components/student/Problem';
@@ -24,7 +24,7 @@ function App() {
 
   const [user, setUser] = useState<IUserInfo>(initialUserState);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     UserApi.get()
     .then((response) => {
       setUser(response.data);
@@ -52,7 +52,7 @@ function App() {
 
   return (
     <>
-      { user.isAuthenticated &&
+      { user.isAuthenticated != true &&
         <Navbar user={user} courses={courses} selectedCourse={selectedCourse} setSelectedCourse={setSelectedCourse} />
       }
       <Routes>

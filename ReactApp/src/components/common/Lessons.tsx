@@ -2,7 +2,7 @@ import NoClasses from "./NoClasses";
 import { Link } from 'react-router-dom';
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useLayoutEffect, useState } from "react";
 import ILesson from "../../types/Lesson";
 import LessonApi from "../../apis/lesson";
 
@@ -11,7 +11,7 @@ const Lessons = (props: any) => {
   const [lessons, setLessons] = useState<ILesson[]>([]);
   const [selectedunit, setSelectedUnit] = useState<string>()
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     props.selectedCourse && LessonApi.getLessons(props.selectedCourse?.courseSlug)
     .then((response) => {
       setLessons(response.data)
