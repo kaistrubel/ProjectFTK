@@ -1,5 +1,6 @@
 import SignUp from '../../components/common/SignUp';
 import Lessons from './Lessons';
+import Loading from './Loading';
 
 
 function Landing(props: any) {
@@ -7,7 +8,10 @@ function Landing(props: any) {
   return (
     <>
     {
-        props.user.isAuthenticated === true
+        props.user == null
+        ? <Loading />
+        :
+        props.user.isAuthenticated === false
         ? <SignUp />
         : <Lessons user={props.user} selectedCourse={props.selectedCourse} setProblemUrl={props.setProblemUrl} setVideoUrl={props.setVideoUrl} />
     }

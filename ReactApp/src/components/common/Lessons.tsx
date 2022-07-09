@@ -2,16 +2,17 @@ import NoClasses from "./NoClasses";
 import { Link } from 'react-router-dom';
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
-import { Fragment, useEffect, useLayoutEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import ILesson from "../../types/Lesson";
 import LessonApi from "../../apis/lesson";
+import Loading from "./Loading";
 
 const Lessons = (props: any) => {
 
   const [lessons, setLessons] = useState<ILesson[]>([]);
   const [selectedunit, setSelectedUnit] = useState<string>()
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     props.selectedCourse && LessonApi.getLessons(props.selectedCourse?.courseSlug)
     .then((response) => {
       setLessons(response.data)
@@ -94,6 +95,9 @@ const Lessons = (props: any) => {
           </div>
 
           {
+          lessons == []
+          ? <Loading />
+          :
             lessons?.sort(l=>l.order).filter(l => l.unit == selectedunit)?.map((lesson: ILesson) => (
             <div key={lesson.name} className="pl-10">
               <Link to= "/problem" onClick={() => {

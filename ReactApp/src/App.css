@@ -57,7 +57,7 @@ body {
 /* .bubble containers: add the texture above a solid background */
 .bubble {
   /* cap the width */
-  max-width: 500px;
+  max-width: 30rem;
   /* give ample whitespace around and inside of the container */
   margin: 2rem 0;
   padding: 0.2rem 1.25rem;
@@ -94,7 +94,7 @@ body {
 .bubble--highlight {
   background: url('data:image/svg+xml;utf8,<svg width="100" height="100" transform="rotate(25)" opacity="0.8" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g  fill="%23d68810"><circle cx="25" cy="25" r="12.5"/><circle cx="75" cy="75" r="12.5"/><circle cx="75" cy="25" r="12.5"/><circle cx="25" cy="75" r="12.5"/></g></svg>'),
     #ffcd28;
-  background-size: 13px, 100%;
+  background-size: 0.8rem, 100%;
   font-weight: 700;
 }
 /* for every .bubble container add a solid background behind the container itself, slightly offset */
@@ -108,14 +108,21 @@ body {
   /* with the same texture, but different color, for both the texture and the background */
   background: url('data:image/svg+xml;utf8,<svg width="100" height="100" transform="rotate(35)" opacity="1" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="%23250E17"><circle cx="25" cy="25" r="12.5"/><circle cx="75" cy="75" r="12.5"/><circle cx="75" cy="25" r="12.5"/><circle cx="25" cy="75" r="12.5"/></g></svg>'),
     #000;
-  background-size: 12px, 100%;
+  background-size: 0.8rem, 100%;
   border: 0.4rem solid #000;
   z-index: -5;
 }
 
-.class-dropdown
-{
+.class-dropdown{
   z-index: 5;
+}
+
+.loading{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-top: -50px;
+  margin-left: -50px;
 }
 
 iframe {
