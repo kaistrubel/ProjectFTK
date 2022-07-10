@@ -8,10 +8,7 @@ function Landing(props: any) {
   return (
     <>
     {
-        props.user != null
-        ? <Loading />
-        :
-        props.user?.isAuthenticated != true
+        props.user?.isAuthenticated == false
         ? <SignUp />
         : <Lessons user={props.user} selectedCourse={props.selectedCourse} setProblemUrl={props.setProblemUrl} setVideoUrl={props.setVideoUrl} />
     }

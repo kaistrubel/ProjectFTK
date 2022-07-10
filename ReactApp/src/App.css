@@ -81,9 +81,9 @@ body {
 
 .bubble-card {
   font-size: 1.4em;
-  max-height: 65px;
   font-weight: bold;
   text-align: start;
+  max-width: 40rem;
 }
 
 .bubble-align-start {

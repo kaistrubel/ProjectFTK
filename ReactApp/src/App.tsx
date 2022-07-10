@@ -10,11 +10,13 @@ import { useState, useEffect } from "react";
 import UserApi from './apis/user';
 import IUserInfo from './types/User';
 import Problem from './components/student/Problem';
+import Loading from './components/common/Loading';
 
 function App() {
   const [user, setUser] = useState<IUserInfo>();
 
   useEffect(() => {
+    <Loading />
     UserApi.get()
     .then((response) => {
       setUser(response.data);
