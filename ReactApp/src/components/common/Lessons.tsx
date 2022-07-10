@@ -27,20 +27,24 @@ const Lessons = (props: any) => {
     return(
       <>
         <div>
-          <div className="float-right text-right sm:px-6">
-            <Link to= {props.user?.isTeacher? "/createClass": "/joinClass"}>
-              <button
-                type="submit"
-                className="text-black bubble bubble--highlight hover:bg-indigo-700 hover:text-white"
-              >
-                {props.isTeacher? "Create" : "Add"} Class
-              </button>
-            </Link>
-          </div>
-
+        {
+          props?.selectedCourse
+          ?
+            <div className="float-right text-right sm:px-6">
+              <Link to= {props.user?.isTeacher? "/createClass": "/joinClass"}>
+                <button
+                  type="submit"
+                  className="text-black bubble bubble--highlight hover:bg-indigo-700 hover:text-white"
+                >
+                  {props.isTeacher? "Create" : "Add"} Class
+                </button>
+              </Link>
+            </div>
+          : <></>
+        }
           {
           props?.selectedCourse && props.selectedCourse!= ""
-          ?         
+          ?
           <div className="grid pl-10 py-10">
             <Listbox value={selectedunit} onChange={setSelectedUnit}>
               <div className="relative mt-1">

@@ -26,7 +26,7 @@ export default function Navbar(props: any) {
   }, [props.courses])
 
   return (
-    <Disclosure as="nav" className="w-screen bg-gray-800">
+    <Disclosure as="nav" className="w-screen nav">
       {({ open }) => (
         <>
           <div className="w-screen max-w-7xl mx-auto">

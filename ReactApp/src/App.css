@@ -42,6 +42,10 @@ body {
   }
 }
 
+.nav {
+  background-color: #15063b;
+}
+
 .title {
   /* cap the width */
   max-width: 500px;
