@@ -2,7 +2,7 @@ import { Fragment, useState, useEffect } from "react";
 import { Disclosure, Listbox, Menu, Transition } from '@headlessui/react'
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
-import ftkLogo from '../../assets/images/logo512.png';
+import ftkLogo from '../../assets/images/logo.png';
 import ICourse from "../../types/Course";
 /*
 const navigation = [
