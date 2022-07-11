@@ -70,6 +70,8 @@ export default function Navbar(props: any) {
                   </div>
                 </div>
               </div>
+              {
+              props.selectedCourse != null && props.selectedCoutse != "" &&
               <div className="grid hidden sm:block">
                 <Listbox value={props.selectedCourse} onChange={props.setSelectedCourse}>
                   <div className="relative mt-1">
@@ -122,6 +124,7 @@ export default function Navbar(props: any) {
                   </div>
                 </Listbox>
               </div>
+              }
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 {/* Profile dropdown */}
                 <Menu as="div" className="ml-3 relative">
