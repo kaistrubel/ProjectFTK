@@ -30,7 +30,7 @@ const Lessons = (props: any) => {
         {
           props?.selectedCourse
           ?
-            <div className="float-right text-right sm:px-6">
+            <div className="float-right text-right px-6">
               <Link to= {props.user?.isTeacher? "/createClass": "/joinClass"}>
                 <button
                   type="submit"
@@ -45,12 +45,12 @@ const Lessons = (props: any) => {
           {
           props?.selectedCourse && props.selectedCourse!= ""
           ?
-          <div className="grid pl-10 py-10">
+          <div className="grid pl-10 pb-8">
             <Listbox value={selectedunit} onChange={setSelectedUnit}>
               <div className="relative mt-1">
-                <Listbox.Button className="relative cursor-default bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
-                  <span className="block truncate"><strong>Unit: </strong> {selectedunit}</span>
-                  <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                <Listbox.Button className="relative bubble-dropdown bg-white py-2 pl-3 pr-10">
+                  <span className="block pr-5"><strong>Unit: </strong> {selectedunit}</span>
+                  <span className="absolute inset-y-0 right-0 flex items-center pr-2">
                     <SelectorIcon
                       className="h-5 w-5 text-gray-400"
                       aria-hidden="true"
@@ -63,12 +63,12 @@ const Lessons = (props: any) => {
                   leaveFrom="opacity-100"
                   leaveTo="opacity-0"
                 >
-                  <Listbox.Options className="absolute mt-1 max-h-60 overflow-auto bg-white py-1 sm:text-sm dropdown">
+                  <Listbox.Options className="absolute mt-1 max-h-60 w-40 overflow-auto bg-white py-1 dropdown">
                     { Array.from(lessons && lessons.sort(l=>l.order), l => l.unit).filter((item, i, ar) => ar.indexOf(item) === i).map((unit: string, Idx: number) => (
                       <Listbox.Option
                         key={unit}
                         className={({ active }) =>
-                          `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                          `relative select-none py-2 pl-10 pr-4 ${
                             active ? 'bg-amber-100 text-amber-900' : 'text-gray-900'
                           }`
                         }
@@ -120,9 +120,9 @@ const Lessons = (props: any) => {
                                             props.setVideoUrl(lesson.problems[0].videos[0].url);
                                             props.setProblemUrl(lesson.problems[0].url);
                                           }}>
-                <div className="bubble bubble-card hover:bg-indigo-700 hover:text-white">
+                <button className="bubble bubble-card hover:bg-indigo-700 hover:text-white">
                     {lesson.name}
-                </div>
+                </button>
               </Link>
             </div>
             ))
