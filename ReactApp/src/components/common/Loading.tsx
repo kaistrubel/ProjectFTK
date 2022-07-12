@@ -1,7 +1,6 @@
 import ReactLoading from 'react-loading';
 
 const Loading = () => {
-    console.log("loading")
     return (
         <div className="loading">
             <ReactLoading
