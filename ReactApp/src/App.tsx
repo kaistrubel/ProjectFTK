@@ -10,27 +10,16 @@ import { useState, useEffect } from "react";
 import UserApi from './apis/user';
 import IUserInfo from './types/User';
 import Problem from './components/student/Problem';
-import IStudent from './types/Student';
-import StudentApi from './apis/student';
+import Loading from './components/common/Loading';
 
 function App() {
   const [user, setUser] = useState<IUserInfo>();
-  const [student, setStudent] = useState<IStudent>()
 
   useEffect(() => {
+    <Loading />
     UserApi.get()
     .then((response) => {
       setUser(response.data);
-    })
-    .catch((e: Error) => {
-      console.log(e);
-    });
-  }, []);
-
-  useEffect(() => {
-    StudentApi.getStudent()
-    .then((response) => {
-      setStudent(response.data);
     })
     .catch((e: Error) => {
       console.log(e);
@@ -62,7 +51,7 @@ function App() {
         <Route path="/" element={<Landing user={user} selectedCourse={selectedCourse} setProblemUrl={setProblemUrl} setVideoUrl={setVideoUrl}/>} />
         <Route path="/createClass" element={<CreateClass setCourses={setCourses} />} />
         <Route path="/joinClass" element={<JoinClass setCourses={setCourses} />} />
-        <Route path="/problem" element={<Problem problemUrl={problemUrl} videoUrl={videoUrl} student={student} setStudent={setStudent}/>} />
+        <Route path="/problem" element={<Problem problemUrl={problemUrl} videoUrl={videoUrl} />} />
         </Routes>
     </>
   );

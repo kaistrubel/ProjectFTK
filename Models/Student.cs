@@ -9,7 +9,5 @@ namespace ProjectFTK.Models
 		public string Email { get; set; }
 
 		public List<Guid> ClassIds { get; set; }
-
-		public Dictionary<string, int> Progress { get; set; }
 	}
 }

@@ -60,8 +60,6 @@ public class ClassController : Controller
                 Code = CreateRandomCode(),
                 Students = new List<string>()
             });
-
-        //Need to add teacher as a possible student. Need to create user on login w/ signup flow. Get state for parition etc. Then rm check in join class for whether student exists
     }
 
     [HttpPost]
@@ -167,7 +165,7 @@ public class ClassController : Controller
         var studentMatch = studentData?.FirstOrDefault();
         if (studentMatch == null)
         {
-            await studentsContainer.CreateItemAsync(new Student() { Email = identity.Email(), ClassIds = new List<Guid>() { classMatch.Id } });
+            await studentsContainer.UpsertItemAsync(new Student() { Email = identity.Email(), ClassIds = new List<Guid>() { classMatch.Id } });
         }
         else if (studentMatch?.ClassIds.Contains(classMatch.Id) == false)
         {

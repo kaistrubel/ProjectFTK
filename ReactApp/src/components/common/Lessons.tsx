@@ -13,6 +13,7 @@ const Lessons = (props: any) => {
   const [selectedunit, setSelectedUnit] = useState<string>()
 
   useEffect(() => {
+    <Loading />
     props.selectedCourse && LessonApi.getLessons(props.selectedCourse?.courseSlug)
     .then((response) => {
       setLessons(response.data)
