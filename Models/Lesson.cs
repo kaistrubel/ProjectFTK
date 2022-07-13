@@ -15,7 +15,6 @@ public class Lesson
 
 	public List<Problem> Problems { get; set; }
 
-
 	[JsonProperty("id")]
 	public string LessonSlug => Name.ToLower().Replace(" ", "-");
 }
