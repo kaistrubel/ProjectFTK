@@ -21,7 +21,7 @@ public class ClassController : Controller
         _cosmosServices = cosmosServices;
     }
 
-    [HttpGet]
+    [HttpPost]
     [Authorize(Roles = CustomRoles.Teacher)]
     public async Task CreateClass(string courseSlug, string period)
     {
@@ -194,10 +194,6 @@ public class ClassController : Controller
             student.ClassIds.Add(classMatch.Id);
             await userContainer.ReplaceItemAsync(student, student.Email);
         }
-        else
-        {
-            throw new Exception("You are already registered for this class registered");
-        }
     }
 
     [HttpGet]
@@ -216,7 +212,7 @@ public class ClassController : Controller
         }
         catch
         {
-            throw new Exception($"Cannot find User {identity.Email()}");
+            return new List<Class>() { new Class() { Id=""} };
         }
 
         var classContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);

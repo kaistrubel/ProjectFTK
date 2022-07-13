@@ -43,7 +43,7 @@ const Lessons = (props: any) => {
           : <></>
         }
           {
-          props?.selectedCourse && props.selectedCourse!= ""
+          props?.selectedCourse && props.selectedCourse.id != ""
           ?
           <div className="grid pl-10 pb-8">
             <Listbox value={selectedunit} onChange={setSelectedUnit}>
@@ -104,7 +104,7 @@ const Lessons = (props: any) => {
         props.selectedCourse == null
         ? <Loading />
         :
-        props.selectedCourse == ""
+        props.selectedCourse?.id == ""
         ? <NoClasses isTeacher={props.user.isTeacher}/>
         :
         <>
