@@ -17,7 +17,7 @@ function App() {
 
   useEffect(() => {
     <Loading />
-    UserApi.get()
+    UserApi.getInfo()
     .then((response) => {
       setUser(response.data);
     })

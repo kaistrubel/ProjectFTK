@@ -6,3 +6,9 @@ export default interface IUserInfo {
     isAuthenticated: boolean,
     isTeacher: boolean,
   }
+
+  export interface IPerson {
+    email: string,
+    classIds: string[],
+    progress: Map<string, number>,
+  }
