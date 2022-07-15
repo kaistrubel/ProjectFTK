@@ -1,16 +1,43 @@
-import { useState } from "react";
-import { IPerson } from "../../types/User";
+import { useMemo, useState } from "react";
+import UserApi from "../../apis/user";
+import { IPerson, Progress } from "../../types/User";
 
 const OpenProblems = (props: any) => {
 
   const [isProbleminFrame, setisProbleminFrame] = useState<boolean>(true);
   const [frameUrl, setFrameUrl] = useState<string>(props.problemUrl);
-  const [level, setLevel] = useState<number>();
+  const [user, setUser] = useState<IPerson>();
+  const [progress, setProgress] = useState<Progress>();
+
+  useMemo(() => {
+    props.selectedCourse && UserApi.getUser()
+    .then((response) => {
+      setUser(response.data);
+      setProgress(response.data.progress.find(x=>x.lessonId == props.selectedCourse.id));
+      console.log("RESP" + progress)
+    })
+    .catch((e: Error) => {
+      console.log(e);
+    });
+  }, []);
 
   function levelDone(e: Event)
   {
-    e.preventDefault();
-    console.log("DONEEE");
+
+    console.log("Progress INIT:" + progress)
+    if(user && progress)
+    {
+      progress.level += 1;
+      UserApi.updateUserProgress(user, progress)
+      console.log("HERE EXISTS: " + progress.level)
+    }
+    else if(user && props.selectedCourse?.id)
+    {
+      var newProg = new Progress(props.selectedCourse.id, 1, "0");
+      console.log("HERE NEW: " + newProg.level)
+      UserApi.updateUserProgress(user, newProg)
+      setProgress(newProg)
+    }
   }
 
   function setButtonListen()

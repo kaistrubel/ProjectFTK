@@ -48,7 +48,13 @@ public class ClassController : Controller
         }
         catch
         {
-            await userContainer.CreateItemAsync(new Person() { Name = identity.Name, Email = identity.Email(), PhotoUrl = identity.PictureUrl(), ClassIds = new List<string>() { newGuid } });
+            await userContainer.CreateItemAsync(new Person() {
+                Name = identity.Name,
+                Email = identity.Email(),
+                PhotoUrl = identity.PictureUrl(),
+                ClassIds = new List<string>() { newGuid },
+                Progress = new List<Progress>()
+            });
         }
 
         var classContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
@@ -180,7 +186,14 @@ public class ClassController : Controller
         }
         catch
         {
-            await userContainer.CreateItemAsync(new Person() { Email = identity.Email(), ClassIds = new List<string>() { classMatch.Id } });
+            await userContainer.CreateItemAsync(
+                new Person() {
+                    Name = identity.Name,
+                    Email = identity.Email(),
+                    PhotoUrl = identity.PictureUrl(),
+                    ClassIds = new List<string>() { classMatch.Id },
+                    Progress = new List<Progress>()
+                });
         }
 
         if (classMatch.Users.Contains(identity.Email()) == false)
@@ -210,7 +223,7 @@ public class ClassController : Controller
             user = userData.Resource;
 
         }
-        catch
+        catch (Exception e)
         {
             return new List<Class>() { new Class() { Id=""} };
         }

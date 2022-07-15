@@ -6,7 +6,7 @@ import ClassApi from './apis/class';
 import ICourse from './types/Course';
 import CreateClass from './components/teacher/CreateClass';
 import Navbar from './components/common/Navbar';
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import UserApi from './apis/user';
 import IUserInfo from './types/User';
 import Problem from './components/student/Problem';
@@ -15,7 +15,7 @@ import Loading from './components/common/Loading';
 function App() {
   const [user, setUser] = useState<IUserInfo>();
 
-  useEffect(() => {
+  useMemo(() => {
     <Loading />
     UserApi.getInfo()
     .then((response) => {
@@ -32,7 +32,7 @@ function App() {
   const [problemUrl, setProblemUrl] = useState<string>();
   const [videoUrl, setVideoUrl] = useState<string>();
 
-  useEffect(() => {
+  useMemo(() => {
     ClassApi.getCurrentClasses()
     .then((response) => {
       setCourses(response.data);
@@ -51,7 +51,7 @@ function App() {
         <Route path="/" element={<Landing user={user} selectedCourse={selectedCourse} setProblemUrl={setProblemUrl} setVideoUrl={setVideoUrl}/>} />
         <Route path="/createClass" element={<CreateClass setCourses={setCourses} />} />
         <Route path="/joinClass" element={<JoinClass setCourses={setCourses} />} />
-        <Route path="/problem" element={<Problem problemUrl={problemUrl} videoUrl={videoUrl} />} />
+        <Route path="/problem" element={<Problem problemUrl={problemUrl} videoUrl={videoUrl} selectedCourse={selectedCourse}/>} />
         </Routes>
     </>
   );

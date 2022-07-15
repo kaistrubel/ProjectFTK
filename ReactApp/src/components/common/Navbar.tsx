@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useMemo } from "react";
 import { Disclosure, Listbox, Menu, Transition } from '@headlessui/react'
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
@@ -21,7 +21,7 @@ function classNames(...classes: string[]) {
 
 export default function Navbar(props: any) {
     
-  useEffect(() => {
+  useMemo(() => {
     props.setSelectedCourse(props.courses[0]);
   }, [props.courses])
 

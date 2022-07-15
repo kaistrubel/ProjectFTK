@@ -2,7 +2,7 @@ import NoClasses from "./NoClasses";
 import { Link } from 'react-router-dom';
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import ILesson from "../../types/Lesson";
 import LessonApi from "../../apis/lesson";
 import Loading from "./Loading";
@@ -12,11 +12,11 @@ const Lessons = (props: any) => {
   const [lessons, setLessons] = useState<ILesson[]>([]);
   const [selectedunit, setSelectedUnit] = useState<string>()
 
-  useEffect(() => {
+  useMemo(() => {
     props.selectedCourse && LessonApi.getLessons(props.selectedCourse?.courseSlug)
     .then((response) => {
       setLessons(response.data)
-      setSelectedUnit(response.data[0].unit) //need to update this to current unit based on userData store
+      response.data[0]?.unit && setSelectedUnit(response.data[0].unit) //need to update this to current unit based on userData store
     })
     .catch((e: Error) => {
       console.log(e);

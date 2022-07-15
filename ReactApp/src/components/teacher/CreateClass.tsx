@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import ClassApi from "../../apis/class";
 import ISubject from "../../types/Subject";
 import * as React from "react";
@@ -13,7 +13,7 @@ const CreateClass = (props: any) => {
   const [selectedCourse, setSelectedCourse] = React.useState("");
   const [selectedPeriod, setSelectedPeriod] = React.useState("");
 
-  useEffect(() => {
+  useMemo(() => {
     ClassApi.getSupportedSubjects()
     .then((response) => {
       setSubjects(response.data);

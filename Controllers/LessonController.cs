@@ -59,6 +59,7 @@ public class LessonController : Controller
         foreach (var lesson in lessons)
         {
             lesson.CourseSlug = courseSlug;
+            lesson.Id = Guid.NewGuid().ToString();
             await container.UpsertItemAsync(lesson);
         }
     }

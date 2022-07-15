@@ -8,7 +8,17 @@ export default interface IUserInfo {
   }
 
   export interface IPerson {
+    name: string,
     email: string,
+    pictureUrl: string,
     classIds: string[],
-    progress: Map<string, number>,
+    progress: Progress[],
+  }
+
+  export class Progress {
+    constructor(public lessonId: string, public level: number, public timeSpent: string) {
+      this.lessonId = lessonId;
+      this.level = level;
+      this.timeSpent = timeSpent;
+    }
   }

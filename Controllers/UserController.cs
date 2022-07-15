@@ -58,10 +58,23 @@ public class UserController : Controller
     }
 
     [HttpPost]
-    public async Task UpdateUserProgress(Person user)
+    public async Task UpdateUserProgress([FromBody] UpdateResponse data)
     {
+        if (data == null)
+        {
+            return;
+        }
+        var user = data.User;
         var studentsContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
-        //await studentsContainer.PatchItemAsync<Student>(identity.Email(), new PartitionKey(identity.Email()), new[] {PatchOperation.Replace("/progress", progress)});
+        var oldProgress = data.User.Progress.FirstOrDefault(x => x.LessonId == data.UpdatedProgress.LessonId);
+        if (oldProgress != null)
+        {
+            user.Progress.Remove(oldProgress);
+        }
+
+        user.Progress.Add(data.UpdatedProgress);
+
+        //await studentsContainer.PatchItemAsync<User>(identity.Email(), PartitionKey.None, new[] {PatchOperation.Replace("/Progress", progress)});
 
         await studentsContainer.ReplaceItemAsync(user, user.Email);
     }
