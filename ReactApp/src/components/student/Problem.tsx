@@ -40,8 +40,12 @@ const OpenProblems = (props: any) => {
   function setButtonListen()
   {
     var problem = document.getElementById('ProblemFrame') as HTMLIFrameElement;
-    var doneButton = problem?.contentWindow?.document.getElementById('doneOk') as HTMLButtonElement;
+    var doneButton = problem?.contentWindow?.document.getElementById('doneOk') as HTMLButtonElement;// ?? problem?.contentWindow?.document.getElementById('secondary') as HTMLButtonElement; <-first lesson only has 1, need to figure out
     doneButton.addEventListener("click", levelDone);
+
+    var table = problem?.contentWindow?.document.getElementsByTagName('h1')[0] as HTMLElement;
+    console.log(table)
+    table.hidden = true;
   }
 
     return (
