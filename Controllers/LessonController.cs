@@ -19,7 +19,6 @@ public class LessonController : Controller
 {
     private readonly ILogger<LessonController> _logger;
     private readonly CosmosClient _cosmosClient;
-    private readonly CosmosServices _cosmosServices;
 
 
 
@@ -27,51 +26,39 @@ public class LessonController : Controller
     {
         _logger = logger;
         _cosmosClient = cosmosClient;
-        _cosmosServices = cosmosServices;
     }
 
-    /*
+    [HttpPost]
+    [Authorize(Roles = CustomRoles.Teacher)]
+    public async Task UploadProblemsFromJson([FromBody] List<Lesson> lessons)
     {
-      "Blockly" : 
-        [ "Intro",
-          "Entry Level Loops and Conditionals",
-          "Deep Dive Conditionals",
-          "Deep Dive Loops",
-          "Math Equations",
-          "Functions",
-          "Javascript",
-          "Open Lab"
-        ]
-    }
-    */
-
-    [HttpPost] 
-    [Authorize(Roles = CustomRoles.Teacher)] //Expecting json body of format
-    public async Task CreateCourseCirriculum(string courseSlug, [FromBody] List<Lesson> lessons)
-    {
-        var courseSupported = Constants.GetSupportedSubjects().Any(x => x.Courses.Any(y => y.CourseSlug == courseSlug));
-        if (courseSupported == false)
-        {
-            throw new Exception($"The class slug {courseSlug} cannot be found.");
-        }
-
         var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
         foreach (var lesson in lessons)
         {
-            lesson.CourseSlug = courseSlug;
-            lesson.Id = Guid.NewGuid().ToString();
+            lesson.Problems.ForEach(problem => problem.Gain = 1.0f);
+            lesson.Problems.ForEach(problem => problem.Videos.ForEach(vid => vid.Gain = 1.0f));
+
             await container.UpsertItemAsync(lesson);
         }
     }
 
-    [HttpGet]
-    //[ResponseCache(Duration = 86400, VaryByQueryKeys = new[] { "courseSlug" })]
-    public async Task<List<Lesson>> GetLessons(string courseSlug)
+    [HttpPost] 
+    [Authorize(Roles = CustomRoles.Teacher)]
+    public async Task AddProblem(string lessonId, [FromBody] Problem problem)
     {
-        //scale by creating a databse per subject, or district or state? or something like that
-        var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
-        var lessonData = await _cosmosServices.GetCosmosItem<Lesson>(container, x => x.CourseSlug == courseSlug);
 
-        return lessonData;
+        var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
+        problem.Gain = 1.0f;
+        problem.Videos.ForEach(vid => vid.Gain = 1.0f);
+
+        await container.PatchItemAsync<Lesson>(lessonId, PartitionKey.None, new[] {PatchOperation.Add("/Problems/-", problem)});
+    }
+
+    [HttpGet]
+    public async Task<List<Problem>> GetProblems(string lessonId)
+    {
+        var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
+        var lesson = await container.ReadItemAsync<Lesson>(lessonId, PartitionKey.None);
+        return lesson.Resource.Problems;
     }
 }

@@ -25,7 +25,7 @@ public class ClassController : Controller
     [Authorize(Roles = CustomRoles.Teacher)]
     public async Task CreateClass(string courseSlug, string period)
     {
-        Person user = null;
+        Models.User user = null;
         var identity = User.Identity;
 
         if (string.IsNullOrEmpty(identity?.Email()))
@@ -43,17 +43,17 @@ public class ClassController : Controller
         var userContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
         try
         {
-            var userData = await userContainer.ReadItemAsync<Person>(identity.Email(), PartitionKey.None);
+            var userData = await userContainer.ReadItemAsync<Models.User>(identity.Email(), PartitionKey.None);
             user = userData.Resource;
         }
         catch
         {
-            await userContainer.CreateItemAsync(new Person() {
+            await userContainer.CreateItemAsync(new Models.User() {
                 Name = identity.Name,
                 Email = identity.Email(),
                 PhotoUrl = identity.PictureUrl(),
                 ClassIds = new List<string>() { newGuid },
-                Progress = new List<Progress>()
+                ProgressList = new List<Progress>()
             });
         }
 
@@ -68,7 +68,7 @@ public class ClassController : Controller
             else
             {
                 user.ClassIds.Add(newGuid);
-                //await userContainer.PatchItemAsync<Person>(user.Email, new PartitionKey(user.Email), new List<PatchOperation>() { PatchOperation.Replace("ClassIds", user.ClassIds) } );
+                //await userContainer.PatchItemAsync<Models.User>(user.Email, new PartitionKey(user.Email), new List<PatchOperation>() { PatchOperation.Replace("ClassIds", user.ClassIds) } );
                 await userContainer.ReplaceItemAsync(user, user.Email);
             }
         }
@@ -92,7 +92,7 @@ public class ClassController : Controller
         await classContainer.DeleteItemAsync<Class>(classId, PartitionKey.None);
 
         var studentsContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
-        var studentData = await _cosmosServices.GetCosmosItem<Person>(studentsContainer, x => x.ClassIds.Contains(classId));
+        var studentData = await _cosmosServices.GetCosmosItem<Models.User>(studentsContainer, x => x.ClassIds.Contains(classId));
 
         foreach (var student in studentData)
         {
@@ -126,7 +126,7 @@ public class ClassController : Controller
     public async Task RemoveStudentFromClass(string classId, string studentEmail)
     {
         Class classMatch;
-        Person studentMatch;
+        Models.User studentMatch;
 
         var classContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
         var userContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
@@ -136,7 +136,7 @@ public class ClassController : Controller
             var classData = await classContainer.ReadItemAsync<Class>(classId, PartitionKey.None);
             classMatch = classData.Resource;
 
-            var studentData = await userContainer.ReadItemAsync<Person>(studentEmail, PartitionKey.None);
+            var studentData = await userContainer.ReadItemAsync<Models.User>(studentEmail, PartitionKey.None);
             studentMatch = studentData.Resource;
 
         }
@@ -162,7 +162,7 @@ public class ClassController : Controller
     [HttpPost]
     public async Task JoinClass(string teacherEmail, string code) //. Max 50 students.Links email to db
     {
-        Person student = null;
+        Models.User student = null;
         var identity = User.Identity;
 
         teacherEmail = teacherEmail.Trim();
@@ -180,19 +180,19 @@ public class ClassController : Controller
         var userContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
         try
         {
-            var studentData = await userContainer.ReadItemAsync<Person>(identity.Email(), PartitionKey.None);
+            var studentData = await userContainer.ReadItemAsync<Models.User>(identity.Email(), PartitionKey.None);
             student = studentData.Resource;
 
         }
         catch
         {
             await userContainer.CreateItemAsync(
-                new Person() {
+                new Models.User() {
                     Name = identity.Name,
                     Email = identity.Email(),
                     PhotoUrl = identity.PictureUrl(),
                     ClassIds = new List<string>() { classMatch.Id },
-                    Progress = new List<Progress>()
+                    ProgressList = new List<Progress>()
                 });
         }
 
@@ -212,14 +212,14 @@ public class ClassController : Controller
     [HttpGet]
     public async Task<List<Class>> GetCurrentClasses()
     {
-        Person user = null;
+        Models.User user = null;
         var identity = User.Identity;
         var supportedCourses = Constants.GetSupportedSubjects().SelectMany(x => x.Courses);
 
         var userContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
         try
         {
-            var userData = await userContainer.ReadItemAsync<Person>(identity.Email(), PartitionKey.None);
+            var userData = await userContainer.ReadItemAsync<Models.User>(identity.Email(), PartitionKey.None);
             user = userData.Resource;
 
         }

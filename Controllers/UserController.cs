@@ -22,7 +22,7 @@ public class UserController : Controller
     }
 
     [HttpGet]
-    public IActionResult Info()
+    public IActionResult CurrentUser()
     {
         var identity = User.Identity;
         var userDate = new JsonResult(new
@@ -30,7 +30,6 @@ public class UserController : Controller
             identity.Name,
             Email = identity.Email(),
             PictureUrl = identity.PictureUrl(),
-            Roles = identity.Roles(),
             identity.IsAuthenticated,
             isTeacher = identity.IsInRole(CustomRoles.Teacher)
         });
@@ -39,40 +38,39 @@ public class UserController : Controller
     }
 
     [HttpGet]
-    public async Task<Person> GetUser()
+    public async Task<Models.User> GetUser(string email)
     {
-        var identity = User.Identity;
         var usersContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
 
-        //var studentData = await studentsContainer.ReadItemAsync<Student>(identity.Email(), new PartitionKey(identity.Email()));
-        //return studentData?.Resource ?? new Student();
         try
         {
-            var userData = await usersContainer.ReadItemAsync<Person>(identity.Email(), PartitionKey.None);
+            var userData = await usersContainer.ReadItemAsync<Models.User>(email, PartitionKey.None);
             return userData.Resource;
         }
         catch
         {
-            return new Person();
+            throw new Exception($"Cannot find user with email {email}");
         }
     }
 
     [HttpPost]
     public async Task UpdateUserProgress([FromBody] UpdateResponse data)
     {
+        //should be able to use patch operation similar to Lesson/AddProblem
+
         if (data == null)
         {
             return;
         }
         var user = data.User;
         var studentsContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
-        var oldProgress = data.User.Progress.FirstOrDefault(x => x.LessonId == data.UpdatedProgress.LessonId);
+        var oldProgress = data.User.ProgressList.FirstOrDefault(x => x.LessonId == data.UpdatedProgress.LessonId);
         if (oldProgress != null)
         {
-            user.Progress.Remove(oldProgress);
+            user.ProgressList.Remove(oldProgress);
         }
 
-        user.Progress.Add(data.UpdatedProgress);
+        user.ProgressList.Add(data.UpdatedProgress);
 
         //await studentsContainer.PatchItemAsync<User>(identity.Email(), PartitionKey.None, new[] {PatchOperation.Replace("/Progress", progress)});
 

@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace ProjectFTK.Models
 {
-	public class Person
+	public class User
 	{
 		[JsonProperty("id")]
 		public string Email { get; set; }
@@ -14,7 +14,7 @@ namespace ProjectFTK.Models
 
 		public List<string> ClassIds { get; set; }
 
-		public List<Progress> Progress { get; set; }
+		public List<Progress> ProgressList { get; set; }
 	}
 
 	public class Progress
@@ -28,7 +28,7 @@ namespace ProjectFTK.Models
 
 	public class UpdateResponse
 	{
-		public Person User { get; set; }
+		public User User { get; set; }
 
 		public Progress UpdatedProgress { get; set; }
 	}
