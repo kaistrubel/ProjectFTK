@@ -61,4 +61,13 @@ public class LessonController : Controller
         var lesson = await container.ReadItemAsync<Lesson>(lessonId, PartitionKey.None);
         return lesson.Resource.Problems;
     }
+
+    [HttpGet]
+    public async Task<List<LessonInfo>> GetLessons(string courseSlug)
+    {
+        var lessonsJson = System.IO.File.ReadAllText($"DataJson/Courses/{courseSlug}.json");
+        var lessons = JsonConvert.DeserializeObject<List<LessonInfo>>(lessonsJson);
+
+        return lessons;
+    }
 }
