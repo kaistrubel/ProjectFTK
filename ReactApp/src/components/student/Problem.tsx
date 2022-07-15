@@ -1,42 +1,39 @@
 import { useMemo, useState } from "react";
+import LessonApi from "../../apis/lesson";
 import UserApi from "../../apis/user";
-import { IPerson, Progress } from "../../types/User";
+import IUser, {Progress } from "../../types/User";
 
 const OpenProblems = (props: any) => {
 
   const [isProbleminFrame, setisProbleminFrame] = useState<boolean>(true);
-  const [frameUrl, setFrameUrl] = useState<string>(props.problemUrl);
-  const [user, setUser] = useState<IPerson>();
-  const [progress, setProgress] = useState<Progress>();
+  const [frameUrl, setFrameUrl] = useState<string>();
+  const [videoUrl, setVideoUrl] = useState<string>();
+  const [problemUrl, setProblemUrl] = useState<string>();
+
+  const [progress, setProgress] = useState<Progress>(props.user.progressList?.find((x: { lessonId: string; }) => x.lessonId == props.lessonId) ?? new Progress(props.lessonId, 1, "0"));
+  let [currLevel, setCurrLevel] = useState<number>(1);
 
   useMemo(() => {
-    props.selectedCourse && UserApi.getUser()
+    LessonApi.getProblems(props.lessonId)
     .then((response) => {
-      setUser(response.data);
-      setProgress(response.data.progress.find(x=>x.lessonId == props.selectedCourse.id));
-      console.log("RESP" + progress)
+      setCurrLevel(progress.level)
+
+      setFrameUrl(response.data[0].url + "?level=" + progress.level)
+      setProblemUrl(response.data[0].url + "?level=" + progress.level)
+      setVideoUrl(response.data[0].videos[0].url)
     })
     .catch((e: Error) => {
       console.log(e);
     });
-  }, []);
+  }, [props.lessonId]);
 
   function levelDone(e: Event)
   {
-
-    console.log("Progress INIT:" + progress)
-    if(user && progress)
+    if(progress?.level < currLevel + 1 != false)
     {
-      progress.level += 1;
-      UserApi.updateUserProgress(user, progress)
-      console.log("HERE EXISTS: " + progress.level)
-    }
-    else if(user && props.selectedCourse?.id)
-    {
-      var newProg = new Progress(props.selectedCourse.id, 1, "0");
-      console.log("HERE NEW: " + newProg.level)
-      UserApi.updateUserProgress(user, newProg)
-      setProgress(newProg)
+      setCurrLevel(currLevel + 1);
+      setProgress(new Progress(progress.lessonId, (currLevel + 1), "0"))
+      UserApi.updateUserProgress(props.user.progressList, new Progress(progress.lessonId, (currLevel + 1), "0"))
     }
   }
 
@@ -57,7 +54,7 @@ const OpenProblems = (props: any) => {
           <button
             onClick={() =>
             {
-              setFrameUrl(frameUrl === props.videoUrl ? props.problemUrl : props.videoUrl)
+              setFrameUrl(frameUrl === videoUrl ? problemUrl : videoUrl)
               setisProbleminFrame(!setisProbleminFrame)
             }}
             type="submit"

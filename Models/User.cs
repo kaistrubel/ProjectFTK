@@ -28,7 +28,7 @@ namespace ProjectFTK.Models
 
 	public class UpdateResponse
 	{
-		public User User { get; set; }
+		public List<Progress> ProgressList { get; set; }
 
 		public Progress UpdatedProgress { get; set; }
 	}

@@ -6,17 +6,21 @@ import { Fragment, useMemo, useState } from "react";
 import ILesson from "../../types/Lesson";
 import LessonApi from "../../apis/lesson";
 import Loading from "./Loading";
+import { useLocalStorage } from "../localStorage";
 
 const Lessons = (props: any) => {
 
   const [lessons, setLessons] = useState<ILesson[]>([]);
-  const [selectedunit, setSelectedUnit] = useState<string>()
+  const [selectedunit, setSelectedUnit] = useLocalStorage<string>("selectedunit");
 
   useMemo(() => {
-    props.selectedCourse && LessonApi.getLessons(props.selectedCourse?.courseSlug)
+    props.selectedCourse?.courseSlug && LessonApi.getLessons(props.selectedCourse?.courseSlug)
     .then((response) => {
       setLessons(response.data)
-      response.data[0]?.unit && setSelectedUnit(response.data[0].unit) //need to update this to current unit based on userData store
+      if(selectedunit == null)
+      {
+        response.data[0]?.unit && setSelectedUnit(response.data[0].unit) //need to update this to current unit based on userData store
+      }
     })
     .catch((e: Error) => {
       console.log(e);
@@ -116,8 +120,7 @@ const Lessons = (props: any) => {
             lessons?.sort(l=>l.order).filter(l => l.unit == selectedunit)?.map((lesson: ILesson) => (
             <div key={lesson.name} className="pl-10">
               <Link to= "/problem" onClick={() => {
-                                            props.setVideoUrl(lesson.problems[0].videos[0].url);
-                                            props.setProblemUrl(lesson.problems[0].url);
+                                            props.setLessonId(lesson.lessonId);
                                           }}>
                 <button className="bubble bubble-card hover:bg-indigo-700 hover:text-white">
                     {lesson.name}

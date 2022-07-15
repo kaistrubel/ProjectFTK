@@ -14,7 +14,5 @@ export default interface ILesson {
     name: string,
     unit: string,
     order: number,
-    courseSlug: string,
-    id: string,
-    problems: IProblem[],
+    lessonId: string,
   }

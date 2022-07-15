@@ -1,26 +1,25 @@
 import http from "../http";
-import IUserInfo, { IPerson, Progress } from "../types/User";
+import IUser, { Progress } from "../types/User";
 
-const getInfo = () => {
-    return http.get<IUserInfo>(`user/info/`);
+const currentUser = () => {
+    return http.get<IUser>(`user/CurrentUser/`);
     };
 
-const getUser = () => {
-    return http.get<IPerson>(`user/GetUser/`);
+const getUser = (email: string) => {
+    return http.get<IUser>(`user/GetUser/?email=${email}`);
     };
 
-const updateUserProgress = (user: IPerson, progress: Progress) => {
+const updateUserProgress = (progressList: Progress[], updatedProgress: Progress) => {
     
-    console.log("REQ: " + user.email + " PROG: " + progress.level )
     var data = {
-        user: user,
-        updatedProgress: progress,
+        progressList: progressList,
+        updatedProgress: updatedProgress,
     };
     return http.post<string>('user/UpdateUserProgress/', data);
     };
 
 const UserApi = {
-    getInfo,
+    currentUser,
     getUser,
     updateUserProgress
   };

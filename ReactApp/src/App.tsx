@@ -6,33 +6,30 @@ import ClassApi from './apis/class';
 import ICourse from './types/Course';
 import CreateClass from './components/teacher/CreateClass';
 import Navbar from './components/common/Navbar';
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import UserApi from './apis/user';
-import IUserInfo from './types/User';
+import IUser, { Progress } from './types/User';
 import Problem from './components/student/Problem';
 import Loading from './components/common/Loading';
+import { useLocalStorage } from './components/localStorage';
 
 function App() {
-  const [user, setUser] = useState<IUserInfo>();
+  const [user, setUser] = useState<IUser>();
+
+  const [courses, setCourses] = useState<ICourse[]>([]);
+  const [selectedCourse, setSelectedCourse] = useLocalStorage<ICourse>("selectedCourse")
+
+  const [lessonId, setLessonId] = useLocalStorage<string>("lessonId");
 
   useMemo(() => {
-    <Loading />
-    UserApi.getInfo()
+    UserApi.currentUser()
     .then((response) => {
       setUser(response.data);
     })
     .catch((e: Error) => {
       console.log(e);
     });
-  }, []);
 
-  const [courses, setCourses] = useState<ICourse[]>([]);
-  const [selectedCourse, setSelectedCourse] = useState<ICourse>()
-
-  const [problemUrl, setProblemUrl] = useState<string>();
-  const [videoUrl, setVideoUrl] = useState<string>();
-
-  useMemo(() => {
     ClassApi.getCurrentClasses()
     .then((response) => {
       setCourses(response.data);
@@ -48,10 +45,10 @@ function App() {
         <Navbar user={user} courses={courses} selectedCourse={selectedCourse} setSelectedCourse={setSelectedCourse} />
       }
       <Routes>
-        <Route path="/" element={<Landing user={user} selectedCourse={selectedCourse} setProblemUrl={setProblemUrl} setVideoUrl={setVideoUrl}/>} />
+        <Route path="/" element={<Landing user={user} selectedCourse={selectedCourse} setLessonId={setLessonId} />} />
         <Route path="/createClass" element={<CreateClass setCourses={setCourses} />} />
         <Route path="/joinClass" element={<JoinClass setCourses={setCourses} />} />
-        <Route path="/problem" element={<Problem problemUrl={problemUrl} videoUrl={videoUrl} selectedCourse={selectedCourse}/>} />
+        <Route path="/problem" element={<Problem user={user} lessonId={lessonId}/>} />
         </Routes>
     </>
   );
