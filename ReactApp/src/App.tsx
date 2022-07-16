@@ -9,9 +9,8 @@ import Navbar from './components/common/Navbar';
 import { useState, useMemo, useEffect } from "react";
 import UserApi from './apis/user';
 import IUser, { Progress } from './types/User';
-import Problem from './components/student/Problem';
-import Loading from './components/common/Loading';
 import { useLocalStorage } from './components/localStorage';
+import BlocklyProblem from './components/student/BlocklyProblem';
 
 function App() {
   const [user, setUser] = useState<IUser>();
@@ -48,7 +47,7 @@ function App() {
         <Route path="/" element={<Landing user={user} selectedCourse={selectedCourse} setLessonId={setLessonId} />} />
         <Route path="/createClass" element={<CreateClass setCourses={setCourses} />} />
         <Route path="/joinClass" element={<JoinClass setCourses={setCourses} />} />
-        <Route path="/problem" element={<Problem user={user} lessonId={lessonId}/>} />
+        <Route path="/blockly" element={<BlocklyProblem user={user} lessonId={lessonId}/>} />
         </Routes>
     </>
   );

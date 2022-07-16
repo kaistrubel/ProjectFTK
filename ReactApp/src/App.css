@@ -109,7 +109,7 @@ body {
   text-align: start;
 }
 
-/* for the highlight container change the solid backgorund to a yellow-ish hue */
+/* for the highlight container change the solid background to a yellow-ish hue */
 .bubble--highlight {
   background: url('data:image/svg+xml;utf8,<svg width="100" height="100" transform="rotate(25)" opacity="0.8" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g  fill="%23d68810"><circle cx="25" cy="25" r="12.5"/><circle cx="75" cy="75" r="12.5"/><circle cx="75" cy="25" r="12.5"/><circle cx="25" cy="75" r="12.5"/></g></svg>'),
     #ffcd28;
@@ -150,4 +150,56 @@ iframe {
   justify-content: center;
   width: 70rem; 
   height: 40rem;
+}
+
+.progressbarparent {
+  width: 50%;
+}
+
+.progressbar {
+  counter-reset: step;
+  float: center;
+}
+
+.progressbar li {
+  list-style-type:none;
+  float:left;
+  position: relative;
+  text-align: center;
+}
+
+.progressbar li:before {
+  content: counter(step);
+  counter-increment: step;
+  width: 3rem;
+  height: 3rem;
+  line-height: 3rem;
+  display: block;
+  text-align: center;
+  margin: 0 auto 1rem auto;
+  border-radius: 50%;
+  background-color: white;
+}
+
+.progressbar li:after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background-color: #ddd;
+  top: 1.5rem;
+  left: -50%;
+  z-index:-1;
+}
+
+.progressbar li:first-child:after {
+  content:none;
+}
+
+.progressbar li.active:before {
+  background-color: green;
+}
+
+.progressbar li.active + li:after {
+  background-color: green;
 }

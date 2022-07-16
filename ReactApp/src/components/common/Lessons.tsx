@@ -119,7 +119,7 @@ const Lessons = (props: any) => {
           :
             lessons?.sort(l=>l.order).filter(l => l.unit == selectedunit)?.map((lesson: ILesson) => (
             <div key={lesson.name} className="pl-10">
-              <Link to= "/problem" onClick={() => {
+              <Link to= {selectedunit == "Blockly" ? "/blockly" : "/problem"}  onClick={() => {
                                             props.setLessonId(lesson.lessonId);
                                           }}>
                 <button className="bubble bubble-card hover:bg-indigo-700 hover:text-white">

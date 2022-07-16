@@ -48,9 +48,23 @@ const OpenProblems = (props: any) => {
     table.hidden = true;
   }
 
+  const renderProgress = () => {
+    var list = [];
+    var totLevels = 10;
+    for (let i = 1; i <= totLevels; i++) {
+      list.push(<li className= {progress.level > i ? "active" : "" } style = {{width: ((1/totLevels)*100) + "%"}}></li>);
+    }
+    return list;
+  }
+
     return (
       <>
         <div className="grid place-items-center pt-16">
+          <div className="progressbarparent">
+            <ul className="progressbar place-items-center">
+              {renderProgress()}
+            </ul>
+          </div>
           <iframe id="ProblemFrame" src={frameUrl} title="Problem" onLoad={setButtonListen}></iframe>
         </div>
 
