@@ -75,6 +75,7 @@ public class UserController : Controller
         {
             return;
         }
+
         var studentsContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
         var progressList = data.ProgressList ?? new List<Progress>();
         var oldProgress = progressList.FirstOrDefault(x => x.LessonId == data.UpdatedProgress.LessonId);

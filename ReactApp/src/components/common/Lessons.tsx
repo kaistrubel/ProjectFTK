@@ -51,6 +51,20 @@ const Lessons = (props: any) => {
     })
   }
 
+  function isDone(lessonId: string)
+  {
+    var progress = props.user.progressList?.find((x: { lessonId: string; }) => x.lessonId == lessonId);
+    if(progress)
+    {
+      if((lessonId == "e0de78ce-4fb7-4db5-993a-14d11868f489" && progress.level > 1) || (progress.level > 10))
+      {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
     return(
       <>
         <div>
@@ -147,7 +161,7 @@ const Lessons = (props: any) => {
               <Link to= {selectedunit == "Blockly" ? "/blockly" : "/problem"}  onClick={() => {
                                             props.setLessonId(lesson.lessonId);
                                           }}>
-                <button className="bubble bubble-card hover:bg-indigo-700 hover:text-white">
+                <button className={"bubble bubble-card hover:bg-indigo-700 hover:text-white" + (isDone(lesson.lessonId) ? " bubble-green" : "")}>
                     {lesson.name}
                 </button>
               </Link>

@@ -18,11 +18,13 @@ const OpenProblems = (props: any) => {
   useMemo(() => {
     LessonApi.getProblems(props.lessonId)
     .then((response) => {
-      setCurrLevel(progress.level)
+    var capLevel = Math.max(10, progress.level);
+
+      setCurrLevel(capLevel)
 
       setProblem(response.data[0])
-      setFrameUrl(response.data[0].url + "?level=" + progress.level)
-      setProblemUrl(response.data[0].url + "?level=" + progress.level)
+      setFrameUrl(response.data[0].url + "?level=" + capLevel)
+      setProblemUrl(response.data[0].url + "?level=" + capLevel)
       setVideoUrl(response.data[0].videos[0].url)
     })
     .catch((e: Error) => {
@@ -32,27 +34,29 @@ const OpenProblems = (props: any) => {
 
   function levelDone(e: Event)
   {
-    if(props.lessonId == "e0de78ce-4fb7-4db5-993a-14d11868f489")
-    {
-    var problemFrame = document.getElementById('ProblemFrame') as HTMLIFrameElement;
-    var msgDiv = problemFrame?.contentWindow?.document.getElementById('answerMessage') as HTMLDivElement;
-    if(msgDiv.children[0].innerHTML.includes("Perfect!"))
-    {
-      window.location.href = "/"
-    }
-    return;
-    }
-
     changeCurrentLevel(currLevel+1)
-    if(progress?.level < currLevel + 1 != false)
+    if((progress?.level < currLevel + 1) != false)
     {
       setProgress(new Progress(progress.lessonId, (currLevel + 1), "0"))
       UserApi.updateUserProgress(props.user.progressList, new Progress(progress.lessonId, (currLevel + 1), "0"))
     }
 
+    if(props.lessonId == "e0de78ce-4fb7-4db5-993a-14d11868f489")
+    {
+      var problemFrame = document.getElementById('ProblemFrame') as HTMLIFrameElement;
+      var msgDiv = problemFrame?.contentWindow?.document.getElementById('answerMessage') as HTMLDivElement;
+      if(msgDiv.children[0].innerHTML.includes("Perfect!"))
+      {
+        window.location.href = "/"
+      }
+      
+      return;
+    }
+
     if((currLevel + 1 ) > 10)
     {
-      window.location.href = "/"
+      window.location.href = "/";
+      return;
     }
   }
 
@@ -78,9 +82,11 @@ const OpenProblems = (props: any) => {
 
   function changeCurrentLevel(lvl: number)
   {
-    setCurrLevel(lvl)
-    problem && setFrameUrl(problem.url + "?level=" + lvl)
-    problem && setProblemUrl(problem.url + "?level=" + lvl)
+    var capLevel = Math.max(10, lvl);
+
+    setCurrLevel(capLevel)
+    problem && setFrameUrl(problem.url + "?level=" + capLevel)
+    problem && setProblemUrl(problem.url + "?level=" + capLevel)
     problem && setVideoUrl(problem.videos[0].url)
   }
 
