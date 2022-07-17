@@ -18,7 +18,7 @@ const OpenProblems = (props: any) => {
   useMemo(() => {
     LessonApi.getProblems(props.lessonId)
     .then((response) => {
-    var capLevel = Math.max(10, progress.level);
+    var capLevel = Math.min(10, progress.level);
 
       setCurrLevel(capLevel)
 
@@ -82,7 +82,7 @@ const OpenProblems = (props: any) => {
 
   function changeCurrentLevel(lvl: number)
   {
-    var capLevel = Math.max(10, lvl);
+    var capLevel = Math.min(10, lvl);
 
     setCurrLevel(capLevel)
     problem && setFrameUrl(problem.url + "?level=" + capLevel)
