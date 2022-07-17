@@ -34,12 +34,7 @@ const OpenProblems = (props: any) => {
 
   function levelDone(e: Event)
   {
-    changeCurrentLevel(currLevel+1)
-    if((progress?.level < currLevel + 1) != false)
-    {
-      setProgress(new Progress(progress.lessonId, (currLevel + 1), "0"))
-      UserApi.updateUserProgress(props.user.progressList, new Progress(progress.lessonId, (currLevel + 1), "0"))
-    }
+    var finsihedLesson = false;
 
     if(props.lessonId == "e0de78ce-4fb7-4db5-993a-14d11868f489")
     {
@@ -47,16 +42,28 @@ const OpenProblems = (props: any) => {
       var msgDiv = problemFrame?.contentWindow?.document.getElementById('answerMessage') as HTMLDivElement;
       if(msgDiv.children[0].innerHTML.includes("Perfect!"))
       {
-        window.location.href = "/"
+        finsihedLesson = true;
       }
-      
-      return;
     }
 
     if((currLevel + 1 ) > 10)
     {
-      window.location.href = "/";
-      return;
+      finsihedLesson = true;
+    }
+
+    changeCurrentLevel(currLevel+1)
+    if((progress?.level < currLevel + 1) != false)
+    {
+      setProgress(new Progress(progress.lessonId, (currLevel + 1), "0"))
+      UserApi.updateUserProgress(props.user.progressList, new Progress(progress.lessonId, (currLevel + 1), "0"))
+      .then(() => 
+      {
+        if(finsihedLesson)
+        {
+          window.location.href = "/";
+          return;
+        }
+      })
     }
   }
 
