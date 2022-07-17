@@ -63,9 +63,9 @@ const OpenProblems = (props: any) => {
     var totLevels = 10;
     for (let i = 1; i <= totLevels; i++) {
       list.push(
-      <li onClick={()=>{changeCurrentLevel(i)}} 
+      <li onClick={()=>{ i <= progress.level ? changeCurrentLevel(i) : void 0}} 
       key = {i}
-      className= {(progress.level > i ? "active " : "") + (currLevel == i ? "current" : "") } 
+      className= {(progress.level > i ? "active cursor-pointer " : "") + (currLevel == i ? "current cursor-pointer" : progress.level == i ? "currentmax cursor-pointer" : "") } 
       style = {{width: ((1/totLevels)*100) + "%"}}></li>
       );
     }
