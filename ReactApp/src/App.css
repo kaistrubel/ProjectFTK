@@ -197,11 +197,11 @@ iframe {
 }
 
 .progressbar li.active:before {
-  background-color: green;
+  background-color: #22874a;
 }
 
 .progressbar li.active + li:after {
-  background-color: green;
+  background-color: #22874a;
 }
 
 .progressbar li.current:before {

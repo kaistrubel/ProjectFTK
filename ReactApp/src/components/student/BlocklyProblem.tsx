@@ -103,7 +103,7 @@ const OpenProblems = (props: any) => {
         <div className="grid place-items-center pt-16">
           <div className="progressbarparent pb-3">
             <ul className="progressbar place-items-center">
-              {renderProgress()}
+              { (props.lessonId != "e0de78ce-4fb7-4db5-993a-14d11868f489" && props.lessonId != "1335fe1a-c5ff-499c-b070-896c3ea3aaab") ? renderProgress() : void 0}
             </ul>
           </div>
           <iframe id="ProblemFrame" src={frameUrl} title="Problem" onLoad={setButtonListen}></iframe>
