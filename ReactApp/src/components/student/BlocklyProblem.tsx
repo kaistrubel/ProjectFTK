@@ -32,21 +32,47 @@ const OpenProblems = (props: any) => {
 
   function levelDone(e: Event)
   {
+    if(props.lessonId == "e0de78ce-4fb7-4db5-993a-14d11868f489")
+    {
+    var problemFrame = document.getElementById('ProblemFrame') as HTMLIFrameElement;
+    var msgDiv = problemFrame?.contentWindow?.document.getElementById('answerMessage') as HTMLDivElement;
+    if(msgDiv.children[0].innerHTML.includes("Perfect!"))
+    {
+      window.location.href = "/"
+    }
+    return;
+    }
+
     changeCurrentLevel(currLevel+1)
     if(progress?.level < currLevel + 1 != false)
     {
       setProgress(new Progress(progress.lessonId, (currLevel + 1), "0"))
       UserApi.updateUserProgress(props.user.progressList, new Progress(progress.lessonId, (currLevel + 1), "0"))
     }
+
+    if((currLevel + 1 ) > 10)
+    {
+      window.location.href = "/"
+    }
   }
 
   function setButtonListen()
   {
-    var problem = document.getElementById('ProblemFrame') as HTMLIFrameElement;
-    var doneButton = problem?.contentWindow?.document.getElementById('doneOk') as HTMLButtonElement;// ?? problem?.contentWindow?.document.getElementById('secondary') as HTMLButtonElement; <-first lesson only has 1, need to figure out
-    doneButton.addEventListener("click", levelDone);
+    var problemFrame = document.getElementById('ProblemFrame') as HTMLIFrameElement;
 
-    var table = problem?.contentWindow?.document.getElementsByTagName('h1')[0] as HTMLElement;
+    if(props.lessonId != "e0de78ce-4fb7-4db5-993a-14d11868f489" && props.lessonId != "1335fe1a-c5ff-499c-b070-896c3ea3aaab")
+    {
+      var doneButton = problemFrame?.contentWindow?.document.getElementById('doneOk') as HTMLButtonElement;// ?? problem?.contentWindow?.document.getElementById('secondary') as HTMLButtonElement; <-first lesson only has 1, need to figure out
+      doneButton.addEventListener("click", levelDone);
+    }
+    else if(props.lessonId == "e0de78ce-4fb7-4db5-993a-14d11868f489")
+    {
+      var donediv = problemFrame?.contentWindow?.document.getElementById('answers') as HTMLDivElement;// ?? problem?.contentWindow?.document.getElementById('secondary') as HTMLButtonElement; <-first lesson only has 1, need to figure out
+      var doneButton = donediv.getElementsByClassName('secondary')[0] as HTMLButtonElement;
+      doneButton.addEventListener("click", levelDone);
+    }
+
+    var table = problemFrame?.contentWindow?.document.getElementsByTagName('h1')[0] as HTMLElement;
     table.hidden = true;
   }
 
