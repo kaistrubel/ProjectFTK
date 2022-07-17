@@ -106,13 +106,13 @@ public class ClassController : Controller
 
     [HttpGet]
     [Authorize(Roles = CustomRoles.Teacher)]
-    public async Task<string> GetCodeForClass(string classId)
+    public async Task<string> GetCodeForClass(string courseId)
     {
         var classContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
 
         try
         {
-            var classData = await classContainer.ReadItemAsync<Class>(classId, PartitionKey.None);
+            var classData = await classContainer.ReadItemAsync<Class>(courseId, PartitionKey.None);
             return classData.Resource.Code;
         }
         catch

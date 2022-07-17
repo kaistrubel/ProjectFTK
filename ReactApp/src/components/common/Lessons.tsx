@@ -7,6 +7,7 @@ import ILesson from "../../types/Lesson";
 import LessonApi from "../../apis/lesson";
 import Loading from "./Loading";
 import { useLocalStorage } from "../localStorage";
+import ClassApi from "../../apis/class";
 
 const Lessons = (props: any) => {
 
@@ -27,21 +28,34 @@ const Lessons = (props: any) => {
     });
   }, [props.selectedCourse]);
 
+  function showCode()
+  {
+    ClassApi.getCodeForClass(props.selectedCourse?.id)
+    .then((response) => {
+      var button = document.getElementById('showCode');
+      if(button)
+      {
+        button.className = "text-black bubble bubble--highlight";
+        button.textContent = response.data;
+      }
+    })
+  }
+
     return(
       <>
         <div>
         {
-          props?.selectedCourse
+          props?.selectedCourse && props.user?.isTeacher
           ?
-            <div className="float-right text-right px-6">
-              <Link to= {props.user?.isTeacher? "/createClass": "/joinClass"}>
+            <div className="float-right text-right pr-10">
+              <div id="showCode">
                 <button
-                  type="submit"
+                  onClick={showCode}
                   className="text-black bubble bubble--highlight hover:bg-indigo-700 hover:text-white"
                 >
-                  {props.isTeacher? "Create" : "Add"} Class
+                  Show Code
                 </button>
-              </Link>
+              </div>
             </div>
           : <></>
         }

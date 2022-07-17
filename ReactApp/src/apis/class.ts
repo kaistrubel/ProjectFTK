@@ -10,6 +10,10 @@ const getSupportedSubjects = () => {
     return http.get<ISubject[]>(`class/getsupportedsubjects/`);
     };
 
+const getCodeForClass = (courseId: string) => {
+    return http.get<string>(`class/getCodeForClass/?courseId=${courseId}`);
+    };
+
 const createClass = (courseSlug: string, period:string) => {
 return http.post<string>(`class/createclass/?courseSlug=${courseSlug}&period=${period}`);
 };
@@ -21,6 +25,7 @@ const joinClass = (teacherEmail: string, code:string) => {
 const ClassApi = {
     getCurrentClasses,
     getSupportedSubjects,
+    getCodeForClass,
     createClass,
     joinClass
   };
