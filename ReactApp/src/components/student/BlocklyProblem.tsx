@@ -7,7 +7,6 @@ import IUser, {Progress } from "../../types/User";
 const OpenProblems = (props: any) => {
 
   const [isProbleminFrame, setisProbleminFrame] = useState<boolean>(true);
-  const [frameUrl, setFrameUrl] = useState<string>();
   const [videoUrl, setVideoUrl] = useState<string>();
   const [problem, setProblem] = useState<IProblem>();
   const [problemUrl, setProblemUrl] = useState<string>();
@@ -23,7 +22,6 @@ const OpenProblems = (props: any) => {
       setCurrLevel(capLevel)
 
       setProblem(response.data[0])
-      setFrameUrl(response.data[0].url + "?level=" + capLevel)
       setProblemUrl(response.data[0].url + "?level=" + capLevel)
       setVideoUrl(response.data[0].videos[0].url)
     })
@@ -92,7 +90,6 @@ const OpenProblems = (props: any) => {
     var capLevel = Math.min(10, lvl);
 
     setCurrLevel(capLevel)
-    problem && setFrameUrl(problem.url + "?level=" + capLevel)
     problem && setProblemUrl(problem.url + "?level=" + capLevel)
     problem && setVideoUrl(problem.videos[0].url)
   }
@@ -111,31 +108,47 @@ const OpenProblems = (props: any) => {
     return list;
   }
 
-    return (
-      <>
-        <div className="grid place-items-center pt-16">
-          <div className="progressbarparent pb-3">
-            <ul className="progressbar place-items-center">
-              { (props.lessonId != "e0de78ce-4fb7-4db5-993a-14d11868f489" && props.lessonId != "1335fe1a-c5ff-499c-b070-896c3ea3aaab") ? renderProgress() : void 0}
-            </ul>
-          </div>
-          <iframe id="ProblemFrame" src={frameUrl} title="Problem" onLoad={setButtonListen}></iframe>
+  return (
+    <>
+      <div className="grid place-items-center pt-16">
+        <div className="progressbarparent pb-3">
+          <ul className="progressbar place-items-center">
+            { (props.lessonId != "e0de78ce-4fb7-4db5-993a-14d11868f489" && props.lessonId != "1335fe1a-c5ff-499c-b070-896c3ea3aaab") ? renderProgress() : void 0}
+          </ul>
         </div>
+        <iframe id="ProblemFrame" src={problemUrl} title="Problem" onLoad={setButtonListen}></iframe>
+        <iframe id="VideoFrame" className="hidden" src={videoUrl} title="Video" hidden></iframe>
+      </div>
 
-        <div className="px-4 text-center sm:px-6">
-          <button
-            onClick={() =>
+      <div className="px-4 text-center sm:px-6">
+        <button
+          onClick={() =>
+          {
+            var problemFrame = document.getElementById("ProblemFrame");
+            var videoFrame = document.getElementById("VideoFrame");
+            if(problemFrame && videoFrame)
             {
-              setFrameUrl(frameUrl === videoUrl ? problemUrl : videoUrl)
-              setisProbleminFrame(!setisProbleminFrame)
-            }}
-            type="submit"
-            className="text-black bubble bubble--highlight hover:bg-indigo-700 hover:text-white"
-          >
-            Show {isProbleminFrame? "Video" : "Problem"}
-          </button>
-        </div>
-      </>
+              if(isProbleminFrame)
+              {
+                problemFrame.className = "hidden"
+                videoFrame.className = ""
+              }
+              else
+              {
+                problemFrame.className = ""
+                videoFrame.className = "hidden"
+              }
+              setisProbleminFrame(!isProbleminFrame);
+            }
+
+          }}
+          type="submit"
+          className="text-black bubble bubble--highlight hover:bg-indigo-700 hover:text-white"
+        >
+          Show {isProbleminFrame? "Video" : "Problem"}
+        </button>
+      </div>
+    </>
   );
 };
 
