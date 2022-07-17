@@ -211,3 +211,9 @@ iframe {
 .progressbar li.currentmax:before {
   border: 0.3rem solid #808080;
 }
+
+.center {
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+}

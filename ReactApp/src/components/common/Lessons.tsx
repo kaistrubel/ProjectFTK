@@ -26,17 +26,27 @@ const Lessons = (props: any) => {
     .catch((e: Error) => {
       console.log(e);
     });
+
+    var showButton = document.getElementById('showCode');
+    var codeDiv = document.getElementById('code');
+    if(showButton && codeDiv)
+    {
+      showButton.hidden = false;
+      codeDiv.hidden = true;
+    }
   }, [props.selectedCourse]);
 
   function showCode()
   {
     ClassApi.getCodeForClass(props.selectedCourse?.id)
     .then((response) => {
-      var button = document.getElementById('showCode');
-      if(button)
+      var showButton = document.getElementById('showCode');
+      var codeDiv = document.getElementById('code');
+      if(showButton && codeDiv)
       {
-        button.className = "text-black bubble bubble--highlight";
-        button.textContent = response.data;
+        showButton.hidden = true;
+        codeDiv.textContent = response.data;
+        codeDiv.hidden = false;
       }
     })
   }
@@ -56,6 +66,7 @@ const Lessons = (props: any) => {
                   Show Code
                 </button>
               </div>
+              <div id="code" className="text-black bubble bubble--highlight" hidden></div>
             </div>
           : <></>
         }
