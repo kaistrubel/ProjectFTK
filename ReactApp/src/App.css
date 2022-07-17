@@ -166,6 +166,7 @@ iframe {
   float:left;
   position: relative;
   text-align: center;
+  cursor: pointer;
 }
 
 .progressbar li:before {
@@ -202,4 +203,8 @@ iframe {
 
 .progressbar li.active + li:after {
   background-color: green;
+}
+
+.progressbar li.current:before {
+  border: 0.3rem solid #ffcd28;
 }

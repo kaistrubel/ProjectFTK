@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import LessonApi from "../../apis/lesson";
 import UserApi from "../../apis/user";
+import { IProblem } from "../../types/Lesson";
 import IUser, {Progress } from "../../types/User";
 
 const OpenProblems = (props: any) => {
@@ -8,6 +9,7 @@ const OpenProblems = (props: any) => {
   const [isProbleminFrame, setisProbleminFrame] = useState<boolean>(true);
   const [frameUrl, setFrameUrl] = useState<string>();
   const [videoUrl, setVideoUrl] = useState<string>();
+  const [problem, setProblem] = useState<IProblem>();
   const [problemUrl, setProblemUrl] = useState<string>();
 
   const [progress, setProgress] = useState<Progress>(props.user.progressList?.find((x: { lessonId: string; }) => x.lessonId == props.lessonId) ?? new Progress(props.lessonId, 1, "0"));
@@ -18,6 +20,7 @@ const OpenProblems = (props: any) => {
     .then((response) => {
       setCurrLevel(progress.level)
 
+      setProblem(response.data[0])
       setFrameUrl(response.data[0].url + "?level=" + progress.level)
       setProblemUrl(response.data[0].url + "?level=" + progress.level)
       setVideoUrl(response.data[0].videos[0].url)
@@ -29,9 +32,9 @@ const OpenProblems = (props: any) => {
 
   function levelDone(e: Event)
   {
+    changeCurrentLevel(currLevel+1)
     if(progress?.level < currLevel + 1 != false)
     {
-      setCurrLevel(currLevel + 1);
       setProgress(new Progress(progress.lessonId, (currLevel + 1), "0"))
       UserApi.updateUserProgress(props.user.progressList, new Progress(progress.lessonId, (currLevel + 1), "0"))
     }
@@ -44,15 +47,27 @@ const OpenProblems = (props: any) => {
     doneButton.addEventListener("click", levelDone);
 
     var table = problem?.contentWindow?.document.getElementsByTagName('h1')[0] as HTMLElement;
-    console.log(table)
     table.hidden = true;
+  }
+
+  function changeCurrentLevel(lvl: number)
+  {
+    setCurrLevel(lvl)
+    problem && setFrameUrl(problem.url + "?level=" + lvl)
+    problem && setProblemUrl(problem.url + "?level=" + lvl)
+    problem && setVideoUrl(problem.videos[0].url)
   }
 
   const renderProgress = () => {
     var list = [];
     var totLevels = 10;
     for (let i = 1; i <= totLevels; i++) {
-      list.push(<li className= {progress.level > i ? "active" : "" } style = {{width: ((1/totLevels)*100) + "%"}}></li>);
+      list.push(
+      <li onClick={()=>{changeCurrentLevel(i)}} 
+      key = {i}
+      className= {(progress.level > i ? "active " : "") + (currLevel == i ? "current" : "") } 
+      style = {{width: ((1/totLevels)*100) + "%"}}></li>
+      );
     }
     return list;
   }
@@ -60,7 +75,7 @@ const OpenProblems = (props: any) => {
     return (
       <>
         <div className="grid place-items-center pt-16">
-          <div className="progressbarparent">
+          <div className="progressbarparent pb-3">
             <ul className="progressbar place-items-center">
               {renderProgress()}
             </ul>
