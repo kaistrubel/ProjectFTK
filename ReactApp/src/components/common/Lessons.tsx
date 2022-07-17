@@ -55,7 +55,7 @@ const Lessons = (props: any) => {
       <>
         <div>
         {
-          props?.selectedCourse && props.user?.isTeacher
+          props.loading === false && props.user?.isTeacher
           ?
             <div className="float-right text-right pr-10">
               <div id="showCode">
@@ -71,7 +71,7 @@ const Lessons = (props: any) => {
           : <></>
         }
           {
-          props?.selectedCourse && props.selectedCourse.id != ""
+          props.loading === false && props.selectedCourse.id != ""
           ?
           <div className="grid pl-10 pb-8">
             <Listbox value={selectedunit} onChange={setSelectedUnit}>
@@ -129,7 +129,7 @@ const Lessons = (props: any) => {
         }
         </div>
       {
-        props.selectedCourse == null
+        props.loading == true
         ? <Loading />
         :
         props.selectedCourse?.id == ""

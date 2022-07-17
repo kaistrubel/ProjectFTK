@@ -23,7 +23,11 @@ function classNames(...classes: string[]) {
 export default function Navbar(props: any) {
     
   useMemo(() => {
-    props.setSelectedCourse(props.courses[0]);
+    if(props.selectedCourse == null)
+    {
+      props.setSelectedCourse(props.courses[0]);
+    }
+    props.setLoading(false);
   }, [props.courses])
 
   return (

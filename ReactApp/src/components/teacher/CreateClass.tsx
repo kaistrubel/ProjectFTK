@@ -3,6 +3,7 @@ import ClassApi from "../../apis/class";
 import ISubject from "../../types/Subject";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
+import Loading from "../common/Loading";
 
 const CreateClass = (props: any) => {
 
@@ -52,6 +53,9 @@ const CreateClass = (props: any) => {
   }
 
     return (
+      props.loading == true
+      ? <Loading />
+      :
       <>
       <div className="center">
         <div className="grid w-96">

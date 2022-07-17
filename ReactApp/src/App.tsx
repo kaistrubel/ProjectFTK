@@ -17,6 +17,7 @@ function App() {
 
   const [courses, setCourses] = useState<ICourse[]>([]);
   const [selectedCourse, setSelectedCourse] = useLocalStorage<ICourse>("selectedCourse")
+  const [loading, setLoading] = useState<boolean>(true)
 
   const [lessonId, setLessonId] = useLocalStorage<string>("lessonId");
 
@@ -41,12 +42,12 @@ function App() {
   return (
     <>
       { user?.isAuthenticated &&
-        <Navbar user={user} courses={courses} selectedCourse={selectedCourse} setSelectedCourse={setSelectedCourse} />
+        <Navbar user={user} courses={courses} selectedCourse={selectedCourse} setSelectedCourse={setSelectedCourse} setLoading={setLoading}/>
       }
       <Routes>
-        <Route path="/" element={<Landing user={user} selectedCourse={selectedCourse} setLessonId={setLessonId} />} />
-        <Route path="/createClass" element={<CreateClass setCourses={setCourses} />} />
-        <Route path="/joinClass" element={<JoinClass setCourses={setCourses} />} />
+        <Route path="/" element={<Landing user={user} selectedCourse={selectedCourse} setLessonId={setLessonId} loading={loading} />} />
+        <Route path="/createClass" element={<CreateClass setCourses={setCourses} loading={loading} />} />
+        <Route path="/joinClass" element={<JoinClass setCourses={setCourses} loading={loading} />} />
         <Route path="/blockly" element={<BlocklyProblem user={user} lessonId={lessonId}/>} />
         </Routes>
     </>

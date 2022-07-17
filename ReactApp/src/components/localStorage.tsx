@@ -10,7 +10,6 @@ export const useLocalStorage = <T,>(
   initialValue?: T
 ): ReturnType<T> => {
   const [state, setState] = useState<T | undefined>(() => {
-    if (!initialValue) return;
     try {
       const value = localStorage.getItem(key);
       return value ? JSON.parse(value) : initialValue;

@@ -1,6 +1,7 @@
 import ClassApi from "../../apis/class";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
+import Loading from "../common/Loading";
 
 const JoinClass = (props: any) => {
   
@@ -36,6 +37,9 @@ const JoinClass = (props: any) => {
   }
 
     return (
+      props.loading == true
+      ? <Loading />
+      :
       <>
       <div className="center">
         <div className="grid w-96">
