@@ -56,6 +56,7 @@ const OpenProblems = (props: any) => {
       else
       {
         resetHit();
+        return;
       }
     }
 
