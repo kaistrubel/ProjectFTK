@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import LessonApi from "../../apis/lesson";
 import UserApi from "../../apis/user";
 import { IProblem } from "../../types/Lesson";
@@ -13,7 +13,7 @@ const OpenProblems = (props: any) => {
 
   const [progress, setProgress] = useState<Progress>(new Progress(props.lessonId, 1, "0", 0));
   const [currLevel, setCurrLevel] = useState<number>(1);
-  const [attempts, setAttempts] = useState<number>(0);
+  const attempts = useRef(0);
 
   useMemo(() => {
   var userProg = props.user?.progressList?.find((x: { lessonId: string; }) => x.lessonId == props.lessonId);
@@ -22,7 +22,7 @@ const OpenProblems = (props: any) => {
   LessonApi.getProblems(props.lessonId)
     .then((response) => {
       
-      var capLevel = Math.min(10, userProg.level);
+      var capLevel = Math.min(10, userProg?.level ?? 1);
 
       setCurrLevel(capLevel)
 
@@ -30,7 +30,7 @@ const OpenProblems = (props: any) => {
       setProblemUrl(response.data[0].url + "?level=" + capLevel)
       setVideoUrl(response.data[0].videos[0].url)
 
-      setAttempts(progress.attempts)
+      attempts.current = userProg?.attempts ?? 0;
     })
     .catch((e: Error) => {
       console.log(e);
@@ -60,13 +60,12 @@ const OpenProblems = (props: any) => {
       finsihedLesson = true;
     }
 
+    ++attempts.current
     changeCurrentLevel(currLevel+1)
-    setAttempts(attempts+1)
     if((progress?.level < currLevel + 1) != false)
     {
-      setProgress(new Progress(progress.lessonId, (currLevel + 1), "0", (attempts + 1)))
-      console.log(attempts)
-      UserApi.updateUserProgress(props.user.progressList, new Progress(progress.lessonId, (currLevel + 1), "0", (attempts + 1)))
+      setProgress(new Progress(props.lessonId, (currLevel + 1), "0", attempts.current))
+      UserApi.updateUserProgress(props.user.progressList, new Progress(props.lessonId, (currLevel + 1), "0", attempts.current))
       .then(() => 
       {
         if(finsihedLesson)
@@ -80,9 +79,8 @@ const OpenProblems = (props: any) => {
 
   function resetHit(e: Event)
   {
-    console.log(attempts)
-    setAttempts((attempts + 1))
-    UserApi.updateUserProgress(props.user.progressList, new Progress(progress.lessonId, currLevel, "0", (attempts + 1)))
+    ++attempts.current
+    UserApi.updateUserProgress(props.user.progressList, new Progress(props.lessonId, currLevel, "0", attempts.current))
   }
 
   function setButtonListen()
