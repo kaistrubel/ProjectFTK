@@ -24,6 +24,8 @@ namespace ProjectFTK.Models
 		public int Level { get; set; }
 
 		public string TimeSpent { get; set; }
+
+		public int Attempts { get; set; }
 	}
 
 	public class UpdateResponse

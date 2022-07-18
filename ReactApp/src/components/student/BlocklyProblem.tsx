@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import LessonApi from "../../apis/lesson";
 import UserApi from "../../apis/user";
 import { IProblem } from "../../types/Lesson";
-import IUser, {Progress } from "../../types/User";
+import {Progress } from "../../types/User";
 
 const OpenProblems = (props: any) => {
 
@@ -11,24 +11,31 @@ const OpenProblems = (props: any) => {
   const [problem, setProblem] = useState<IProblem>();
   const [problemUrl, setProblemUrl] = useState<string>();
 
-  const [progress, setProgress] = useState<Progress>(props.user.progressList?.find((x: { lessonId: string; }) => x.lessonId == props.lessonId) ?? new Progress(props.lessonId, 1, "0"));
-  let [currLevel, setCurrLevel] = useState<number>(1);
+  const [progress, setProgress] = useState<Progress>(new Progress(props.lessonId, 1, "0", 0));
+  const [currLevel, setCurrLevel] = useState<number>(1);
+  const [attempts, setAttempts] = useState<number>(0);
 
   useMemo(() => {
-    LessonApi.getProblems(props.lessonId)
+  var userProg = props.user?.progressList?.find((x: { lessonId: string; }) => x.lessonId == props.lessonId);
+  userProg && setProgress(userProg)
+  
+  LessonApi.getProblems(props.lessonId)
     .then((response) => {
-    var capLevel = Math.min(10, progress.level);
+      
+      var capLevel = Math.min(10, userProg.level);
 
       setCurrLevel(capLevel)
 
       setProblem(response.data[0])
       setProblemUrl(response.data[0].url + "?level=" + capLevel)
       setVideoUrl(response.data[0].videos[0].url)
+
+      setAttempts(progress.attempts)
     })
     .catch((e: Error) => {
       console.log(e);
     });
-  }, [props.lessonId]);
+  }, [props.lessonId, props.user]);
 
   function levelDone(e: Event)
   {
@@ -42,6 +49,10 @@ const OpenProblems = (props: any) => {
       {
         finsihedLesson = true;
       }
+      else
+      {
+        //update similar to reset hit for intro here
+      }
     }
 
     if((currLevel + 1 ) > 10)
@@ -50,10 +61,12 @@ const OpenProblems = (props: any) => {
     }
 
     changeCurrentLevel(currLevel+1)
+    setAttempts(attempts+1)
     if((progress?.level < currLevel + 1) != false)
     {
-      setProgress(new Progress(progress.lessonId, (currLevel + 1), "0"))
-      UserApi.updateUserProgress(props.user.progressList, new Progress(progress.lessonId, (currLevel + 1), "0"))
+      setProgress(new Progress(progress.lessonId, (currLevel + 1), "0", (attempts + 1)))
+      console.log(attempts)
+      UserApi.updateUserProgress(props.user.progressList, new Progress(progress.lessonId, (currLevel + 1), "0", (attempts + 1)))
       .then(() => 
       {
         if(finsihedLesson)
@@ -65,14 +78,24 @@ const OpenProblems = (props: any) => {
     }
   }
 
+  function resetHit(e: Event)
+  {
+    console.log(attempts)
+    setAttempts((attempts + 1))
+    UserApi.updateUserProgress(props.user.progressList, new Progress(progress.lessonId, currLevel, "0", (attempts + 1)))
+  }
+
   function setButtonListen()
   {
     var problemFrame = document.getElementById('ProblemFrame') as HTMLIFrameElement;
 
     if(props.lessonId != "e0de78ce-4fb7-4db5-993a-14d11868f489" && props.lessonId != "1335fe1a-c5ff-499c-b070-896c3ea3aaab")
     {
-      var doneButton = problemFrame?.contentWindow?.document.getElementById('doneOk') as HTMLButtonElement;// ?? problem?.contentWindow?.document.getElementById('secondary') as HTMLButtonElement; <-first lesson only has 1, need to figure out
+      var doneButton = problemFrame?.contentWindow?.document.getElementById('doneOk') as HTMLButtonElement;
       doneButton.addEventListener("click", levelDone);
+
+      var resetButton = problemFrame?.contentWindow?.document.getElementById('resetButton') as HTMLButtonElement;
+      resetButton.addEventListener("click", resetHit);
     }
     else if(props.lessonId == "e0de78ce-4fb7-4db5-993a-14d11868f489")
     {
