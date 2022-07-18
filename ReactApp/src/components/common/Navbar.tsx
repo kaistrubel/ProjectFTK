@@ -1,9 +1,10 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useMemo } from "react";
 import { Disclosure, Listbox, Menu, Transition } from '@headlessui/react'
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import ftkLogo from '../../assets/images/logo.png';
 import ICourse from "../../types/Course";
+import { Link } from "react-router-dom";
 /*
 const navigation = [
   { name: 'Dashboard', href: '#', current: true },
@@ -21,8 +22,12 @@ function classNames(...classes: string[]) {
 
 export default function Navbar(props: any) {
     
-  useEffect(() => {
-    props.setSelectedCourse(props.courses[0]);
+  useMemo(() => {
+    if(props.selectedCourse == null)
+    {
+      props.setSelectedCourse(props.courses[0]);
+    }
+    props.setLoading(false);
   }, [props.courses])
 
   return (
@@ -147,7 +152,7 @@ export default function Navbar(props: any) {
                     leaveFrom="transform opacity-100 scale-100"
                     leaveTo="transform opacity-0 scale-95"
                   >
-                    <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <Menu.Items className="dropdown origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                     {/*   <Menu.Item>
                         {({ active }) => (
                           <a
@@ -172,8 +177,18 @@ export default function Navbar(props: any) {
                       <Menu.Item>
                         {({ active }) => (
                           <a
-                            href="https://projectftk.com/Auth/GoogleSignOut"
-                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                            href={props.user?.isTeacher? "/createClass": "/joinClass"}
+                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-gray-700')}
+                          >
+                            {props.isTeacher? "Create" : "Add"} a Class
+                          </a>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <a
+                            href="/Auth/GoogleSignOut"
+                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-gray-700')}
                           >
                             Sign out
                           </a>

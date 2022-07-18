@@ -6,44 +6,30 @@ import ClassApi from './apis/class';
 import ICourse from './types/Course';
 import CreateClass from './components/teacher/CreateClass';
 import Navbar from './components/common/Navbar';
-import { useState, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import UserApi from './apis/user';
-import IUserInfo from './types/User';
-import Problem from './components/student/Problem';
-import IStudent from './types/Student';
-import StudentApi from './apis/student';
+import IUser, { Progress } from './types/User';
+import { useLocalStorage } from './components/localStorage';
+import BlocklyProblem from './components/student/BlocklyProblem';
 
 function App() {
-  const [user, setUser] = useState<IUserInfo>();
-  const [student, setStudent] = useState<IStudent>()
+  const [user, setUser] = useState<IUser>();
 
-  useEffect(() => {
-    UserApi.get()
+  const [courses, setCourses] = useState<ICourse[]>([]);
+  const [selectedCourse, setSelectedCourse] = useLocalStorage<ICourse>("selectedCourse")
+  const [loading, setLoading] = useState<boolean>(true)
+
+  const [lessonId, setLessonId] = useLocalStorage<string>("lessonId");
+
+  useMemo(() => {
+    UserApi.currentUser()
     .then((response) => {
       setUser(response.data);
     })
     .catch((e: Error) => {
       console.log(e);
     });
-  }, []);
 
-  useEffect(() => {
-    StudentApi.getStudent()
-    .then((response) => {
-      setStudent(response.data);
-    })
-    .catch((e: Error) => {
-      console.log(e);
-    });
-  }, []);
-
-  const [courses, setCourses] = useState<ICourse[]>([]);
-  const [selectedCourse, setSelectedCourse] = useState<ICourse>()
-
-  const [problemUrl, setProblemUrl] = useState<string>();
-  const [videoUrl, setVideoUrl] = useState<string>();
-
-  useEffect(() => {
     ClassApi.getCurrentClasses()
     .then((response) => {
       setCourses(response.data);
@@ -56,13 +42,13 @@ function App() {
   return (
     <>
       { user?.isAuthenticated &&
-        <Navbar user={user} courses={courses} selectedCourse={selectedCourse} setSelectedCourse={setSelectedCourse} />
+        <Navbar user={user} courses={courses} selectedCourse={selectedCourse} setSelectedCourse={setSelectedCourse} setLoading={setLoading}/>
       }
       <Routes>
-        <Route path="/" element={<Landing user={user} selectedCourse={selectedCourse} setProblemUrl={setProblemUrl} setVideoUrl={setVideoUrl}/>} />
-        <Route path="/createClass" element={<CreateClass setCourses={setCourses} />} />
-        <Route path="/joinClass" element={<JoinClass setCourses={setCourses} />} />
-        <Route path="/problem" element={<Problem problemUrl={problemUrl} videoUrl={videoUrl} student={student} setStudent={setStudent}/>} />
+        <Route path="/" element={<Landing user={user} selectedCourse={selectedCourse} setLessonId={setLessonId} loading={loading} />} />
+        <Route path="/createClass" element={<CreateClass setCourses={setCourses} loading={loading} />} />
+        <Route path="/joinClass" element={<JoinClass setCourses={setCourses} loading={loading} />} />
+        <Route path="/blockly" element={<BlocklyProblem user={user} lessonId={lessonId}/>} />
         </Routes>
     </>
   );

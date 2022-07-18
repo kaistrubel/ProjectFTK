@@ -2,47 +2,90 @@ import NoClasses from "./NoClasses";
 import { Link } from 'react-router-dom';
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import ILesson from "../../types/Lesson";
 import LessonApi from "../../apis/lesson";
 import Loading from "./Loading";
+import { useLocalStorage } from "../localStorage";
+import ClassApi from "../../apis/class";
 
 const Lessons = (props: any) => {
 
   const [lessons, setLessons] = useState<ILesson[]>([]);
-  const [selectedunit, setSelectedUnit] = useState<string>()
+  const [selectedunit, setSelectedUnit] = useLocalStorage<string>("selectedunit");
 
-  useEffect(() => {
-    props.selectedCourse && LessonApi.getLessons(props.selectedCourse?.courseSlug)
+  useMemo(() => {
+    props.selectedCourse?.courseSlug && LessonApi.getLessons(props.selectedCourse?.courseSlug)
     .then((response) => {
       setLessons(response.data)
-      setSelectedUnit(response.data[0].unit) //need to update this to current unit based on userData store
+      if(selectedunit == null)
+      {
+        response.data[0]?.unit && setSelectedUnit(response.data[0].unit) //need to update this to current unit based on userData store
+      }
     })
     .catch((e: Error) => {
       console.log(e);
     });
+
+    var showButton = document.getElementById('showCode');
+    var codeDiv = document.getElementById('code');
+    if(showButton && codeDiv)
+    {
+      showButton.hidden = false;
+      codeDiv.hidden = true;
+    }
   }, [props.selectedCourse]);
+
+  function showCode()
+  {
+    ClassApi.getCodeForClass(props.selectedCourse?.id)
+    .then((response) => {
+      var showButton = document.getElementById('showCode');
+      var codeDiv = document.getElementById('code');
+      if(showButton && codeDiv)
+      {
+        showButton.hidden = true;
+        codeDiv.textContent = response.data;
+        codeDiv.hidden = false;
+      }
+    })
+  }
+
+  function isDone(lessonId: string)
+  {
+    var progress = props.user.progressList?.find((x: { lessonId: string; }) => x.lessonId == lessonId);
+    if(progress)
+    {
+      if((lessonId == "e0de78ce-4fb7-4db5-993a-14d11868f489" && progress.level > 1) || (progress.level > 10))
+      {
+        return true;
+      }
+    }
+
+    return false;
+  }
 
     return(
       <>
         <div>
         {
-          props?.selectedCourse
+          props.loading === false && props.user?.isTeacher
           ?
-            <div className="float-right text-right px-6">
-              <Link to= {props.user?.isTeacher? "/createClass": "/joinClass"}>
+            <div className="float-right text-right pr-10">
+              <div id="showCode">
                 <button
-                  type="submit"
+                  onClick={showCode}
                   className="text-black bubble bubble--highlight hover:bg-indigo-700 hover:text-white"
                 >
-                  {props.isTeacher? "Create" : "Add"} Class
+                  Show Code
                 </button>
-              </Link>
+              </div>
+              <div id="code" className="text-black bubble bubble--highlight" hidden></div>
             </div>
           : <></>
         }
           {
-          props?.selectedCourse && props.selectedCourse!= ""
+          props.loading === false && props.selectedCourse.id != ""
           ?
           <div className="grid pl-10 pb-8">
             <Listbox value={selectedunit} onChange={setSelectedUnit}>
@@ -100,10 +143,10 @@ const Lessons = (props: any) => {
         }
         </div>
       {
-        props.selectedCourse == null
+        props.loading == true
         ? <Loading />
         :
-        props.selectedCourse == ""
+        props.selectedCourse?.id == ""
         ? <NoClasses isTeacher={props.user.isTeacher}/>
         :
         <>
@@ -115,11 +158,10 @@ const Lessons = (props: any) => {
           :
             lessons?.sort(l=>l.order).filter(l => l.unit == selectedunit)?.map((lesson: ILesson) => (
             <div key={lesson.name} className="pl-10">
-              <Link to= "/problem" onClick={() => {
-                                            props.setVideoUrl(lesson.problems[0].videos[0].url);
-                                            props.setProblemUrl(lesson.problems[0].url);
+              <Link to= {selectedunit == "Blockly" ? "/blockly" : "/problem"}  onClick={() => {
+                                            props.setLessonId(lesson.lessonId);
                                           }}>
-                <button className="bubble bubble-card hover:bg-indigo-700 hover:text-white">
+                <button className={"bubble bubble-card hover:bg-indigo-700 hover:text-white" + (isDone(lesson.lessonId) ? " bubble-green" : "")}>
                     {lesson.name}
                 </button>
               </Link>

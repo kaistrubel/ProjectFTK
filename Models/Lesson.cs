@@ -3,20 +3,26 @@ using Newtonsoft.Json;
 
 namespace ProjectFTK.Models;
 
-public class Lesson
+public class LessonInfo
 {
 	public string Unit { get; set; }
+
+	public string LessonId { get; set; }
 
 	public string Name { get; set; }
 
 	public int Order { get; set; }
 
 	public string CourseSlug { get; set; }
+}
 
-	public List<Problem> Problems { get; set; }
-
+public class Lesson
+{
 	[JsonProperty("id")]
-	public string LessonSlug => Name.ToLower().Replace(" ", "-");
+	public string LessonId { get; set; }
+
+	public List<Problem> Problems { get; set; } //list of notes too
+
 }
 
 public class Problem
@@ -28,7 +34,6 @@ public class Problem
 	public float Gain { get; set; }
 
 	public List<Video> Videos { get; set; } //list of notes too
-
 }
 
 public class Video
@@ -36,9 +41,4 @@ public class Video
 	public string Url { get; set; }
 
 	public float Gain { get; set; }
-}
-
-public class LessonsJson
-{
-	public Dictionary<string, List<string>> Units;
 }

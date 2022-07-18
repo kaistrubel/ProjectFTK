@@ -6,18 +6,18 @@ namespace ProjectFTK.Models;
 
 public class Class : Course
 {
-	public string Period { get; set; }
-
 	[JsonProperty("id")]
-	public Guid Id { get; set; }
+	public string Id { get; set; }
+
+	public string Period { get; set; }
 
 	public string? Code { get; set; }
 
 	public string TeacherEmail { get; set; }
 
-	public List<string> Students { get; set; }
+	public List<string> Users { get; set; }
 
-	public int StudentCount() => Students.Count();
+	public int UserCount() => Users.Count();
 }
 
 public class Course

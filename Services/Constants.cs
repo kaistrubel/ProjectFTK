@@ -23,6 +23,6 @@ public static class Constants
     */
     public static readonly string GlobalDb = "Global";
     public static readonly string LessonsContainer = "Lessons";
-    public static readonly string ClassStudentsContainer = "ClassStudents";
+    public static readonly string ClassUsersContainer = "ClassStudents";
 
 }
