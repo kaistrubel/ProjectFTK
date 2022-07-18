@@ -69,7 +69,7 @@ const Lessons = (props: any) => {
       <>
         <div>
         {
-          props.loading === false && props.user?.isTeacher
+          props.loading === false && props.user?.isTeacher && props.selectedCourse?.id != ""
           ?
             <div className="float-right text-right pr-10">
               <div id="showCode">

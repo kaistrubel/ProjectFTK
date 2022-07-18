@@ -1,4 +1,4 @@
-import { Fragment, useState, useMemo } from "react";
+import { Fragment, useState, useMemo, useEffect } from "react";
 import { Disclosure, Listbox, Menu, Transition } from '@headlessui/react'
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
@@ -22,8 +22,8 @@ function classNames(...classes: string[]) {
 
 export default function Navbar(props: any) {
     
-  useMemo(() => {
-    if(props.selectedCourse == null)
+  useEffect(() => {
+    if(props.selectedCourse == null || props.selectedCourse == "")
     {
       props.setSelectedCourse(props.courses[0]);
     }
@@ -76,7 +76,7 @@ export default function Navbar(props: any) {
                 </div>
               </div>
               {
-              props.selectedCourse != null && props.selectedCoutse != "" &&
+              props.selectedCourse != null && props.selectedCourse?.id != "" &&
               <div className="grid hidden sm:block">
                 <Listbox value={props.selectedCourse} onChange={props.setSelectedCourse}>
                   <div className="relative mt-1">
@@ -187,6 +187,7 @@ export default function Navbar(props: any) {
                       <Menu.Item>
                         {({ active }) => (
                           <a
+                            onClick={()=>{localStorage.clear()}}
                             href="/Auth/GoogleSignOut"
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-gray-700')}
                           >

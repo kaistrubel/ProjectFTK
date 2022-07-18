@@ -22,6 +22,7 @@ const JoinClass = (props: any) => {
         ClassApi.getCurrentClasses()
         .then((response) => {
           props.setCourses(response.data);
+          props.setSelectedCourse(response.data[0])
         })
         .catch((e: Error) => {
           console.log(e);

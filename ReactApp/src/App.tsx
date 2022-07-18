@@ -46,8 +46,8 @@ function App() {
       }
       <Routes>
         <Route path="/" element={<Landing user={user} selectedCourse={selectedCourse} setLessonId={setLessonId} loading={loading} />} />
-        <Route path="/createClass" element={<CreateClass setCourses={setCourses} loading={loading} />} />
-        <Route path="/joinClass" element={<JoinClass setCourses={setCourses} loading={loading} />} />
+        <Route path="/createClass" element={<CreateClass setCourses={setCourses} setSelectedCourse={setSelectedCourse} loading={loading} />} />
+        <Route path="/joinClass" element={<JoinClass setCourses={setCourses} setSelectedCourse={setSelectedCourse} loading={loading} />} />
         <Route path="/blockly" element={<BlocklyProblem user={user} lessonId={lessonId}/>} />
         </Routes>
     </>
