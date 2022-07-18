@@ -9,10 +9,10 @@ export default interface IUser {
 }
 
 export class Progress {
-  constructor(public lessonId: string, public level: number, public timeSpent: string, public attempts: number) {
+  constructor(public lessonId: string, public level: number, public activeSeconds: number, public attempts: number) {
     this.lessonId = lessonId;
     this.level = level;
-    this.timeSpent = timeSpent;
+    this.activeSeconds = activeSeconds;
     this.attempts = attempts;
   }
 }

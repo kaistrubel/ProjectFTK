@@ -11,9 +11,12 @@ const OpenProblems = (props: any) => {
   const [problem, setProblem] = useState<IProblem>();
   const [problemUrl, setProblemUrl] = useState<string>();
 
-  const [progress, setProgress] = useState<Progress>(new Progress(props.lessonId, 1, "0", 0));
+  const [progress, setProgress] = useState<Progress>(new Progress(props.lessonId, 1, 0, 0));
   const [currLevel, setCurrLevel] = useState<number>(1);
   const attempts = useRef(0);
+
+  const activeSeconds = useRef(0);
+  const inactivetyCount = useRef(180);
 
   useMemo(() => {
   var userProg = props.user?.progressList?.find((x: { lessonId: string; }) => x.lessonId == props.lessonId);
@@ -30,6 +33,7 @@ const OpenProblems = (props: any) => {
       setProblemUrl(response.data[0].url + "?level=" + capLevel)
       setVideoUrl(response.data[0].videos[0].url)
 
+      activeSeconds.current = userProg?.activeSeconds ?? 0;
       attempts.current = userProg?.attempts ?? 0;
     })
     .catch((e: Error) => {
@@ -51,7 +55,7 @@ const OpenProblems = (props: any) => {
       }
       else
       {
-        //update similar to reset hit for intro here
+        resetHit();
       }
     }
 
@@ -64,8 +68,8 @@ const OpenProblems = (props: any) => {
     changeCurrentLevel(currLevel+1)
     if((progress?.level < currLevel + 1) != false)
     {
-      setProgress(new Progress(props.lessonId, (currLevel + 1), "0", attempts.current))
-      UserApi.updateUserProgress(props.user.progressList, new Progress(props.lessonId, (currLevel + 1), "0", attempts.current))
+      setProgress(new Progress(props.lessonId, (currLevel + 1), activeSeconds.current, attempts.current))
+      UserApi.updateUserProgress(props.user.progressList, new Progress(props.lessonId, (currLevel + 1), activeSeconds.current, attempts.current))
       .then(() => 
       {
         if(finsihedLesson)
@@ -77,15 +81,39 @@ const OpenProblems = (props: any) => {
     }
   }
 
-  function resetHit(e: Event)
+  function resetHit()
   {
     ++attempts.current
-    UserApi.updateUserProgress(props.user.progressList, new Progress(props.lessonId, currLevel, "0", attempts.current))
+    UserApi.updateUserProgress(props.user.progressList, new Progress(props.lessonId, currLevel, activeSeconds.current, attempts.current))
+  }
+
+  var intervalId = window.setInterval(function(){
+    --inactivetyCount.current
+    if(inactivetyCount.current > 0)
+    {
+      ++activeSeconds.current
+    }
+  }, 1000);
+
+  var intervalId = window.setInterval(function(){
+    if(inactivetyCount.current > 0)
+    {
+      UserApi.updateUserProgress(props.user.progressList, new Progress(props.lessonId, currLevel, activeSeconds.current, attempts.current))
+    }
+  }, 180000);
+
+  function resetTimer()
+  {
+    inactivetyCount.current = 180;
   }
 
   function setButtonListen()
   {
     var problemFrame = document.getElementById('ProblemFrame') as HTMLIFrameElement;
+    if(problemFrame?.contentWindow?.document)
+    {
+      problemFrame.contentWindow.document.onclick = resetTimer;
+    }
 
     if(props.lessonId != "e0de78ce-4fb7-4db5-993a-14d11868f489" && props.lessonId != "1335fe1a-c5ff-499c-b070-896c3ea3aaab")
     {
@@ -137,7 +165,7 @@ const OpenProblems = (props: any) => {
             { (props.lessonId != "e0de78ce-4fb7-4db5-993a-14d11868f489" && props.lessonId != "1335fe1a-c5ff-499c-b070-896c3ea3aaab") ? renderProgress() : void 0}
           </ul>
         </div>
-        <iframe id="ProblemFrame" src={problemUrl} title="Problem" onLoad={setButtonListen}></iframe>
+        <iframe id="ProblemFrame" src={problemUrl} title="Problem" onLoad={setButtonListen} ></iframe>
         <iframe id="VideoFrame" className="hidden" src={videoUrl} title="Video" hidden></iframe>
       </div>
 
