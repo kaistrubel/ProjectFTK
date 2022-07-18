@@ -85,7 +85,7 @@ const Lessons = (props: any) => {
           : <></>
         }
           {
-          props.loading === false && props.selectedCourse.id != ""
+          props.loading === false && props.selectedCourse?.id != ""
           ?
           <div className="grid pl-10 pb-8">
             <Listbox value={selectedunit} onChange={setSelectedUnit}>
