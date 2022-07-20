@@ -77,10 +77,11 @@ const v4 = () => {
       <section className="w-screen h-screen flex items-center flex-col bg-[url('assets/images/hero_wide.png')] bg-cover bg-center">
         <div className=" w-screen h-screen grid grid-rows-6 grid-flow-col justify-center content-center text-white pt-20 bg-gradient-to-t from-black">
           <div className="row-span-2">
-          <div className="bubble">Welcome to <strong>Project FTK.</strong> </div>
+          <div className="bubble bubble-header">Welcome to <strong>Project FTK.</strong> </div>
           </div>
-          <div className="row-span-2 pt-20 text-center">
-          <div className="text-xl">Enter your email to verify a teacher account.</div>
+          <div className="row-span-2 pt-16 text-center">
+          <div className="text-3xl">Enter your email to verify a teacher account.</div>
+            <div className='center'>
           <div className="w-96 flex outline outline-4 text-black">
             <input className="w-full focus:outline-none text-gray-400 px-4 py-3 bg-white focus:text-black" placeholder="Email address" type="text" />
             <div className="bg-red flex-shrink-0 flex ">
@@ -91,9 +92,10 @@ const v4 = () => {
               </button>
             </div>
             </div>
+            </div>
           </div>
           <div  className='row-span-1'>
-          <div className="text-xl text-center">Students and verified Teachers</div>
+          <div className="text-3xl text-center">Students and verified Teachers</div>
             <div className='center'>
               <GoogleButton onClick={() => { console.log('Google button clicked') }}/>
             </div>
