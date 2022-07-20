@@ -102,9 +102,9 @@ const v4 = () => {
       </section>
 
       <section className="   flex-col sm:flex-row h-full  flex  border-gray-700 border-t-8  min-half-screen  w-full z-50 text-white   bg-black">
-        <div className="flex my-auto  h-full justify-center   items-center  flex-col sm:w-1/2 w-full p-12">
-          <div className="text-left  w-full bubble bubble-align-start w-fit">Teachers.</div>
-          <div className="text-xl bubble bubble-align-start w-fit">Get analytics on the class status, as well as individual students.</div>
+        <div className="flex my-auto h-full justify-center   items-center  flex-col sm:w-1/2 w-full p-12">
+          <div className="text-xl bubble bubble-align-start w-fit bubble-no-margin"> <strong>A complete student success platform, offering analysis of the classroom progress and performance with suggestions for topics to cover in class and individual student suggestions.</strong></div>
+          <div className="text-xl bubble bubble-align-start w-fit bubble-no-margin"> <strong>Bring your own problems and videos, mix and match with the best content from the community. Benefit from the curated content, organized to meet state standards.</strong></div>
         </div>
         <div className="flex my-auto  h-full justify-center   items-center  flex-col sm:w-1/2 w-full p-12">
         <div className="flex-1 w-full bg-[url('assets/images/teacher_signin.png')] comic-border bg-center bg-auto">
@@ -123,9 +123,8 @@ const v4 = () => {
             </div>
           </div>
         </div>
-        <div className="flex my-auto  h-full justify-center   items-center  flex-col sm:w-1/2 w-full p-12">
-          <div className="text-left  w-full bubble bubble-align-start w-fit">Students.</div>
-          <div className="text-xl bubble bubble-align-start w-fit">Get personalized problems and see where your pace is in the course and compared to the rest of the class.</div>
+        <div className="flex my-auto h-full justify-center   items- center  flex-col sm:w-1/2 w-full p-12">
+          <div className="text-xl bubble bubble-align-start w-fit"><strong>Personalized learning so students can progress at a dynamic pace, according to their abilities and knowledge gaps.</strong></div>
         </div>
       </section>
     </div>
