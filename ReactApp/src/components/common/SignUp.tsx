@@ -1,4 +1,5 @@
 import GoogleButton from 'react-google-button'
+import { useNavigate } from 'react-router-dom';
 
 const v1 = () => {
     return (
@@ -70,17 +71,19 @@ const SignUp = () => {
   );
 };
 
-const v4 = () => {
+const V4 = () => {
+
+  const navigate = useNavigate();
   return (
     <>
     <div className="bg-black">
       <section className="w-screen h-screen flex items-center flex-col bg-[url('assets/images/hero_wide.png')] bg-cover bg-center">
         <div className=" w-screen h-screen grid grid-rows-6 grid-flow-col justify-center content-center text-white pt-20 bg-gradient-to-t from-black">
-          <div className="row-span-2">
+          <div className="row-span-3 pt-20">
           <div className="bubble bubble-header">Welcome to <strong>Project FTK.</strong> </div>
           </div>
-          <div className="row-span-2 pt-16 text-center">
-          <div className="text-3xl">Enter your email to verify a teacher account.</div>
+          <div  className='row-span-1 hidden'>
+          <div className="text-3xl">Enter your email to start a teacher account</div>
             <div className='center'>
           <div className="w-96 flex outline outline-4 text-black">
             <input className="w-full focus:outline-none text-gray-400 px-4 py-3 bg-white focus:text-black" placeholder="Email address" type="text" />
@@ -94,10 +97,10 @@ const v4 = () => {
             </div>
             </div>
           </div>
-          <div  className='row-span-1'>
-          <div className="text-3xl text-center">Students and verified Teachers</div>
+          <div className="row-span-2 pt-16 text-center">
+          <div className="text-3xl text-center pb-10">Students and Teachers</div>
             <div className='center'>
-              <GoogleButton onClick={() => { console.log('Google button clicked') }}/>
+              <GoogleButton onClick={() => {navigate('/Auth/GoogleLogin?isTeacher=true') }}/>
             </div>
           </div>
         </div>
@@ -105,8 +108,8 @@ const v4 = () => {
 
       <section className="   flex-col sm:flex-row h-full  flex  border-gray-700 border-t-8  min-half-screen  w-full z-50 text-white   bg-black">
         <div className="flex my-auto h-full justify-center   items-center  flex-col sm:w-1/2 w-full p-12">
-          <div className="text-xl bubble bubble-align-start w-fit bubble-no-margin"> <strong>A complete student success platform, offering analysis of the classroom progress and performance with suggestions for topics to cover in class and individual student suggestions.</strong></div>
-          <div className="text-xl bubble bubble-align-start w-fit bubble-no-margin"> <strong>Bring your own problems and videos, mix and match with the best content from the community. Benefit from the curated content, organized to meet state standards.</strong></div>
+          <div className="text-xl w-fit"> <strong>A complete student success platform, offering analysis of the classroom progress and performance with suggestions for topics to cover in class and individual student suggestions.</strong></div>
+          <div className="text-xl w-fit pt-10"> <strong>Bring your own problems and videos, mix and match with the best content from the community. Benefit from the curated content, organized to meet state standards.</strong></div>
         </div>
         <div className="flex my-auto  h-full justify-center   items-center  flex-col sm:w-1/2 w-full p-12">
         <div className="flex-1 w-full bg-[url('assets/images/teacher_signin.png')] comic-border bg-center bg-auto">
@@ -126,7 +129,7 @@ const v4 = () => {
           </div>
         </div>
         <div className="flex my-auto h-full justify-center   items- center  flex-col sm:w-1/2 w-full p-12">
-          <div className="text-xl bubble bubble-align-start w-fit"><strong>Personalized learning so students can progress at a dynamic pace, according to their abilities and knowledge gaps.</strong></div>
+          <div className="text-xl w-fit"><strong>Personalized learning so students can progress at a dynamic pace, according to their abilities and knowledge gaps.</strong></div>
         </div>
       </section>
     </div>
@@ -134,4 +137,4 @@ const v4 = () => {
   );
 };
 
-export default v4;
+export default V4;
