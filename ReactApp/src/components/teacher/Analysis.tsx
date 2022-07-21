@@ -7,10 +7,10 @@ const Analysis = (props: any) => {
   const [analysis, setAnalysis] = useState<IStudentAnalysis[]>([]);
   
   useMemo(() => {
-        props.selectedCourse?.courseSlug && LessonApi.getStudentAnalysis(props.selectedCourse?.courseSlug, props.selectedCourse?.startDate, props.selectedCourse.students)
+        props.selectedCourse?.courseSlug && LessonApi.getStudentAnalysis(props.selectedCourse?.courseSlug, props.selectedCourse?.startDate, props.selectedCourse?.users)
         .then((response) => {
             setAnalysis(response.data)
-            console.log(response.data[0].name)
+            console.log(response.data)
         })
         .catch((e: Error) => {
           console.log(e);
@@ -19,7 +19,7 @@ const Analysis = (props: any) => {
 
     return (
       <>
-
+        <h1>ello world</h1>
       </>
   );
 };

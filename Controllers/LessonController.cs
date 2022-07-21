@@ -74,6 +74,7 @@ public class LessonController : Controller
     [Authorize(Roles = CustomRoles.Teacher)]
     public async Task<List<StudentAnalysis>> GetAnalysis(string courseSlug, string startDate, [FromBody] List<string> studentEmails)
     {
+        //var studentEmails = studentEmailsResp.Emails;
         var studentData = new ConcurrentBag<StudentAnalysis>();
         var usersContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
         List<(string, PartitionKey)> studenQueries = studentEmails
@@ -118,7 +119,7 @@ public class LessonController : Controller
             });
         });
 
-        return studentData.ToList();
+        return studentData.OrderBy(x=>x.Status == "Warning").ThenBy(x=>x.Status == "Behind").ToList();
     }
 
     private int SchoolDaysDifference(DateTime startDate, DateTime endDate, IEnumerable<DateTime> holidays)

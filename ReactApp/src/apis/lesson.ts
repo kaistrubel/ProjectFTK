@@ -11,7 +11,7 @@ const getProblems = (lessonId: string) => {
   };
 
 const getStudentAnalysis = (courseSlug: string, startDate: string, emails: string[]) => {
-  return http.post<IStudentAnalysis[]>(`lesson//GetAnalysis/?courseSlug=${courseSlug}&startDate${startDate}`, emails);
+  return http.post<IStudentAnalysis[]>(`lesson/GetAnalysis/?courseSlug=${courseSlug}&startDate=${startDate}`, emails);
 }
 
 const LessonApi = {

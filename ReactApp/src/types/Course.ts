@@ -3,7 +3,7 @@ export default interface ICourse {
     code: string,
     startDate: string,
     teacherEmail: string,
-    students: string[],
+    users: string[],
     courseSlug: string,
     displayName: string,
   }
