@@ -13,6 +13,8 @@ public class LessonInfo
 
 	public int Order { get; set; }
 
+	public int Days { get; set; }
+
 	public string CourseSlug { get; set; }
 }
 

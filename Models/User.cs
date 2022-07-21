@@ -34,4 +34,17 @@ namespace ProjectFTK.Models
 
 		public Progress UpdatedProgress { get; set; }
 	}
+
+	public class StudentAnalysis
+	{
+		public string Name { get; set; }
+
+		public string PhotoUrl { get; set; }
+
+		public string Current { get; set; }
+
+		public string Status { get; set; }
+
+		public string Time { get; set; }
+	}
 }

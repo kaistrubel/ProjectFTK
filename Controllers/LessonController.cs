@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -63,11 +64,81 @@ public class LessonController : Controller
     }
 
     [HttpGet]
-    public async Task<List<LessonInfo>> GetLessons(string courseSlug)
+    public List<LessonInfo> GetLessons(string courseSlug)
     {
         var lessonsJson = System.IO.File.ReadAllText($"DataJson/Courses/{courseSlug}.json");
         var lessons = JsonConvert.DeserializeObject<List<LessonInfo>>(lessonsJson);
 
         return lessons;
+    }
+
+    [HttpPost]
+    [Authorize(Roles = CustomRoles.Teacher)]
+    public async Task GetAnalysis(string courseSlug, string startDate, [FromBody] List<string> studentEmails)
+    {
+        var studentData = new ConcurrentBag<StudentAnalysis>();
+        var usersContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
+        List<(string, PartitionKey)> studenQueries = studentEmails
+            .Where(x => x != User.Identity.Email())
+            .Select(x => (x, PartitionKey.None))
+            .ToList();
+        List<Models.User> students;
+
+        var courseLessons = GetLessons(courseSlug);
+        var courseLessonIds = courseLessons.Select(x => x.LessonId);
+        var studentsData = await usersContainer.ReadManyItemsAsync<Models.User>(studenQueries);
+        students = studentsData.Resource.ToList();
+
+        Parallel.ForEach(students, student =>
+        {
+            /*
+            var courseProg = student.ProgressList
+            .Where(x => courseLessonIds.Contains(x.LessonId))
+            .OrderBy(x => courseLessons.First(y => y.LessonId == x.LessonId).Order)
+            .ToList();
+            */
+
+            var courseProg = courseLessons
+                            .Where(y => student.ProgressList
+                            .Select(x => x.LessonId)
+                            .Contains(y.LessonId))
+                            .OrderBy(x => x.Order);
+
+            var current = courseProg.Last();
+            var studentDays = courseProg.Sum(x => x.Days);
+            var expectedDays = SchoolDaysDifference(DateTime.Parse(startDate), DateTime.Now, null);
+            var status = studentDays > expectedDays ? "OnTrack" : studentDays + 3 > expectedDays ? "Warning" : "Behind"; 
+
+            var time = TimeSpan.FromSeconds(student.ProgressList.Sum(x => x.ActiveSeconds));
+            studentData.Add(new StudentAnalysis
+            {
+                Name = student.Name,
+                PhotoUrl = student.PhotoUrl,
+                Time = time.ToString(@"hh\:mm\:ss\:fff"),
+                Current = current.Name, //might want to format this Unit1 Lesson2 etc.
+                Status = status
+            });
+        });
+    }
+
+
+    public int SchoolDaysDifference(this DateTime startDate, DateTime endDate, IEnumerable<DateTime> holidays)
+    {
+        if (startDate > endDate)
+        {
+            throw new Exception($"{startDate} cannot be greater than {endDate}.");
+        }
+
+        int cnt = 0;
+        for (var current = startDate; current < endDate; current = current.AddDays(1))
+        {
+            if (current.DayOfWeek != DayOfWeek.Saturday
+                || current.DayOfWeek != DayOfWeek.Sunday
+                || (holidays != null && holidays.Contains(current.Date) == false))
+            {
+                cnt++;
+            }
+        }
+        return cnt;
     }
 }
