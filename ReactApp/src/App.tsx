@@ -11,6 +11,7 @@ import UserApi from './apis/user';
 import IUser, { Progress } from './types/User';
 import { useLocalStorage } from './components/localStorage';
 import BlocklyProblem from './components/student/BlocklyProblem';
+import Analysis from './components/teacher/Analysis';
 
 function App() {
   const [user, setUser] = useState<IUser>();
@@ -49,6 +50,7 @@ function App() {
         <Route path="/createClass" element={<CreateClass setCourses={setCourses} setSelectedCourse={setSelectedCourse} loading={loading} />} />
         <Route path="/joinClass" element={<JoinClass setCourses={setCourses} setSelectedCourse={setSelectedCourse} loading={loading} />} />
         <Route path="/blockly" element={<BlocklyProblem user={user} lessonId={lessonId}/>} />
+        <Route path="/analysis" element={<Analysis selectedCourse={selectedCourse}/>} />
         </Routes>
     </>
   );

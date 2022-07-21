@@ -21,8 +21,6 @@ public class LessonController : Controller
     private readonly ILogger<LessonController> _logger;
     private readonly CosmosClient _cosmosClient;
 
-
-
     public LessonController(ILogger<LessonController> logger, CosmosClient cosmosClient, CosmosServices cosmosServices)
     {
         _logger = logger;
@@ -74,7 +72,7 @@ public class LessonController : Controller
 
     [HttpPost]
     [Authorize(Roles = CustomRoles.Teacher)]
-    public async Task GetAnalysis(string courseSlug, string startDate, [FromBody] List<string> studentEmails)
+    public async Task<List<StudentAnalysis>> GetAnalysis(string courseSlug, string startDate, [FromBody] List<string> studentEmails)
     {
         var studentData = new ConcurrentBag<StudentAnalysis>();
         var usersContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
@@ -119,10 +117,11 @@ public class LessonController : Controller
                 Status = status
             });
         });
+
+        return studentData.ToList();
     }
 
-
-    public int SchoolDaysDifference(this DateTime startDate, DateTime endDate, IEnumerable<DateTime> holidays)
+    private int SchoolDaysDifference(DateTime startDate, DateTime endDate, IEnumerable<DateTime> holidays)
     {
         if (startDate > endDate)
         {

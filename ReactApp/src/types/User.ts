@@ -8,6 +8,14 @@ export default interface IUser {
   isTeacher: boolean,
 }
 
+export interface IStudentAnalysis{
+  name: string,
+  pictureUrl: string,
+  current: string,
+  status: string,
+  time: string,
+}
+
 export class Progress {
   constructor(public lessonId: string, public level: number, public activeSeconds: number, public attempts: number) {
     this.lessonId = lessonId;
