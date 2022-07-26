@@ -1,20 +1,12 @@
 import { Fragment, useState, useMemo, useEffect } from "react";
 import { Disclosure, Listbox, Menu, Transition } from '@headlessui/react'
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
-import { MenuIcon, XIcon } from '@heroicons/react/outline'
+import { ChevronDownIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
 import ftkLogo from '../../assets/images/logo.png';
 import ICourse from "../../types/Course";
 import { Link } from "react-router-dom";
-/*
-const navigation = [
-  { name: 'Dashboard', href: '#', current: true },
-  { name: 'Team', href: '#', current: false },
-  { name: 'Projects', href: '#', current: false },
-  { name: 'Calendar', href: '#', current: false },
-]
-*/
 
-const navigation: any[] = []
+let navigation: any[] = []
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -28,6 +20,13 @@ export default function Navbar(props: any) {
       props.setSelectedCourse(props.courses[0]);
     }
     props.setLoading(false);
+    if(props.user?.isTeacher == true)
+    {
+      navigation = [
+        { name: 'Lessons', href: '/' },
+        { name: 'Analysis', href: '/analysis' },
+      ]
+    }
   }, [props.courses])
 
   return (
@@ -47,8 +46,8 @@ export default function Navbar(props: any) {
                   )}
                 </Disclosure.Button>
               </div>
-              <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                <div className="flex-shrink-0 flex items-center">
+              <div className="flex items-center justify-start sm:items-stretch">
+                <div className="flex-shrink-0 flex justify-self-start">
                   <a href="/">
                     <img
                       className="block h-8 w-auto"
@@ -57,6 +56,8 @@ export default function Navbar(props: any) {
                     />
                   </a>
                 </div>
+              </div>
+              <div className="flex-1 flex items-center justify-center sm:items-stretch">
                 <div className="hidden sm:block sm:ml-6">
                   <div className="flex space-x-4">
                     {navigation.map((item) => (
@@ -64,10 +65,9 @@ export default function Navbar(props: any) {
                         key={item.name}
                         href={item.href}
                         className={classNames(
-                          item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                          'text-gray-300 hover:bg-gray-700 hover:text-white',
                           'px-3 py-2 rounded-md text-sm font-medium'
                         )}
-                        aria-current={item.current ? 'page' : undefined}
                       >
                         {item.name}
                       </a>
@@ -134,6 +134,7 @@ export default function Navbar(props: any) {
                 {/* Profile dropdown */}
                 <Menu as="div" className="ml-3 relative">
                   <div>
+                    <ChevronDownIcon className="float-right mt-2 h-4 w-4 text-white" aria-hidden="true" />
                     <Menu.Button className="bg-gray-800 flex text-sm rounded-full focus:outline-none">
                       <span className="sr-only">Open user menu</span>
                       <img
@@ -203,17 +204,16 @@ export default function Navbar(props: any) {
           </div>
 
           <Disclosure.Panel className="sm:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1">
+            <div className="px-2 pt-2 pb-3 space-y-1 center">
               {navigation.map((item) => (
                 <Disclosure.Button
                   key={item.name}
                   as="a"
                   href={item.href}
                   className={classNames(
-                    item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                    'text-gray-300 hover:bg-gray-700 hover:text-white',
                     'block px-3 py-2 rounded-md text-base font-medium'
                   )}
-                  aria-current={item.current ? 'page' : undefined}
                 >
                   {item.name}
                 </Disclosure.Button>

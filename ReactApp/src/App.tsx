@@ -50,7 +50,7 @@ function App() {
         <Route path="/createClass" element={<CreateClass setCourses={setCourses} setSelectedCourse={setSelectedCourse} loading={loading} />} />
         <Route path="/joinClass" element={<JoinClass setCourses={setCourses} setSelectedCourse={setSelectedCourse} loading={loading} />} />
         <Route path="/blockly" element={<BlocklyProblem user={user} lessonId={lessonId}/>} />
-        <Route path="/analysis" element={<Analysis selectedCourse={selectedCourse}/>} />
+        <Route path="/analysis" element={<Analysis selectedCourse={selectedCourse} loading={loading}/>} />
         </Routes>
     </>
   );

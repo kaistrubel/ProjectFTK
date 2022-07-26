@@ -4,6 +4,7 @@ import { Doughnut } from 'react-chartjs-2';
 import 'chart.js/auto';
 import LessonApi from "../../apis/lesson";
 import { IStudentAnalysis } from "../../types/User";
+import Loading from '../common/Loading';
 
 const Analysis = (props: any) => {
 
@@ -12,8 +13,8 @@ const Analysis = (props: any) => {
   const options = {
     plugins: {
       legend: {
-        position: 'bottom' as const
-      }
+        position: 'bottom' as const,
+      },
     }
   }
   useMemo(() => {
@@ -28,6 +29,9 @@ const Analysis = (props: any) => {
     }, [])
 
     return (
+        props.loading == true
+        ? <Loading />
+        :
       <>
       <div className="grid pt-10 gap-20 center">
         <div className="w-1/4 p-4 bg-white rounded-lg shadow-xs bg-zinc-900">
@@ -40,7 +44,7 @@ const Analysis = (props: any) => {
                      * These colors come from Tailwind CSS palette
                      * https://tailwindcss.com/docs/customizing-colors/#default-color-palette
                      */
-                    backgroundColor: ['red', 'orange', 'green'],
+                    backgroundColor: ['#991b1b', '#f97316', '#166534'],
                     label: 'Split',
                     },
                 ],
@@ -79,7 +83,7 @@ const Analysis = (props: any) => {
                 {analysis.map((student: IStudentAnalysis) => (
                 <TableRow key={student.name} className='bg-zinc-900 text-white'>
                     <TableCell>
-                        <div className="flex items-center text-sm">
+                        <div className="flex items-center text-md">
                             <Avatar src={student.pictureUrl} alt={student.name} />
                             <span className="font-semibold ml-2">{student.name}</span>
                         </div>
@@ -87,15 +91,15 @@ const Analysis = (props: any) => {
                     <TableCell>
                         <Badge type="success" className={
                             student.status == "Behind" ? 'bg-red-800'
-                            : student.status == "Warning" ? 'bg-orange-700'
+                            : student.status == "Warning" ? 'bg-orange-500'
                             : 'bg-green-800'
                         }>{student.status}</Badge>
                     </TableCell>
                     <TableCell>
-                        <span className="text-sm">{student.current}</span>
+                        <span className="text-md">{student.current}</span>
                     </TableCell>
                     <TableCell>
-                        <span className="text-sm">{student.time}</span>
+                        <span className="text-md">{student.time}</span>
                     </TableCell>
                 </TableRow>
                 ))}
