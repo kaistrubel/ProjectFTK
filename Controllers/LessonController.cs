@@ -113,12 +113,12 @@ public class LessonController : Controller
                 Name = student.Name,
                 PhotoUrl = student.PhotoUrl,
                 Time = time.ToString(@"hh\:mm\:ss\:fff"),
-                Current = current.Name, //might want to format this Unit1 Lesson2 etc.
+                Current = "L" + current.Order + ": " + current.Name, //might want to format this Unit1 Lesson2 etc.
                 Status = status
             });
         });
 
-        return studentData.OrderBy(x=>x.Status == "Warning").ThenBy(x=>x.Status == "Behind").ToList();
+        return studentData.OrderBy(x=>x.Current).ThenBy(x=>x.Status == "Warning").ThenBy(x=>x.Status == "Behind").ToList();
     }
 
     private int SchoolDaysDifference(DateTime startDate, DateTime endDate, IEnumerable<DateTime> holidays)
