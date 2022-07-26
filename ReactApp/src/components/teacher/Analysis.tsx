@@ -20,19 +20,20 @@ const Analysis = (props: any) => {
 
     return (
       <>
-        <TableContainer>
+      <div className='center pt-20'>
+        <TableContainer className='w-3/4'>
             <Table>
                 <TableHeader>
-                <TableRow>
+                <TableRow className='bg-zinc-900 text-white'>
                     <TableCell>Student</TableCell>
-                    <TableCell>Current</TableCell>
                     <TableCell>Status</TableCell>
+                    <TableCell>Current</TableCell>
                     <TableCell>Time Spent</TableCell>
                 </TableRow>
                 </TableHeader>
                 <TableBody>
                 {analysis.map((student: IStudentAnalysis) => (
-                <TableRow>
+                <TableRow className='bg-zinc-900 text-white'>
                     <TableCell>
                         <div className="flex items-center text-sm">
                             <Avatar src={student.pictureUrl} alt={student.name} />
@@ -40,7 +41,11 @@ const Analysis = (props: any) => {
                         </div>
                     </TableCell>
                     <TableCell>
-                        <Badge type="success">{student.status}</Badge>
+                        <Badge type="success" className={
+                            student.status == "Behind" ? 'bg-red-800'
+                            : student.status == "Warning" ? 'bg-orange-700'
+                            : 'bg-green-800'
+                        }>{student.status}</Badge>
                     </TableCell>
                     <TableCell>
                         <span className="text-sm">{student.current}</span>
@@ -52,10 +57,11 @@ const Analysis = (props: any) => {
                 ))}
                 </TableBody>
             </Table>
-            <TableFooter>
-                <Pagination totalResults={10} resultsPerPage={4} onChange={() => {}} label="Table navigation" />
+            <TableFooter className='text-white'>
+                <Pagination totalResults={analysis.length} resultsPerPage={10} onChange={() => {}} label="Table navigation" />
             </TableFooter>
         </TableContainer>
+      </div>
       </>
   );
 };

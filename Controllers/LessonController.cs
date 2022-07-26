@@ -74,7 +74,6 @@ public class LessonController : Controller
     [Authorize(Roles = CustomRoles.Teacher)]
     public async Task<List<StudentAnalysis>> GetAnalysis(string courseSlug, string startDate, [FromBody] List<string> studentEmails)
     {
-        //var studentEmails = studentEmailsResp.Emails;
         var studentData = new ConcurrentBag<StudentAnalysis>();
         var usersContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
         List<(string, PartitionKey)> studenQueries = studentEmails

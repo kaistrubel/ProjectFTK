@@ -100,7 +100,7 @@ const V4 = () => {
           <div className="row-span-2 pt-16 text-center">
           <div className="text-3xl text-center pb-10">Students and Teachers</div>
             <div className='center'>
-              <GoogleButton onClick={() => {navigate('/Auth/GoogleLogin?isTeacher=true') }}/>
+              <GoogleButton className='outline outline-4' onClick={() => {navigate('/Auth/GoogleLogin?isTeacher=true') }}/>
             </div>
           </div>
         </div>
