@@ -25,7 +25,8 @@ export default function Navbar(props: any) {
     props.setLoading(false);
     if(props.user?.isTeacher == true)
     {
-      navigation.push({ name: 'Analysis', href: '/analysis' })
+      if(!navigation.find(x=>x.name === "Analysis"))
+        navigation.push({ name: 'Analysis', href: '/analysis' })
     }
   }, [props.courses])
 
