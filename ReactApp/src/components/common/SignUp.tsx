@@ -79,7 +79,7 @@ const V4 = () => {
     <div className="bg-black">
       <section className="w-screen h-screen flex items-center flex-col bg-[url('assets/images/hero_wide.png')] bg-cover bg-center">
         <div className=" w-screen h-screen grid grid-rows-6 grid-flow-col justify-center content-center text-white pt-20 bg-gradient-to-t from-black">
-          <div className="row-span-3 pt-20">
+          <div className="row-span-2">
           <div className="bubble bubble-header">Welcome to <strong>Project FTK.</strong> </div>
           </div>
           <div  className='row-span-1 hidden'>
@@ -98,9 +98,9 @@ const V4 = () => {
             </div>
           </div>
           <div className="row-span-2 pt-16 text-center">
-          <div className="text-3xl text-center pb-10">Students and Teachers</div>
+          <div className="text-3xl text-center pb-5">Ready to get started?</div>
             <div className='center'>
-              <GoogleButton className='outline outline-4' onClick={() => {navigate('/Auth/GoogleLogin?isTeacher=true') }}/>
+              <GoogleButton className='outline outline-2' onClick={() => {navigate('/Auth/GoogleLogin') }}/>
             </div>
           </div>
         </div>

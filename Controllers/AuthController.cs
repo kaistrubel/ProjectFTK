@@ -25,7 +25,7 @@ public class AuthController : Controller
     }
     
 
-    public async Task<IActionResult> GoogleResponse(string returnUrl, bool isTeacher = false)
+    public async Task<IActionResult> GoogleResponse(string returnUrl)
     {
         var authenticateResult = await HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
         if (!authenticateResult.Succeeded)
@@ -37,12 +37,9 @@ public class AuthController : Controller
         claimsIdentity.AddClaim(authenticateResult.Principal.FindFirst(ClaimTypes.Email));
         claimsIdentity.AddClaim(authenticateResult.Principal.FindFirst(GoogleClaims.PictureUrl));
 
-        if (isTeacher)
+        if (ValidateTeacherEmail(authenticateResult.Principal.FindFirst(ClaimTypes.Email).Value))
         {
-            if (ValidateTeacherEmail(authenticateResult.Principal.FindFirst(ClaimTypes.Email).Value))
-            {
-                claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, CustomRoles.Teacher));
-            }
+            claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, CustomRoles.Teacher));
         }
 
         await HttpContext.SignInAsync(
