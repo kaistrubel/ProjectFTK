@@ -57,7 +57,7 @@ export default function Navbar(props: any) {
                   </a>
                 </div>
               </div>
-              <div className="flex-1 flex items-center justify-center sm:items-stretch">
+              <div className="flex-1 flex pl-52 items-center justify-center sm:items-stretch">
                 <div className="hidden sm:block sm:ml-6">
                   <div className="flex space-x-4">
                     {navigation.map((item) => (
@@ -66,7 +66,7 @@ export default function Navbar(props: any) {
                         href={item.href}
                         className={classNames(
                           'text-gray-300 hover:bg-gray-700 hover:text-white',
-                          'px-3 py-2 rounded-md text-sm font-medium'
+                          'px-3 py-2 rounded-md font-medium'
                         )}
                       >
                         {item.name}

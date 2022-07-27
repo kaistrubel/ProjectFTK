@@ -112,7 +112,7 @@ public class LessonController : Controller
             {
                 Name = student.Name,
                 PhotoUrl = student.PhotoUrl,
-                Time = time.ToString(@"hh\:mm\:ss"),
+                Time = time.ToString(@"hh\:mm\:ss"), //account for greater than one day, maybe 4 days
                 Current = "L" + current.Order + ": " + current.Name, //might want to format this Unit1 Lesson2 etc.
                 Status = status
             });

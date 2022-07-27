@@ -51,22 +51,6 @@ const Analysis = (props: any) => {
                 labels: ['Behind', 'Warning', 'OnTrack'],
             }} options={options}/>
         </div>
-        <div className="w-1/4 p-4 bg-white rounded-lg shadow-xs bg-zinc-900">
-            <Doughnut data={{
-                datasets: [
-                    {
-                    data: data,
-                    /**
-                     * These colors come from Tailwind CSS palette
-                     * https://tailwindcss.com/docs/customizing-colors/#default-color-palette
-                     */
-                    backgroundColor: ['red', 'orange', 'green'],
-                    label: 'Split',
-                    },
-                ],
-                labels: ['Behind', 'Warning', 'OnTrack'],
-            }} options={options} />
-        </div>
       </div>
       <div className='center pt-20'>
         <TableContainer className='w-3/4'>
