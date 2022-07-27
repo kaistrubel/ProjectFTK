@@ -77,7 +77,7 @@ const Analysis = (props: any) => {
                     labels: currentLabels,
                     datasets: [
                       {
-                        backgroundColor: '#571aad',
+                        backgroundColor: '#a434eb',
                         borderWidth: 2,
                         borderColor: '#fff',
                         data: currentData,

@@ -42,6 +42,10 @@ body {
   }
 }
 
+.bg{
+  background-color: #20085f;
+}
+
 .landing-info{
   height: 25rem;
 }

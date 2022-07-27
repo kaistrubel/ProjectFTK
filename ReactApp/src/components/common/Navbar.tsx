@@ -6,7 +6,10 @@ import ftkLogo from '../../assets/images/logo.png';
 import ICourse from "../../types/Course";
 import { Link } from "react-router-dom";
 
-let navigation: any[] = []
+let navigation: any[] = [
+  { name: 'Lessons', href: '/' },
+  { name: 'Sandbox', href: '/sandbox' },
+]
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -22,10 +25,7 @@ export default function Navbar(props: any) {
     props.setLoading(false);
     if(props.user?.isTeacher == true)
     {
-      navigation = [
-        { name: 'Lessons', href: '/' },
-        { name: 'Analysis', href: '/analysis' },
-      ]
+      navigation.push({ name: 'Analysis', href: '/analysis' })
     }
   }, [props.courses])
 
