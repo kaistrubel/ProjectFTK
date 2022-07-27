@@ -26,7 +26,7 @@ const Analysis = (props: any) => {
         .catch((e: Error) => {
           console.log(e);
         });
-    }, [])
+    }, [props.selectedCourse])
 
     return (
         props.loading == true
@@ -90,7 +90,7 @@ const Analysis = (props: any) => {
                 </TableBody>
             </Table>
             <TableFooter>
-                <Pagination totalResults={analysis.length} resultsPerPage={10} onChange={() => {}} label="Table navigation" />
+                <Pagination totalResults={analysis.length} resultsPerPage={50} onChange={() => {}} label="Table navigation" />
             </TableFooter>
         </TableContainer>
       </div>
