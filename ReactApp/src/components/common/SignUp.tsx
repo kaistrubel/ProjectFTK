@@ -100,7 +100,7 @@ const V4 = () => {
           <div className="row-span-2 pt-16 text-center">
           <div className="text-3xl text-center pb-5">Ready to get started?</div>
             <div className='center'>
-              <GoogleButton className='outline outline-2' onClick={() => {navigate('/Auth/GoogleLogin') }}/>
+              <GoogleButton className='outline outline-2' onClick={() => {window.location.href = '/Auth/GoogleLogin' }}/>
             </div>
           </div>
         </div>

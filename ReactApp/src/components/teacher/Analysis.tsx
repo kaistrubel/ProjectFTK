@@ -1,6 +1,6 @@
 import {TableContainer,Table,TableHeader,TableBody,TableRow,TableCell, Avatar, Badge, TableFooter, Pagination} from '@windmill/react-ui'
 import { useMemo, useState } from "react";
-import { Doughnut } from 'react-chartjs-2';
+import { Bar, Doughnut } from 'react-chartjs-2';
 import 'chart.js/auto';
 import LessonApi from "../../apis/lesson";
 import { IStudentAnalysis } from "../../types/User";
@@ -9,19 +9,39 @@ import Loading from '../common/Loading';
 const Analysis = (props: any) => {
 
   const [analysis, setAnalysis] = useState<IStudentAnalysis[]>([]);
-  const [data, setData] = useState<number[]>();
-  const options = {
+  const [statusData, setStatusData] = useState<number[]>();
+  const [currentLabels, setCurrentLabels] = useState<string[]>();
+  const [currentData, setCurrentData] = useState<number[]>();
+  const statusOptions = {
     plugins: {
       legend: {
         position: 'bottom' as const,
       },
     }
   }
+
+    const currentOptions = {
+    plugins: {
+      legend: {
+        display: false
+      },
+    }
+  }
+
+
+  const groupBy = <T, K extends keyof any>(arr: T[], key: (i: T) => K) =>
+  arr.reduce((groups, item) => {
+    (groups[key(item)] ||= []).push(item);
+    return groups;
+  }, {} as Record<K, T[]>);
+
   useMemo(() => {
         props.selectedCourse?.courseSlug && LessonApi.getStudentAnalysis(props.selectedCourse?.courseSlug, props.selectedCourse?.startDate, props.selectedCourse?.users)
         .then((response) => {
             setAnalysis(response.data)
-            setData([response.data.filter(x=>x.status == "Behind").length, response.data.filter(x=>x.status == "Warning").length, response.data.filter(x=>x.status == "OnTrack").length])
+            setStatusData([response.data.filter(x=>x.status == "Behind").length, response.data.filter(x=>x.status == "Warning").length, response.data.filter(x=>x.status == "OnTrack").length])
+            setCurrentLabels(Object.keys(response.data.reduce((a, c) => (a[c.current] = (a[c.current] || 0) + 1, a), Object.create(null))))
+            setCurrentData(Object.values(response.data.reduce((a, c) => (a[c.current] = (a[c.current] || 0) + 1, a), Object.create(null))))
         })
         .catch((e: Error) => {
           console.log(e);
@@ -35,11 +55,11 @@ const Analysis = (props: any) => {
       <>
       <div className="grid pt-10 gap-20 center">
         <div className="w-1/4 p-4 bg-white rounded-lg shadow-xs bg-zinc-900">
-            <p className=" center mb-4 font-semibold text-gray-800 dark:text-gray-300">Split</p>
+            <p className=" center mb-4 font-semibold text-gray-800 dark:text-gray-300">Status</p>
             <Doughnut data={{
                 datasets: [
                     {
-                    data: data,
+                    data: statusData,
                     /**
                      * These colors come from Tailwind CSS palette
                      * https://tailwindcss.com/docs/customizing-colors/#default-color-palette
@@ -49,7 +69,21 @@ const Analysis = (props: any) => {
                     },
                 ],
                 labels: ['Behind', 'Warning', 'OnTrack'],
-            }} options={options}/>
+            }} options={statusOptions}/>
+        </div>
+        <div className="w-1/2 p-4 bg-white rounded-lg shadow-xs bg-zinc-900">
+            <p className=" center mb-4 font-semibold text-gray-800 dark:text-gray-300">Current</p>
+            <Bar data={{
+                    labels: currentLabels,
+                    datasets: [
+                      {
+                        backgroundColor: '#571aad',
+                        borderWidth: 2,
+                        borderColor: '#fff',
+                        data: currentData,
+                      },
+                    ],
+            }} options={currentOptions}/>
         </div>
       </div>
       <div className='center pt-20'>
