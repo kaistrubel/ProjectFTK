@@ -65,6 +65,16 @@ const Lessons = (props: any) => {
     return false;
   }
 
+  function isFutureLesson(lessonId: string, prevLessonId: string|null)
+  {
+    if(prevLessonId == null || isDone(prevLessonId))
+    {
+      return false;
+    }
+
+    return true;
+  }
+
     return(
       <>
         <div>
@@ -156,12 +166,12 @@ const Lessons = (props: any) => {
           lessons == []
           ? <Loading />
           :
-            lessons?.sort(l=>l.order).filter(l => l.unit == selectedunit)?.map((lesson: ILesson) => (
+            lessons?.sort(l=>l.order).filter(l => l.unit == selectedunit)?.map((lesson: ILesson, idx: number) => (
             <div key={lesson.name} className="pl-10">
               <Link to= {selectedunit == "Blockly" ? "/blockly" : "/problem"}  onClick={() => {
                                             props.setLessonId(lesson.lessonId);
                                           }}>
-                <button className={"bubble bubble-card hover:bg-indigo-700 hover:text-white" + (isDone(lesson.lessonId) ? " bubble-green" : "")}>
+                <button disabled={isFutureLesson(lesson.lessonId, idx == 0 ? null : lessons[idx-1].lessonId)} className={"bubble bubble-card" + (isDone(lesson.lessonId) ? " bubble-green hover:bg-indigo-700 hover:text-white" : (isFutureLesson(lesson.lessonId, idx == 0 ? null : lessons[idx-1].lessonId) ? "" : " hover:bg-indigo-700 hover:text-white"))}>
                     {lesson.name}
                 </button>
               </Link>
