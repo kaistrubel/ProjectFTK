@@ -122,7 +122,7 @@ public class ClassController : Controller
         }
     }
 
-    [HttpGet]
+    [HttpPost]
     [Authorize(Roles = CustomRoles.Teacher)]
     public async Task RemoveStudentFromClass(string classId, string studentEmail)
     {

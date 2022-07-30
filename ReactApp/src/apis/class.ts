@@ -22,12 +22,17 @@ const joinClass = (teacherEmail: string, code:string) => {
     return http.post<string>(`class/joinclass/?teacherEmail=${teacherEmail}&code=${code}`);
     };
 
+const removeStudent = (classId: string, studentEmail:string) => {
+    return http.post<string>(`class/RemoveStudentFromClass/?classId=${classId}&studentEmail=${studentEmail}`);
+    };
+
 const ClassApi = {
     getCurrentClasses,
     getSupportedSubjects,
     getCodeForClass,
     createClass,
-    joinClass
+    joinClass,
+    removeStudent
   };
   
   export default ClassApi;

@@ -65,7 +65,7 @@ const Lessons = (props: any) => {
     return false;
   }
 
-  function isFutureLesson(lessonId: string, prevLessonId: string|null)
+  function isFutureLesson(prevLessonId: string|null)
   {
     if(prevLessonId == null || isDone(prevLessonId))
     {
@@ -79,7 +79,7 @@ const Lessons = (props: any) => {
       <>
         <div>
         {
-          props.loading === false && props.user?.isTeacher && props.selectedCourse?.id != ""
+          props.loading === false && props.user?.isTeacher && props.selectedCourse?.id
           ?
             <div className="float-right text-right pr-10">
               <div id="showCode">
@@ -95,7 +95,7 @@ const Lessons = (props: any) => {
           : <></>
         }
           {
-          props.loading === false && props.selectedCourse?.id != ""
+          props.loading === false && props.selectedCourse?.id
           ?
           <div className="grid pl-10 pb-8">
             <Listbox value={selectedunit} onChange={setSelectedUnit}>
@@ -156,7 +156,7 @@ const Lessons = (props: any) => {
         props.loading == true
         ? <Loading />
         :
-        props.selectedCourse?.id == ""
+        !props.selectedCourse?.id
         ? <NoClasses isTeacher={props.user.isTeacher}/>
         :
         <>
@@ -171,7 +171,7 @@ const Lessons = (props: any) => {
               <Link to= {selectedunit == "Blockly" ? "/blockly" : "/problem"}  onClick={() => {
                                             props.setLessonId(lesson.lessonId);
                                           }}>
-                <button disabled={isFutureLesson(lesson.lessonId, idx == 0 ? null : lessons[idx-1].lessonId)} className={"bubble bubble-card" + (isDone(lesson.lessonId) ? " bubble-green hover:bg-indigo-700 hover:text-white" : (isFutureLesson(lesson.lessonId, idx == 0 ? null : lessons[idx-1].lessonId) ? " bubble-gray" : " hover:bg-indigo-700 hover:text-white"))}>
+                <button disabled={isFutureLesson(idx == 0 ? null : lessons[idx-1].lessonId)} className={"bubble bubble-card" + (isDone(lesson.lessonId) ? " bubble-green hover:bg-indigo-700 hover:text-white" : (isFutureLesson(idx == 0 ? null : lessons[idx-1].lessonId) ? " bubble-gray" : " hover:bg-indigo-700 hover:text-white"))}>
                     {lesson.name}
                 </button>
               </Link>

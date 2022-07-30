@@ -1,10 +1,13 @@
-import {TableContainer,Table,TableHeader,TableBody,TableRow,TableCell, Avatar, Badge, TableFooter, Pagination} from '@windmill/react-ui'
+import {TableContainer,Table,TableHeader,TableBody,TableRow,TableCell, Avatar, Badge, TableFooter, Pagination, Button} from '@windmill/react-ui'
 import { useMemo, useState } from "react";
 import { Bar, Doughnut } from 'react-chartjs-2';
 import 'chart.js/auto';
 import LessonApi from "../../apis/lesson";
 import { IStudentAnalysis } from "../../types/User";
 import Loading from '../common/Loading';
+import { TrashIcon } from '@heroicons/react/solid';
+import ClassApi from '../../apis/class';
+import { useNavigate } from 'react-router-dom';
 
 const Analysis = (props: any) => {
 
@@ -25,6 +28,25 @@ const Analysis = (props: any) => {
       legend: {
         display: false
       },
+    }
+  }
+
+  function removeStudent(studentEmail: string)
+  {
+    if(window.confirm(`Are you sure you want to remove ${studentEmail} from ${props.selectedCourse?.displayName}?`))
+    {
+      ClassApi.removeStudent(props.selectedCourse?.id, studentEmail)
+      .then((response) => {
+      if(response.status === 200){
+        ClassApi.getCurrentClasses()
+        .then((response) => {
+          props.setSelectedCourse(response.data.filter(x=>x.id == props.selectedCourse?.id)[0])
+        })
+        .catch((e: Error) => {
+          console.log(e);
+        });
+        }
+      })
     }
   }
 
@@ -88,6 +110,7 @@ const Analysis = (props: any) => {
                     <TableCell>Status</TableCell>
                     <TableCell>Current</TableCell>
                     <TableCell>Time Spent</TableCell>
+                    <TableCell></TableCell>
                 </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -112,13 +135,15 @@ const Analysis = (props: any) => {
                     <TableCell>
                         <span className="text-md">{student.time}</span>
                     </TableCell>
+                    <TableCell>
+                      <Button onClick={() => removeStudent(student.email)} layout="link" size="small" aria-label="Delete">
+                        <TrashIcon className="w-5 h-5" aria-hidden="true" />
+                      </Button>
+                    </TableCell>
                 </TableRow>
                 ))}
                 </TableBody>
             </Table>
-            <TableFooter>
-                <Pagination totalResults={analysis.length} resultsPerPage={50} onChange={() => {}} label="Table navigation" />
-            </TableFooter>
         </TableContainer>
       </div>
       </>

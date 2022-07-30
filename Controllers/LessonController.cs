@@ -125,6 +125,7 @@ public class LessonController : Controller
             studentData.Add(new StudentAnalysis
             {
                 Name = student.Name,
+                Email = student.Email,
                 PhotoUrl = student.PhotoUrl,
                 Time = time.ToString(@"hh\:mm\:ss"), //account for greater than one day, maybe 4 days
                 Current = "L" + current.Order + ": " + current.Name, //might want to format this Unit1 Lesson2 etc.
