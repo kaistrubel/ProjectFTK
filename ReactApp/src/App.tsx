@@ -11,8 +11,9 @@ import UserApi from './apis/user';
 import IUser, { Progress } from './types/User';
 import { useLocalStorage } from './components/localStorage';
 import BlocklyProblem from './components/student/BlocklyProblem';
-import Analysis from './components/teacher/Analysis';
+import Dashboard from './components/teacher/Analysis';
 import Sandbox from './components/common/Sandbox';
+import Lessons from './components/common/Lessons';
 
 function App() {
   const [user, setUser] = useState<IUser>();
@@ -48,10 +49,11 @@ function App() {
       }
       <Routes>
         <Route path="/" element={<Landing user={user} selectedCourse={selectedCourse} setLessonId={setLessonId} loading={loading} />} />
+        <Route path="/lessons" element={<Lessons user={user} selectedCourse={selectedCourse} setLessonId={setLessonId} loading={loading}/>} />
         <Route path="/createClass" element={<CreateClass setCourses={setCourses} setSelectedCourse={setSelectedCourse} loading={loading} />} />
         <Route path="/joinClass" element={<JoinClass setCourses={setCourses} setSelectedCourse={setSelectedCourse} loading={loading} />} />
         <Route path="/blockly" element={<BlocklyProblem user={user} lessonId={lessonId}/>} />
-        <Route path="/analysis" element={<Analysis setSelectedCourse={setSelectedCourse} selectedCourse={selectedCourse} loading={loading}/>} />
+        <Route path="/dashboard" element={<Dashboard setSelectedCourse={setSelectedCourse} selectedCourse={selectedCourse} loading={loading}/>} />
         <Route path="/sandbox" element={<Sandbox />} />
         </Routes>
     </>

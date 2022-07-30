@@ -9,7 +9,7 @@ import { TrashIcon } from '@heroicons/react/solid';
 import ClassApi from '../../apis/class';
 import { useNavigate } from 'react-router-dom';
 
-const Analysis = (props: any) => {
+const Dashboard = (props: any) => {
 
   const [analysis, setAnalysis] = useState<IStudentAnalysis[]>([]);
   const [statusData, setStatusData] = useState<number[]>();
@@ -150,4 +150,4 @@ const Analysis = (props: any) => {
   );
 };
 
-export default Analysis;
+export default Dashboard;

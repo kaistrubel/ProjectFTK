@@ -7,7 +7,7 @@ import ICourse from "../../types/Course";
 import { Link } from "react-router-dom";
 
 let navigation: any[] = [
-  { name: 'Lessons', href: '/' },
+  { name: 'Lessons', href: '/lessons' },
   { name: 'Sandbox', href: '/sandbox' },
 ]
 
@@ -25,8 +25,8 @@ export default function Navbar(props: any) {
     props.setLoading(false);
     if(props.user?.isTeacher == true)
     {
-      if(!navigation.find(x=>x.name === "Analysis"))
-        navigation.push({ name: 'Analysis', href: '/analysis' })
+      if(!navigation.find(x=>x.name === "Dashboard"))
+        navigation.push({ name: 'Dashboard', href: '/dashboard' })
     }
   }, [props.courses])
 

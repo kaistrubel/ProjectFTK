@@ -1,16 +1,17 @@
+import { useNavigate } from 'react-router-dom';
 import SignUp from '../../components/common/SignUp';
-import Lessons from './Lessons';
-import Loading from './Loading';
-
 
 function Landing(props: any) {
+  const navigate = useNavigate();
   
   return (
     <>
     {
         props.user?.isAuthenticated == false
         ? <SignUp />
-        : <Lessons user={props.user} selectedCourse={props.selectedCourse} setLessonId={props.setLessonId} loading={props.loading}/>
+        : props.user?.isTeacher
+        ? navigate('/dashboard')
+        : navigate('/lessons')
     }
     </>
   );
