@@ -56,7 +56,7 @@ const Lessons = (props: any) => {
     var progress = props.user.progressList?.find((x: { lessonId: string; }) => x.lessonId == lessonId);
     if(progress)
     {
-      if((lessonId == "e0de78ce-4fb7-4db5-993a-14d11868f489" && progress.level > 1) || (progress.level > 10))
+      if((lessonId == "e0de78ce-4fb7-4db5-993a-14d11868f489" && progress.level > 1) || (progress.level > 9))
       {
         return true;
       }
@@ -171,7 +171,7 @@ const Lessons = (props: any) => {
               <Link to= {selectedunit == "Blockly" ? "/blockly" : "/problem"}  onClick={() => {
                                             props.setLessonId(lesson.lessonId);
                                           }}>
-                <button disabled={isFutureLesson(lesson.lessonId, idx == 0 ? null : lessons[idx-1].lessonId)} className={"bubble bubble-card" + (isDone(lesson.lessonId) ? " bubble-green hover:bg-indigo-700 hover:text-white" : (isFutureLesson(lesson.lessonId, idx == 0 ? null : lessons[idx-1].lessonId) ? "" : " hover:bg-indigo-700 hover:text-white"))}>
+                <button disabled={isFutureLesson(lesson.lessonId, idx == 0 ? null : lessons[idx-1].lessonId)} className={"bubble bubble-card" + (isDone(lesson.lessonId) ? " bubble-green hover:bg-indigo-700 hover:text-white" : (isFutureLesson(lesson.lessonId, idx == 0 ? null : lessons[idx-1].lessonId) ? " bubble-gray" : " hover:bg-indigo-700 hover:text-white"))}>
                     {lesson.name}
                 </button>
               </Link>

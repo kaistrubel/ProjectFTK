@@ -96,6 +96,20 @@ public class LessonController : Controller
             .ToList();
             */
 
+            if (student.ProgressList == null || student.ProgressList.Count == 0)
+            {
+                studentData.Add(new StudentAnalysis
+                {
+                    Name = student.Name,
+                    PhotoUrl = student.PhotoUrl,
+                    Time = TimeSpan.Zero.ToString(@"hh\:mm\:ss"), //account for greater than one day, maybe 4 days
+                    Current = "L0: Has Not Started", //might want to format this Unit1 Lesson2 etc.
+                    Status = "Behind"
+                });
+
+                return;
+            }
+
             var courseProg = courseLessons
                             .Where(y => student.ProgressList
                             .Select(x => x.LessonId)
