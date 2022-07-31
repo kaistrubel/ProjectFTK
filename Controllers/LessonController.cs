@@ -29,40 +29,69 @@ public class LessonController : Controller
 
     [HttpPost]
     [Authorize(Roles = CustomRoles.Teacher)]
-    public async Task UploadProblemsFromJson([FromBody] List<Lesson> lessons)
-    {
-        var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
-        foreach (var lesson in lessons)
-        {
-            lesson.Problems.ForEach(problem => problem.Gain = 1.0f);
-            lesson.Problems.ForEach(problem => problem.Videos.ForEach(vid => vid.Gain = 1.0f));
-
-            await container.UpsertItemAsync(lesson);
-        }
-    }
-
-    [HttpPost] 
-    [Authorize(Roles = CustomRoles.Teacher)]
     public async Task AddProblem(string lessonId, [FromBody] Problem problem)
     {
 
         var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
         problem.Gain = 1.0f;
-        problem.Videos.ForEach(vid => vid.Gain = 1.0f);
 
-        await container.PatchItemAsync<Lesson>(lessonId, PartitionKey.None, new[] {PatchOperation.Add("/Problems/-", problem)});
+        await container.PatchItemAsync<Lesson>(lessonId, PartitionKey.None, new[] { PatchOperation.Add("/Problems/-", problem) });
+    }
+
+    [HttpPost]
+    [Authorize(Roles = CustomRoles.Teacher)]
+    public async Task AddVideo(string lessonId, [FromBody] Lecture video)
+    {
+
+        var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
+        video.Gain = 1.0f;
+
+        await container.PatchItemAsync<Lesson>(lessonId, PartitionKey.None, new[] { PatchOperation.Add("/Videos/-", video) });
+    }
+
+    [HttpPost]
+    [Authorize(Roles = CustomRoles.Teacher)]
+    public async Task AddNotes(string lessonId, [FromBody] Lecture notes)
+    {
+
+        var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
+        notes.Gain = 1.0f;
+
+        await container.PatchItemAsync<Lesson>(lessonId, PartitionKey.None, new[] { PatchOperation.Add("/Notes/-", notes) });
     }
 
     [HttpGet]
-    public async Task<List<Problem>> GetProblems(string lessonId)
+    [Authorize(Roles = CustomRoles.Teacher)]
+    public async Task CreateEmptyLessonFromCourse(string courseSlug)
+    {
+
+        var lessonsJson = System.IO.File.ReadAllText($"DataJson/Courses/{courseSlug}.json");
+        var lessons = JsonConvert.DeserializeObject<List<LessonInfo>>(lessonsJson);
+
+        var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
+        foreach (var lesson in lessons)
+        {
+            await container.CreateItemAsync(new Lesson() {
+                LessonId = lesson.LessonId,
+                Problems = new List<Problem>(),
+                Videos = new List<Lecture>(),
+                Notes = new List<Lecture>()
+            });
+        }
+    }
+
+    [HttpGet]
+    public async Task<Lesson> GetLesson(string lessonId)
     {
         var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
         var lesson = await container.ReadItemAsync<Lesson>(lessonId, PartitionKey.None);
-        return lesson.Resource.Problems;
+        //take 10 items from each lecture/problem for each level?
+
+        return lesson.Resource;
     }
 
     [HttpGet]
-    public List<LessonInfo> GetLessons(string courseSlug)
+    public List<LessonInfo> GetLessonsInfo(string courseSlug)
     {
         var lessonsJson = System.IO.File.ReadAllText($"DataJson/Courses/{courseSlug}.json");
         var lessons = JsonConvert.DeserializeObject<List<LessonInfo>>(lessonsJson);
@@ -82,7 +111,7 @@ public class LessonController : Controller
             .ToList();
         List<Models.User> students;
 
-        var courseLessons = GetLessons(courseSlug);
+        var courseLessons = GetLessonsInfo(courseSlug);
         var courseLessonIds = courseLessons.Select(x => x.LessonId);
         var studentsData = await usersContainer.ReadManyItemsAsync<Models.User>(studenQueries);
         students = studentsData.Resource.ToList();
@@ -116,8 +145,8 @@ public class LessonController : Controller
                             .Contains(y.LessonId))
                             .OrderBy(x => x.Order);
 
-            var current = courseProg.Last();
-            var studentDays = courseProg.Sum(x => x.Days);
+            var current = courseProg?.LastOrDefault();
+            var studentDays = courseProg?.Sum(x => x.Days);
             var expectedDays = SchoolDaysDifference(DateTime.Parse(startDate), DateTime.Now, null);
             var status = studentDays > expectedDays ? "OnTrack" : studentDays + 3 > expectedDays ? "Warning" : "Behind"; 
 
@@ -128,7 +157,7 @@ public class LessonController : Controller
                 Email = student.Email,
                 PhotoUrl = student.PhotoUrl,
                 Time = time.ToString(@"hh\:mm\:ss"), //account for greater than one day, maybe 4 days
-                Current = "L" + current.Order + ": " + current.Name, //might want to format this Unit1 Lesson2 etc.
+                Current = "L" + current?.Order ?? "0" + ": " + current?.Name ?? "Not Started" , //might want to format this Unit1 Lesson2 etc.
                 Status = status
             });
         });

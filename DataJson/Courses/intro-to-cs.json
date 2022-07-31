@@ -1,56 +1,56 @@
 ﻿[
   {
     "Unit": "Blockly",
-    "LessonId": "e0de78ce-4fb7-4db5-993a-14d11868f489",
-    "Name":"Intro",
+    "LessonId": "fc6d7c75-b20a-4a88-a632-920395c3211e",
+    "Name": "Intro",
     "Order": 1,
     "Days": 2
   },
   {
     "Unit": "Blockly",
-    "LessonId": "ab4b6cee-b8f0-4893-9085-ac8bfe05133a",
+    "LessonId": "3d4295d1-df1e-4881-aad5-2aa87b822079",
     "Name": "Entry Level Loops and Conditionals",
     "Order": 2,
     "Days": 2
   },
   {
     "Unit": "Blockly",
-    "LessonId": "46bcdf15-1253-4321-b590-91ced2ccee56",
+    "LessonId": "076a2e4a-03c9-4710-8b87-46cf760225d9",
     "Name": "Deep Dive Conditionals",
     "Order": 3,
     "Days": 3
   },
   {
     "Unit": "Blockly",
-    "LessonId": "9b6c3fbc-d678-45b8-a35b-8a4629fc0795",
+    "LessonId": "fdb35292-d61b-440d-975d-1ddbb66f60fd",
     "Name": "Deep Dive Loops",
     "Order": 4,
     "Days": 4
   },
   {
     "Unit": "Blockly",
-    "LessonId": "8e9488d6-0b9f-4e95-b622-4b6437ce46d7",
+    "LessonId": "bd0758a4-9cdb-405a-95ca-16ab61d65323",
     "Name": "Math Equations",
     "Order": 5,
     "Days": 5
   },
   {
     "Unit": "Blockly",
-    "LessonId": "e95b28f7-f3aa-496c-b1f7-4033588194f4",
+    "LessonId": "5a486699-14ca-46b3-a942-dcdc9025428c",
     "Name": "Functions",
     "Order": 6,
     "Days": 5
   },
   {
     "Unit": "Blockly",
-    "LessonId": "872c8097-e951-4a60-ad44-343245993205",
+    "LessonId": "ce4dad41-5650-46df-95b1-c8e371e551e6",
     "Name": "Javascript",
     "Order": 7,
     "Days": 7
   },
   {
     "Unit": "Blockly",
-    "LessonId": "1335fe1a-c5ff-499c-b070-896c3ea3aaab",
+    "LessonId": "996f8891-1e82-42d4-9f0f-c3f92ddea9cc",
     "Name": "Open Lab",
     "Order": 8,
     "Days": 14

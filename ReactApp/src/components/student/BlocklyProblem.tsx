@@ -1,14 +1,16 @@
 import { useMemo, useRef, useState } from "react";
 import LessonApi from "../../apis/lesson";
 import UserApi from "../../apis/user";
-import { IProblem } from "../../types/Lesson";
+import { ILecture, IProblem } from "../../types/Lesson";
 import {Progress } from "../../types/User";
+import AddLectures from "../teacher/AddLectures";
 
 const OpenProblems = (props: any) => {
 
   const [isProbleminFrame, setisProbleminFrame] = useState<boolean>(true);
   const [videoUrl, setVideoUrl] = useState<string>();
-  const [problem, setProblem] = useState<IProblem>();
+  const [videos, setVideos] = useState<ILecture[]>();
+  const [problems, setProblems] = useState<IProblem[]>();
   const [problemUrl, setProblemUrl] = useState<string>();
 
   const [progress, setProgress] = useState<Progress>(new Progress(props.lessonId, 1, 0, 0));
@@ -22,16 +24,17 @@ const OpenProblems = (props: any) => {
   var userProg = props.user?.progressList?.find((x: { lessonId: string; }) => x.lessonId == props.lessonId);
   userProg && setProgress(userProg)
   
-  LessonApi.getProblems(props.lessonId)
+  LessonApi.getLesson(props.lessonId)
     .then((response) => {
       
       var capLevel = Math.min(10, userProg?.level ?? 1);
 
       setCurrLevel(capLevel)
 
-      setProblem(response.data[0])
-      setProblemUrl(response.data[0].url + "?level=" + capLevel)
-      setVideoUrl(response.data[0].videos[0].url)
+      setProblems(response.data.problems)
+      setVideos(response.data.videos)
+      setProblemUrl(response.data.problems[0].url + "?level=" + capLevel)
+      setVideoUrl(response.data.videos[0].url)
 
       activeSeconds.current = userProg?.activeSeconds ?? 0;
       attempts.current = userProg?.attempts ?? 0;
@@ -140,8 +143,8 @@ const OpenProblems = (props: any) => {
     var capLevel = Math.min(10, lvl);
 
     setCurrLevel(capLevel)
-    problem && setProblemUrl(problem.url + "?level=" + capLevel)
-    problem && setVideoUrl(problem.videos[0].url)
+    problems && setProblemUrl(problems[0].url + "?level=" + capLevel)
+    videos && setVideoUrl(videos[0].url)
   }
 
   const renderProgress = () => {
@@ -170,34 +173,39 @@ const OpenProblems = (props: any) => {
         <iframe id="VideoFrame" className="hidden" src={videoUrl} title="Video" hidden></iframe>
       </div>
 
-      <div className="px-4 text-center sm:px-6">
-        <button
-          onClick={() =>
-          {
-            var problemFrame = document.getElementById("ProblemFrame");
-            var videoFrame = document.getElementById("VideoFrame");
-            if(problemFrame && videoFrame)
+      {props.user?.isTeacher != true ? 
+        <div className="px-4 text-center sm:px-6">
+          <button
+            onClick={() =>
             {
-              if(isProbleminFrame)
+              var problemFrame = document.getElementById("ProblemFrame");
+              var videoFrame = document.getElementById("VideoFrame");
+              if(problemFrame && videoFrame)
               {
-                problemFrame.className = "hidden"
-                videoFrame.className = ""
+                if(isProbleminFrame)
+                {
+                  problemFrame.className = "hidden"
+                  videoFrame.className = ""
+                }
+                else
+                {
+                  problemFrame.className = ""
+                  videoFrame.className = "hidden"
+                }
+                setisProbleminFrame(!isProbleminFrame);
               }
-              else
-              {
-                problemFrame.className = ""
-                videoFrame.className = "hidden"
-              }
-              setisProbleminFrame(!isProbleminFrame);
-            }
 
-          }}
-          type="submit"
-          className="text-black bubble bubble--highlight hover:bg-indigo-700 hover:text-white"
-        >
-          Show {isProbleminFrame? "Video" : "Problem"}
-        </button>
-      </div>
+            }}
+            type="submit"
+            className="text-black bubble bubble--highlight hover:bg-indigo-700 hover:text-white"
+          >
+            Show {isProbleminFrame? "Video" : "Problem"}
+          </button>
+        </div>
+        :
+        <AddLectures/>
+      }
+
     </>
   );
 };

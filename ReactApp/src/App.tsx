@@ -14,6 +14,7 @@ import BlocklyProblem from './components/student/BlocklyProblem';
 import Dashboard from './components/teacher/Analysis';
 import Sandbox from './components/common/Sandbox';
 import Lessons from './components/common/Lessons';
+import AddLectures from './components/teacher/AddLectures';
 
 function App() {
   const [user, setUser] = useState<IUser>();
@@ -55,6 +56,7 @@ function App() {
         <Route path="/blockly" element={<BlocklyProblem user={user} lessonId={lessonId}/>} />
         <Route path="/dashboard" element={<Dashboard setSelectedCourse={setSelectedCourse} selectedCourse={selectedCourse} loading={loading}/>} />
         <Route path="/sandbox" element={<Sandbox />} />
+        <Route path="/addLectures" element={<AddLectures />} />
         </Routes>
     </>
   );

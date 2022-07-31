@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 import { Fragment, useMemo, useState } from "react";
-import ILesson from "../../types/Lesson";
+import {ILessonInfo} from "../../types/Lesson";
 import LessonApi from "../../apis/lesson";
 import Loading from "./Loading";
 import { useLocalStorage } from "../localStorage";
@@ -11,11 +11,11 @@ import ClassApi from "../../apis/class";
 
 const Lessons = (props: any) => {
 
-  const [lessons, setLessons] = useState<ILesson[]>([]);
+  const [lessons, setLessons] = useState<ILessonInfo[]>([]);
   const [selectedunit, setSelectedUnit] = useLocalStorage<string>("selectedunit");
 
   useMemo(() => {
-    props.selectedCourse?.courseSlug && LessonApi.getLessons(props.selectedCourse?.courseSlug)
+    props.selectedCourse?.courseSlug && LessonApi.getLessonsInfo(props.selectedCourse?.courseSlug)
     .then((response) => {
       setLessons(response.data)
       if(selectedunit == null)
@@ -67,7 +67,7 @@ const Lessons = (props: any) => {
 
   function isFutureLesson(prevLessonId: string|null)
   {
-    if(prevLessonId == null || isDone(prevLessonId))
+    if(prevLessonId == null || isDone(prevLessonId) || props.user?.isTeacher)
     {
       return false;
     }
@@ -160,13 +160,11 @@ const Lessons = (props: any) => {
         ? <NoClasses isTeacher={props.user.isTeacher}/>
         :
         <>
-
-
           {
           lessons == []
           ? <Loading />
           :
-            lessons?.sort(l=>l.order).filter(l => l.unit == selectedunit)?.map((lesson: ILesson, idx: number) => (
+            lessons?.sort(l=>l.order).filter(l => l.unit == selectedunit)?.map((lesson: ILessonInfo, idx: number) => (
             <div key={lesson.name} className="pl-10">
               <Link to= {selectedunit == "Blockly" ? "/blockly" : "/problem"}  onClick={() => {
                                             props.setLessonId(lesson.lessonId);

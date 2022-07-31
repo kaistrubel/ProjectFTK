@@ -23,11 +23,14 @@ public class Lesson
 	[JsonProperty("id")]
 	public string LessonId { get; set; }
 
-	public List<Problem> Problems { get; set; } //list of notes too
+	public List<Problem> Problems { get; set; }
 
+	public List<Lecture> Videos { get; set; }
+
+	public List<Lecture> Notes { get; set; }
 }
 
-public class Problem
+public class Lecture
 {
 	public string Url { get; set; }
 
@@ -35,12 +38,20 @@ public class Problem
 
 	public float Gain { get; set; }
 
-	public List<Video> Videos { get; set; } //list of notes too
+	public int Views { get; set; }
+
+    public string Author { get; set; }
 }
 
-public class Video
+public class Problem
 {
-	public string Url { get; set; }
+    public string Url { get; set; }
 
-	public float Gain { get; set; }
+    public int Level { get; set; } //map concept to 0? 1- > beginner, 2-> medium, 3->hard
+
+    public float Gain { get; set; }
+
+    public int Attempts { get; set; }
+
+    public string Author { get; set; }
 }

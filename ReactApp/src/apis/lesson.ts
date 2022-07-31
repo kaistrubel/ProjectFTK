@@ -1,13 +1,13 @@
 import http from "../http";
-import ILesson, { IProblem } from "../types/Lesson";
+import ILesson, { ILessonInfo, IProblem } from "../types/Lesson";
 import { IStudentAnalysis } from "../types/User";
 
-const getLessons = (courseSlug: string) => {
-return http.get<ILesson[]>(`lesson/getLessons/?courseSlug=${courseSlug}`);
+const getLessonsInfo = (courseSlug: string) => {
+return http.get<ILessonInfo[]>(`lesson/GetLessonsInfo/?courseSlug=${courseSlug}`);
 };
 
-const getProblems = (lessonId: string) => {
-  return http.get<IProblem[]>(`lesson/GetProblems/?lessonId=${lessonId}`);
+const getLesson = (lessonId: string) => {
+  return http.get<ILesson>(`lesson/GetLesson/?lessonId=${lessonId}`);
   };
 
 const getStudentAnalysis = (courseSlug: string, startDate: string, emails: string[]) => {
@@ -15,8 +15,8 @@ const getStudentAnalysis = (courseSlug: string, startDate: string, emails: strin
 }
 
 const LessonApi = {
-    getLessons,
-    getProblems,
+    getLessonsInfo,
+    getLesson,
     getStudentAnalysis
   };
   

@@ -105,7 +105,7 @@ const Dashboard = (props: any) => {
         <TableContainer className='w-3/4'>
             <Table>
                 <TableHeader>
-                <TableRow className='bg-zinc-900 text-white'>
+                <TableRow className='bg-zinc-900 text-white text-sm'>
                     <TableCell>Student</TableCell>
                     <TableCell>Status</TableCell>
                     <TableCell>Current</TableCell>
