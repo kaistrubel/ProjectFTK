@@ -136,9 +136,9 @@ const Dashboard = (props: any) => {
                         <span className="text-md">{student.time}</span>
                     </TableCell>
                     <TableCell>
-                      <Button onClick={() => removeStudent(student.email)} layout="link" size="small" aria-label="Delete">
+                      <button onClick={() => removeStudent(student.email)} aria-label="Delete">
                         <TrashIcon className="w-5 h-5" aria-hidden="true" />
-                      </Button>
+                      </button>
                     </TableCell>
                 </TableRow>
                 ))}
