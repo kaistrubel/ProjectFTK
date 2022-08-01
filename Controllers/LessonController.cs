@@ -48,6 +48,17 @@ public class LessonController : Controller
 
     [HttpPost]
     [Authorize(Roles = CustomRoles.Teacher)]
+    public async Task RemoveProblem(string lessonId, string url)
+    {
+
+        var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
+        var lesson = await GetLesson(lessonId);
+
+        await container.PatchItemAsync<Lesson>(lessonId, PartitionKey.None, new[] { PatchOperation.Replace("/Problems", lesson.Problems.Where(x => (x.Url == url && x.Author == User.Identity.Email()) == false)) });
+    }
+
+    [HttpPost]
+    [Authorize(Roles = CustomRoles.Teacher)]
     public async Task AddVideo(string lessonId, string url, int level)
     {
 
@@ -76,6 +87,17 @@ public class LessonController : Controller
 
     [HttpPost]
     [Authorize(Roles = CustomRoles.Teacher)]
+    public async Task RemoveVideo(string lessonId, string url)
+    {
+
+        var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
+        var lesson = await GetLesson(lessonId);
+
+        await container.PatchItemAsync<Lesson>(lessonId, PartitionKey.None, new[] { PatchOperation.Replace("/Videos", lesson.Videos.Where(x => (x.Url == url && x.Author == User.Identity.Email()) == false)) });
+    }
+
+    [HttpPost]
+    [Authorize(Roles = CustomRoles.Teacher)]
     public async Task AddNotes(string lessonId, string url, int level)
     {
 
@@ -90,6 +112,17 @@ public class LessonController : Controller
         };
 
         await container.PatchItemAsync<Lesson>(lessonId, PartitionKey.None, new[] { PatchOperation.Add("/Notes/-", notes) });
+    }
+
+    [HttpPost]
+    [Authorize(Roles = CustomRoles.Teacher)]
+    public async Task RemoveNotes(string lessonId, string url)
+    {
+
+        var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
+        var lesson = await GetLesson(lessonId);
+
+        await container.PatchItemAsync<Lesson>(lessonId, PartitionKey.None, new[] { PatchOperation.Replace("/Notes", lesson.Notes.Where(x => (x.Url == url && x.Author == User.Identity.Email()) == false)) });
     }
 
     [HttpGet]

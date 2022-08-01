@@ -26,13 +26,28 @@ const addNotes = (lessonId: string, url: string, level: number) => {
   return http.post<ILesson>(`lesson/AddNotes/?lessonId=${lessonId}&url=${url}&level=${level}`);
   };
 
+const removeProblem = (lessonId: string, url: string) => {
+  return http.post<ILesson>(`lesson/RemoveProblem/?lessonId=${lessonId}&url=${url}`);
+  };
+
+const removeVideo = (lessonId: string, url: string) => {
+  return http.post<ILesson>(`lesson/RemoveVideo/?lessonId=${lessonId}&url=${url}`);
+  };
+
+const removeNotes = (lessonId: string, url: string) => {
+  return http.post<ILesson>(`lesson/RemoveNotes/?lessonId=${lessonId}&url=${url}`);
+  };
+
 const LessonApi = {
     getLessonsInfo,
     getLesson,
     getStudentAnalysis,
     addProblem,
     addVideo,
-    addNotes
+    addNotes,
+    removeProblem,
+    removeVideo,
+    removeNotes
   };
   
   export default LessonApi;

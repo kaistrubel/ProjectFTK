@@ -1,6 +1,6 @@
 import {TableContainer,Table,TableHeader,TableBody,TableRow,TableCell, Button } from '@windmill/react-ui'
 import { Tab, Dialog, Transition  } from '@headlessui/react'
-import { Fragment, useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import { TrashIcon, PlusCircleIcon } from '@heroicons/react/solid';
 import LessonApi from '../../apis/lesson';
 import { ILecture, IProblem } from '../../types/Lesson';
@@ -64,6 +64,45 @@ function LectureTable(type: string, user: IUser, lessonId:string, level:number, 
     }
   }
 
+  function removeFromLesson(deleteUrl: string) {
+
+    if(window.confirm(`You are about to delete this ${type}. Are you sure? \n You will need to refresh for this to take effect`) != true)
+    {
+      return;
+    }
+
+    if(type == "Problem")
+    {
+      LessonApi.removeProblem(lessonId, deleteUrl)
+      .then((response) => 
+      {
+        if(response.status !== 200){
+          window.alert('An Error Occured')
+        }
+      })
+    }
+    else if(type == "Video")
+    {
+      LessonApi.removeVideo(lessonId, deleteUrl)
+      .then((response) => 
+      {
+        if(response.status !== 200){
+          window.alert('An Error Occured')
+        }
+      })
+    }
+    else
+    {
+      LessonApi.removeNotes(lessonId, deleteUrl)
+      .then((response) => 
+      {
+        if(response.status !== 200){
+          window.alert('An Error Occured')
+        }
+      })
+    }
+  }
+
   return(
     <>
       <div className='center pt-5'>
@@ -92,7 +131,7 @@ function LectureTable(type: string, user: IUser, lessonId:string, level:number, 
                     </TableCell>
                     <TableCell>{problem.gain}</TableCell>
                     <TableCell>
-                      <button onClick={() => void 0} className="float-right" aria-label="Delete">
+                      <button onClick={() => removeFromLesson(problem.url)} className="float-right" aria-label="Delete">
                         <TrashIcon className="w-5 h-5" aria-hidden="true" />
                       </button>
                     </TableCell>
@@ -108,7 +147,7 @@ function LectureTable(type: string, user: IUser, lessonId:string, level:number, 
                     </TableCell>
                     <TableCell>{lecture.gain}</TableCell>
                     <TableCell>
-                      <button onClick={() => void 0} className="float-right" aria-label="Delete">
+                      <button onClick={() => removeFromLesson(lecture.url)} className="float-right" aria-label="Delete">
                         <TrashIcon className="w-5 h-5" aria-hidden="true" />
                       </button>
                     </TableCell>
