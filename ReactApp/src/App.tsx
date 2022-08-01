@@ -56,7 +56,6 @@ function App() {
         <Route path="/blockly" element={<BlocklyProblem user={user} lessonId={lessonId}/>} />
         <Route path="/dashboard" element={<Dashboard setSelectedCourse={setSelectedCourse} selectedCourse={selectedCourse} loading={loading}/>} />
         <Route path="/sandbox" element={<Sandbox />} />
-        <Route path="/addLectures" element={<AddLectures />} />
         </Routes>
     </>
   );

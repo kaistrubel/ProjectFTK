@@ -50,7 +50,7 @@ const OpenProblems = (props: any) => {
   {
     var finsihedLesson = false;
 
-    if(props.lessonId == "e0de78ce-4fb7-4db5-993a-14d11868f489")
+    if(props.lessonId == "fc6d7c75-b20a-4a88-a632-920395c3211e")
     {
       var problemFrame = document.getElementById('ProblemFrame') as HTMLIFrameElement;
       var msgDiv = problemFrame?.contentWindow?.document.getElementById('answerMessage') as HTMLDivElement;
@@ -121,7 +121,7 @@ const OpenProblems = (props: any) => {
       problemFrame.contentWindow.document.onclick = resetTimer;
     }
 
-    if(props.lessonId != "e0de78ce-4fb7-4db5-993a-14d11868f489" && props.lessonId != "1335fe1a-c5ff-499c-b070-896c3ea3aaab")
+    if(props.lessonId != "fc6d7c75-b20a-4a88-a632-920395c3211e" && props.lessonId != "996f8891-1e82-42d4-9f0f-c3f92ddea9cc")
     {
       var doneButton = problemFrame?.contentWindow?.document.getElementById('doneOk') as HTMLButtonElement;
       doneButton.addEventListener("click", levelDone);
@@ -129,7 +129,7 @@ const OpenProblems = (props: any) => {
       var resetButton = problemFrame?.contentWindow?.document.getElementById('resetButton') as HTMLButtonElement;
       resetButton.addEventListener("click", resetHit);
     }
-    else if(props.lessonId == "e0de78ce-4fb7-4db5-993a-14d11868f489")
+    else if(props.lessonId == "fc6d7c75-b20a-4a88-a632-920395c3211e")
     {
       var donediv = problemFrame?.contentWindow?.document.getElementById('answers') as HTMLDivElement;// ?? problem?.contentWindow?.document.getElementById('secondary') as HTMLButtonElement; <-first lesson only has 1, need to figure out
       var doneButton = donediv.getElementsByClassName('secondary')[0] as HTMLButtonElement;
@@ -168,7 +168,7 @@ const OpenProblems = (props: any) => {
       <div className="grid place-items-center pt-16">
         <div className="progressbarparent pb-3">
           <ul className="progressbar place-items-center">
-            { (props.lessonId != "e0de78ce-4fb7-4db5-993a-14d11868f489" && props.lessonId != "1335fe1a-c5ff-499c-b070-896c3ea3aaab") ? renderProgress() : void 0}
+            { (props.lessonId != "fc6d7c75-b20a-4a88-a632-920395c3211e" && props.lessonId != "996f8891-1e82-42d4-9f0f-c3f92ddea9cc") ? renderProgress() : void 0}
           </ul>
         </div>
         <iframe id="ProblemFrame" src={problemUrl} title="Problem" onLoad={setButtonListen} ></iframe>
