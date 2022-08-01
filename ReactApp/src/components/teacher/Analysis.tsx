@@ -69,7 +69,7 @@ const Dashboard = (props: any) => {
       ? <Loading />
       :
       !props.selectedCourse?.id
-      ? <NoClasses isTeacher={props.user.isTeacher}/>
+      ? <NoClasses isTeacher={true}/>
       :
       <>
       <div className="grid pt-10 gap-20 center">
