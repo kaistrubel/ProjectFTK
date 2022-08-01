@@ -31,7 +31,7 @@ const CreateClass = (props: any) => {
     ClassApi.createClass(selectedCourse, selectedPeriod)
     .then((response) => {
       if(response.status !== 200){
-        window.confirm('An Error Occured')
+        window.alert('An Error Occured')
       }
       else
       {
@@ -49,7 +49,7 @@ const CreateClass = (props: any) => {
     })
     .catch((e: Error) => {
       console.log(e)
-      window.confirm('An Error Occured')
+      window.alert('An Error Occured')
     });
   }
 

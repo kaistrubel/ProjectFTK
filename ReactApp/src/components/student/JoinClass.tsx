@@ -15,7 +15,7 @@ const JoinClass = (props: any) => {
     ClassApi.joinClass(teacherEmail, code)
     .then((response) => {
       if(response.status !== 200){
-        window.confirm('An Error Occured')
+        window.alert('An Error Occured')
       }
       else
       {
@@ -33,7 +33,7 @@ const JoinClass = (props: any) => {
     })
     .catch((e: Error) => {
       console.log(e)
-      window.confirm('An Error Occured')
+      window.alert('An Error Occured')
     });
   }
 

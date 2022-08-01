@@ -9,6 +9,7 @@ const OpenProblems = (props: any) => {
 
   const [isProbleminFrame, setisProbleminFrame] = useState<boolean>(true);
   const [videoUrl, setVideoUrl] = useState<string>();
+  const [notes, setNotes] = useState<ILecture[]>();
   const [videos, setVideos] = useState<ILecture[]>();
   const [problems, setProblems] = useState<IProblem[]>();
   const [problemUrl, setProblemUrl] = useState<string>();
@@ -33,6 +34,7 @@ const OpenProblems = (props: any) => {
 
       setProblems(response.data.problems)
       setVideos(response.data.videos)
+      setNotes(response.data.notes)
       setProblemUrl(response.data.problems[0].url + "?level=" + capLevel)
       setVideoUrl(response.data.videos[0].url)
 
@@ -173,7 +175,7 @@ const OpenProblems = (props: any) => {
         <iframe id="VideoFrame" className="hidden" src={videoUrl} title="Video" hidden></iframe>
       </div>
 
-      {props.user?.isTeacher == true ? 
+      {props.user?.isTeacher != true ? 
         <div className="px-4 text-center sm:px-6">
           <button
             onClick={() =>
@@ -203,7 +205,7 @@ const OpenProblems = (props: any) => {
           </button>
         </div>
         :
-        <AddLectures lessonId={props.lessonId} level={currLevel}/>
+        <AddLectures problems={problems} user={props.user} videos={videos} notes={notes} lessonId={props.lessonId} level={currLevel}/>
       }
 
     </>

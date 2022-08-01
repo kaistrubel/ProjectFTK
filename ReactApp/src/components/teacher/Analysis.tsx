@@ -8,6 +8,7 @@ import Loading from '../common/Loading';
 import { TrashIcon } from '@heroicons/react/solid';
 import ClassApi from '../../apis/class';
 import { useNavigate } from 'react-router-dom';
+import NoClasses from '../common/NoClasses';
 
 const Dashboard = (props: any) => {
 
@@ -64,9 +65,12 @@ const Dashboard = (props: any) => {
     }, [props.selectedCourse])
 
     return (
-        props.loading == true
-        ? <Loading />
-        :
+      props.loading == true
+      ? <Loading />
+      :
+      !props.selectedCourse?.id
+      ? <NoClasses isTeacher={props.user.isTeacher}/>
+      :
       <>
       <div className="grid pt-10 gap-20 center">
         <div className="w-1/4 p-4 bg-white rounded-lg shadow-xs bg-zinc-900">

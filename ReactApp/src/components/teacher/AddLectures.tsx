@@ -3,36 +3,33 @@ import { Tab, Dialog, Transition  } from '@headlessui/react'
 import { Fragment, useState } from 'react';
 import { TrashIcon, PlusCircleIcon } from '@heroicons/react/solid';
 import LessonApi from '../../apis/lesson';
+import { ILecture, IProblem } from '../../types/Lesson';
+import IUser from '../../types/User';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 
-function LectureTable(type: string, lessonId:string, level:number)
+function LectureTable(type: string, user: IUser, lessonId:string, level:number, videos: ILecture[], notes: ILecture[], problems: IProblem[])
 {
-  let [isOpen, setIsOpen] = useState(false)
+  let [addModalIsOpen, setaddModalIsOpen] = useState(false)
+  let [iframeModalIsOpen, setIframeModalIsOpen] = useState(false)
+  let [frameUrl, setFrameUrl] = useState<string>("")
+
   let [url, setUrl] = useState<string>("")
 
-  function closeModal() {
-    setIsOpen(false)
-  }
-
-  function openModal() {
-    setIsOpen(true)
-  }
-
-  const addToLesson = (type:string) => {
+  function addToLesson() {
     if(type == "Problem")
     {
       LessonApi.addProblem(lessonId, url, level)
       .then((response) => 
       {
         if(response.status !== 200){
-          window.confirm('An Error Occured')
+          window.alert('An Error Occured')
         }
         else
         {
-          closeModal();
+          setaddModalIsOpen(false);
           window.location.href = "/blockly";
         }
       })
@@ -43,11 +40,11 @@ function LectureTable(type: string, lessonId:string, level:number)
       .then((response) => 
       {
         if(response.status !== 200){
-          window.confirm('An Error Occured')
+          window.alert('An Error Occured')
         }
         else
         {
-          closeModal();
+          setaddModalIsOpen(false)
         }
       })
     }
@@ -57,11 +54,11 @@ function LectureTable(type: string, lessonId:string, level:number)
       .then((response) => 
       {
         if(response.status !== 200){
-          window.confirm('An Error Occured')
+          window.alert('An Error Occured')
         }
         else
         {
-          closeModal();
+          setaddModalIsOpen(false);
         }
       })
     }
@@ -75,24 +72,48 @@ function LectureTable(type: string, lessonId:string, level:number)
                 <TableHeader>
                 <TableRow className='bg-zinc-900 text-white text-sm'>
                     <TableCell>My {type}s</TableCell>
+                    <TableCell>Rate</TableCell>
                     <TableCell> 
-                      <Button onClick={openModal} className="bg-white hover:bg-black hover:text-white float-right" layout="link" size="small" aria-label="Add">
+                      <Button onClick={() => setaddModalIsOpen(true)} className="bg-white hover:bg-black hover:text-white float-right" layout="link" size="small" aria-label="Add">
                       <PlusCircleIcon className="w-5 h-5 pr-5" aria-hidden="true" /> Add a {type}
                       </Button>
                     </TableCell>
                 </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow className='bg-zinc-900 text-white'>
+                  {type=="Problem" ? 
+                  Array.from(problems ?? []).filter(x=>x.author == user.email).map((problem: IProblem, idx:number) => (
+                    <TableRow key={problem.url} className='bg-zinc-900 text-white'>
                     <TableCell>
-                      <span className="text-md">URL</span>
+                      <button onClick={() => {
+                        setFrameUrl(problem.url)
+                        setIframeModalIsOpen(true)
+                        }} className="text-md">{problem.url}</button>
                     </TableCell>
+                    <TableCell>{problem.gain}</TableCell>
                     <TableCell>
                       <button onClick={() => void 0} className="float-right" aria-label="Delete">
                         <TrashIcon className="w-5 h-5" aria-hidden="true" />
                       </button>
                     </TableCell>
                   </TableRow>
+                ))
+                  : Array.from(type=="Video" ? videos ?? [] : notes ?? []).filter(x=>x.author == user.email).map((lecture: ILecture, idx:number) => (
+                    <TableRow key={lecture.url} className='bg-zinc-900 text-white'>
+                    <TableCell>
+                      <button onClick={() => {
+                        setFrameUrl(lecture.url)
+                        setIframeModalIsOpen(true)
+                        }} className="text-md">{lecture.url}</button>
+                    </TableCell>
+                    <TableCell>{lecture.gain}</TableCell>
+                    <TableCell>
+                      <button onClick={() => void 0} className="float-right" aria-label="Delete">
+                        <TrashIcon className="w-5 h-5" aria-hidden="true" />
+                      </button>
+                    </TableCell>
+                  </TableRow>
+                ))}
                 </TableBody>
             </Table>
         </TableContainer>
@@ -104,21 +125,47 @@ function LectureTable(type: string, lessonId:string, level:number)
                 <TableHeader>
                 <TableRow className='bg-zinc-900 text-white text-sm'>
                     <TableCell>Public {type}s</TableCell>
+                    <TableCell>Rate</TableCell>
                 </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow className='bg-zinc-900 text-white'>
+                {type=="Problem" ? 
+                  Array.from(problems?? []).filter(x=>x.author != user.email).map((problem: IProblem, idx:number) => (
+                    <TableRow key={problem.url} className='bg-zinc-900 text-white'>
                     <TableCell>
-                      <span className="text-md">URL</span>
+                      <button onClick={() => {
+                        setFrameUrl(problem.url)
+                        setIframeModalIsOpen(true)
+                        }} className="text-md">{problem.url}</button>
+                    </TableCell>
+                    <TableCell>{problem.gain}</TableCell>
+                    <TableCell>
+                      <button onClick={() => void 0} className="float-right" aria-label="Delete">
+                        <TrashIcon className="w-5 h-5" aria-hidden="true" />
+                      </button>
                     </TableCell>
                   </TableRow>
+                ))
+                  :Array.from(type=="Video" ? videos ?? [] : notes ?? []).filter(x=>x.author != user.email).map((lecture: ILecture, idx:number) => (
+                    <TableRow key={lecture.url} className='bg-zinc-900 text-white'>
+                    <TableCell>
+                      <button className="text-md">{lecture.url}</button>
+                    </TableCell>
+                    <TableCell>{lecture.gain}</TableCell>
+                    <TableCell>
+                      <button onClick={() => void 0} className="float-right" aria-label="Delete">
+                        <TrashIcon className="w-5 h-5" aria-hidden="true" />
+                      </button>
+                    </TableCell>
+                  </TableRow>
+                ))}
                 </TableBody>
             </Table>
         </TableContainer>
       </div>
 
-      <Transition appear show={isOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={closeModal}>
+      <Transition appear show={addModalIsOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => setaddModalIsOpen(false)}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -150,7 +197,7 @@ function LectureTable(type: string, lessonId:string, level:number)
                     Add a {type}
                   </Dialog.Title>
                   <div className="mt-2">
-                    <p className="text-sm text-gray-300">
+                    <p className="text-gray-300">
                       {type != `Problem` ? 
                       `This ${type} lecture will be used for this this lesson for level ${level} and higher. Currently we only support ${type == `Video` ? `YouTube` : `Google Docs`}`
                       :`Please enter the url for the level ${level} problem.`}.
@@ -173,13 +220,47 @@ function LectureTable(type: string, lessonId:string, level:number)
                   </div>
                 <div className="py-3 text-right">
                 <button
-                  onClick={() => addToLesson(type)}
+                  onClick={() => addToLesson()}
                   type="submit"
                   className="text-black bubble bubble--highlight hover:bg-indigo-700 hover:text-white"
                 >
                   Submit
                 </button>
                 </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
+      <Transition appear show={iframeModalIsOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => setIframeModalIsOpen(false)}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-fit transform overflow-hidden rounded-2xl align-middle shadow-xl transition-all">
+                  <iframe className='m-auto' id="iframe" src={frameUrl} title="Lecture" hidden></iframe>
                 </Dialog.Panel>
               </Transition.Child>
             </div>
@@ -216,8 +297,8 @@ const AddLectures = (props: any) => {
               </Tab.List>
               <Tab.Panels className="mt-2">
               {tabs.map(tab => (
-                <Tab.Panel>
-                  {LectureTable(tab, props.lessonId, props.level)}
+                <Tab.Panel key={tab}>
+                  {LectureTable(tab, props.user, props.lessonId, props.level, props.videos, props.notes, props.problems)}
                 </Tab.Panel>
                 ))}
               </Tab.Panels>
