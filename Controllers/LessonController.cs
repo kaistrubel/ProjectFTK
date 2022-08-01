@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -29,33 +30,64 @@ public class LessonController : Controller
 
     [HttpPost]
     [Authorize(Roles = CustomRoles.Teacher)]
-    public async Task AddProblem(string lessonId, [FromBody] Problem problem)
+    public async Task AddProblem(string lessonId, string url, int level)
     {
 
         var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
-        problem.Gain = 1.0f;
+        var problem = new Problem()
+        {
+            Author = User.Identity.Email(),
+            Url = url,
+            Level = level,
+            Gain = 1.0f,
+            Attempts = 0
+        };
 
         await container.PatchItemAsync<Lesson>(lessonId, PartitionKey.None, new[] { PatchOperation.Add("/Problems/-", problem) });
     }
 
     [HttpPost]
     [Authorize(Roles = CustomRoles.Teacher)]
-    public async Task AddVideo(string lessonId, [FromBody] Lecture video)
+    public async Task AddVideo(string lessonId, string url, int level)
     {
 
+        if (url.Contains("youtube", StringComparison.OrdinalIgnoreCase) == false)
+        {
+            throw new Exception($"Only YouTube videos allowed. Error by {User.Identity.Email()}");
+        }
+
+        if (url.Contains("watch"))
+        {
+            url = url.Replace("/watch?v=", "/embed/");
+        }
+
         var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
-        video.Gain = 1.0f;
+        var video = new Lecture()
+        {
+            Author = User.Identity.Email(),
+            Url = url,
+            Level = level,
+            Gain = 1.0f,
+            Views = 0
+        };
 
         await container.PatchItemAsync<Lesson>(lessonId, PartitionKey.None, new[] { PatchOperation.Add("/Videos/-", video) });
     }
 
     [HttpPost]
     [Authorize(Roles = CustomRoles.Teacher)]
-    public async Task AddNotes(string lessonId, [FromBody] Lecture notes)
+    public async Task AddNotes(string lessonId, string url, int level)
     {
 
         var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
-        notes.Gain = 1.0f;
+        var notes = new Lecture()
+        {
+            Author = User.Identity.Email(),
+            Url = url,
+            Level = level,
+            Gain = 1.0f,
+            Views = 0
+        };
 
         await container.PatchItemAsync<Lesson>(lessonId, PartitionKey.None, new[] { PatchOperation.Add("/Notes/-", notes) });
     }

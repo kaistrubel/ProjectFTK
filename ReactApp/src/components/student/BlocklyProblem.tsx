@@ -152,9 +152,9 @@ const OpenProblems = (props: any) => {
     var totLevels = 10;
     for (let i = 1; i <= totLevels; i++) {
       list.push(
-      <li onClick={()=>{ i <= progress.level ? changeCurrentLevel(i) : void 0}} 
+      <li onClick={()=>{ i <= progress.level || props.user?.isTeacher === true ? changeCurrentLevel(i) : void 0}} 
       key = {i}
-      className= {(progress.level > i ? "active cursor-pointer " : "") + (currLevel == i ? "current cursor-pointer" : progress.level == i ? "currentmax cursor-pointer" : "") } 
+      className= {(props.user?.isTeacher === true ? "cursor-pointer " : "") + (progress.level > i ? "active cursor-pointer " : "") + (currLevel == i ? "current cursor-pointer" : progress.level == i ? "currentmax cursor-pointer" : "") } 
       style = {{width: ((1/totLevels)*100) + "%"}}></li>
       );
     }
@@ -173,7 +173,7 @@ const OpenProblems = (props: any) => {
         <iframe id="VideoFrame" className="hidden" src={videoUrl} title="Video" hidden></iframe>
       </div>
 
-      {props.user?.isTeacher != true ? 
+      {props.user?.isTeacher == true ? 
         <div className="px-4 text-center sm:px-6">
           <button
             onClick={() =>
@@ -203,7 +203,7 @@ const OpenProblems = (props: any) => {
           </button>
         </div>
         :
-        <AddLectures/>
+        <AddLectures lessonId={props.lessonId} level={currLevel}/>
       }
 
     </>
