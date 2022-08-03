@@ -11,7 +11,7 @@ export default interface IUser {
 export interface IStudentAnalysis{
   name: string,
   email: string,
-  pictureUrl: string,
+  photoUrl: string,
   current: string,
   status: string,
   time: string,

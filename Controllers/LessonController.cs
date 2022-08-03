@@ -19,6 +19,11 @@ namespace ProjectFTK.Controllers;
 //[Authorize(Roles = CustomRoles.Teacher)]
 public class LessonController : Controller
 {
+
+    private readonly List<DateTime> _holidays = new List<DateTime>() {
+        new DateTime(2022, 12, 11) //labor day
+    };
+
     private readonly ILogger<LessonController> _logger;
     private readonly CosmosClient _cosmosClient;
 
@@ -136,7 +141,8 @@ public class LessonController : Controller
         var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
         foreach (var lesson in lessons)
         {
-            await container.CreateItemAsync(new Lesson() {
+            await container.CreateItemAsync(new Lesson()
+            {
                 LessonId = lesson.LessonId,
                 Problems = new List<Problem>(),
                 Videos = new List<Lecture>(),
@@ -210,10 +216,10 @@ public class LessonController : Controller
                             .Contains(y.LessonId))
                             .OrderBy(x => x.Order);
 
-            var current = courseProg?.LastOrDefault();
-            var studentDays = courseProg?.Sum(x => x.Days);
-            var expectedDays = SchoolDaysDifference(DateTime.Parse(startDate), DateTime.Now, null);
-            var status = studentDays > expectedDays ? "OnTrack" : studentDays + 3 > expectedDays ? "Warning" : "Behind"; 
+            var current = courseProg?.LastOrDefault() ?? new LessonInfo() { Order = 0, Name = "Has Not Starated" };
+            var studentDays = courseProg?.Sum(x => x.Days) ?? 0;
+            var expectedDays = SchoolDaysDifference(DateTime.Parse(startDate), DateTime.Now, _holidays);
+            var status = studentDays > expectedDays ? "OnTrack" : studentDays + 3 > expectedDays ? "Warning" : "Behind";
 
             var time = TimeSpan.FromSeconds(student.ProgressList.Sum(x => x.ActiveSeconds));
             studentData.Add(new StudentAnalysis
@@ -222,19 +228,19 @@ public class LessonController : Controller
                 Email = student.Email,
                 PhotoUrl = student.PhotoUrl,
                 Time = time.ToString(@"hh\:mm\:ss"), //account for greater than one day, maybe 4 days
-                Current = "L" + current?.Order ?? "0" + ": " + current?.Name ?? "Not Started" , //might want to format this Unit1 Lesson2 etc.
+                Current = "L" + current?.Order + ": " + current?.Name, //might want to format this Unit1 Lesson2 etc.
                 Status = status
             });
         });
 
-        return studentData.OrderBy(x=>x.Current).ThenBy(x=>x.Status == "Warning").ThenBy(x=>x.Status == "Behind").ToList();
+        return studentData.OrderBy(x => x.Current).ThenBy(x => x.Status == "Warning").ThenBy(x => x.Status == "Behind").ToList();
     }
 
-    private int SchoolDaysDifference(DateTime startDate, DateTime endDate, IEnumerable<DateTime> holidays)
+    private int SchoolDaysDifference(DateTime startDate, DateTime endDate, List<DateTime> holidays)
     {
         if (startDate > endDate)
         {
-            throw new Exception($"{startDate} cannot be greater than {endDate}.");
+            return 0;
         }
 
         int cnt = 0;

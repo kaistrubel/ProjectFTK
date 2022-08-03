@@ -54,6 +54,7 @@ const Dashboard = (props: any) => {
   useMemo(() => {
         props.selectedCourse?.courseSlug && LessonApi.getStudentAnalysis(props.selectedCourse?.courseSlug, props.selectedCourse?.startDate, props.selectedCourse?.users)
         .then((response) => {
+          console.log(response.data)
             setAnalysis(response.data)
             setStatusData([response.data.filter(x=>x.status == "Behind").length, response.data.filter(x=>x.status == "Warning").length, response.data.filter(x=>x.status == "OnTrack").length])
             setCurrentLabels(Object.keys(response.data.reduce((a, c) => (a[c.current] = (a[c.current] || 0) + 1, a), Object.create(null))))
@@ -105,7 +106,7 @@ const Dashboard = (props: any) => {
             }} options={currentOptions}/>
         </div>
       </div>
-      <div className='center pt-20'>
+      <div className='center py-20'>
         <TableContainer className='w-3/4'>
             <Table>
                 <TableHeader>
@@ -122,7 +123,7 @@ const Dashboard = (props: any) => {
                 <TableRow key={student.name} className='bg-zinc-900 text-white'>
                     <TableCell>
                         <div className="flex items-center text-md">
-                            <Avatar src={student.pictureUrl} alt={student.name} />
+                            <Avatar src={student.photoUrl} alt={student.name} />
                             <span className="font-semibold ml-2">{student.name}</span>
                         </div>
                     </TableCell>

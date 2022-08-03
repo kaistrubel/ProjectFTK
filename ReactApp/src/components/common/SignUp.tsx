@@ -1,83 +1,10 @@
 import GoogleButton from 'react-google-button'
-import { useNavigate } from 'react-router-dom';
 
-const v1 = () => {
-    return (
-      <div className="grid place-items-center pt-16">
-        <div className="bubble bubble-header">
-          Welcome to <strong>Project FTK.</strong>
-        </div>
-        <div className="container flex items-start justify-between flex-col lg:flex-row signup" id="signup">
-          <div className="flex-1 w-full lg:w-1/2 bg-[url('assets/images/teacher_signin.png')] comic-border bg-auto">
-            <div className="grid grid-rows-[100px_minmax(200px,_1fr)_100px] place-items-center">
-              <div className="relative title">Teachers</div>
-              <div className="relative -bottom-40">
-                <a
-                  className="bubble bubble--highlight"
-                  href="https://projectftk.com/Auth/GoogleLogin?isTeacher=true"
-                >Sign in with Google</a>
-              </div>
-            </div>
-          </div>
-          <div className="flex-1 w-full lg:w-1/2 bg-[url('assets/images/student_signin.png')] comic-border bg-auto">
-            <div className="grid grid-rows-[100px_minmax(200px,_1fr)_100px] place-items-center">
-              <div className="relative title">Students</div>
-              <div className="relative -bottom-40">
-                  <a
-                    className="bubble bubble--highlight"
-                    href="https://projectftk.com/Auth/GoogleLogin"
-                  >Sign in with Google</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <br/>
-        <div className="w-full landing-info bg-[url('https://www.imageworks.com/sites/default/files/inline-images/spi_intospiderverse_website_content_024.jpg')] comic-border bg-right bg-contain">
-          <div className="pl-10 pt-3">
-              <h2 className="bubble bubble-align-start text-sm w-fit">Lorem Ipsum is simply dummy text of the printing and.</h2>
-          </div>
-          <div className="pl-10">
-              <h2 className="bubble bubble-align-start text-sm w-fit">Lorem Ipsum is simply dummy text of the printing and.</h2>
-          </div>
-        </div>
-      </div>
-  );
-};
-
-const SignUp = () => {
-  return (
-    <>
-    <div className="grid place-items-center w-screen h-screen bg-[url('https://www.imageworks.com/sites/default/files/inline-images/spi_intospiderverse_website_content_012.jpg')] bg-right bg-fit">
-      <div className="bubble bubble-header bubble-no-margin">
-        Welcome to <strong>Project FTK.</strong>
-      </div>
-      <div className="pl-10 pt-3">
-            <h2 className="bubble text-sm w-fit bubble-no-margin">Lorem Ipsum is simply dummy text of the printing and.</h2>
-      </div>
-      <div className="pl-10">
-            <h2 className="bubble text-sm w-fit bubble-no-margin">Lorem Ipsum is simply dummy text of the printing and.</h2>
-      </div>
-    </div>
-    <div className="grid place-items-center w-screen h-96 bg-black comic-border bg-right bg-contain">
-      <h2 className="bubble bubble-header">
-        Welcome to <strong>Project FTK.</strong>
-      </h2>
-      <div>
-      <h2 className="text-white">Lorem Ipsum is simply dummy text of the printing and.</h2>
-      <h2 className="text-white">Lorem Ipsum is simply dummy text of the printing and.</h2>
-      </div>
-    </div>
-    </>
-  );
-};
-
-const V4 = () => {
-
-  const navigate = useNavigate();
+const Signup = () => {
   return (
     <>
     <div className="bg-black">
-      <section className="w-screen h-screen flex items-center flex-col bg-[url('assets/images/hero_wide.png')] bg-cover bg-center">
+      <section className="w-screen h-screen flex items-center flex-col bg-[url('assets/images/mountain-x.jpg')] bg-cover bg-center">
         <div className=" w-screen h-screen grid grid-rows-6 grid-flow-col justify-center content-center text-white pt-20 bg-gradient-to-t from-black">
           <div className="row-span-2">
           <div className="bubble bubble-header">Welcome to <strong>Project FTK.</strong> </div>
@@ -98,9 +25,9 @@ const V4 = () => {
             </div>
           </div>
           <div className="row-span-2 pt-16 text-center">
-          <div className="text-3xl text-center pb-5">Ready to get started?</div>
+          <div className="text-2xl text-center pb-3">Ready to get started?</div>
             <div className='center'>
-              <GoogleButton className='outline outline-2' onClick={() => {window.location.href = '/Auth/GoogleLogin' }}/>
+              <GoogleButton style={{backgroundColor: `black`, width:360, fontSize: 23, fontFamily: "Dekko"}} className='outline outline-2' onClick={() => {window.location.href = '/Auth/GoogleLogin' }}/>
             </div>
           </div>
         </div>
@@ -137,4 +64,4 @@ const V4 = () => {
   );
 };
 
-export default V4;
+export default Signup;
