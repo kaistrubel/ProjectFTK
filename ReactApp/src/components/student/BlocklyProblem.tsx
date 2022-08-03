@@ -46,12 +46,12 @@ const OpenProblems = (props: any) => {
     });
 
     setInterval(() => {
-      --inactivetyCount.current
+      inactivetyCount.current--
       if(inactivetyCount.current > 0)
       {
-        ++activeSeconds.current
+        activeSeconds.current++
       }
-    }, 1000);
+    }, 2000);
   
     setInterval(() => {
       if(inactivetyCount.current > 0)
