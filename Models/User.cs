@@ -45,6 +45,8 @@ public class StudentAnalysis
 
 	public string Current { get; set; }
 
+	public int Order { get; set; }
+
 	public string Status { get; set; }
 
 	public string Time { get; set; }

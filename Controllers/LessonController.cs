@@ -172,7 +172,7 @@ public class LessonController : Controller
 
     [HttpPost]
     [Authorize(Roles = CustomRoles.Teacher)]
-    public async Task<List<StudentAnalysis>> GetAnalysis(string courseSlug, string startDate, [FromBody] List<string> studentEmails)
+    public async Task<List<StudentAnalysis>> GetAnalysis(string courseSlug, [FromBody] List<string> studentEmails)
     {
         var studentData = new ConcurrentBag<StudentAnalysis>();
         var usersContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
@@ -218,8 +218,6 @@ public class LessonController : Controller
 
             var current = courseProg?.LastOrDefault() ?? new LessonInfo() { Order = 0, Name = "Has Not Starated" };
             var studentDays = courseProg?.Sum(x => x.Days) ?? 0;
-            var expectedDays = SchoolDaysDifference(DateTime.Parse(startDate), DateTime.Now, _holidays);
-            var status = studentDays > expectedDays ? "OnTrack" : studentDays + 3 > expectedDays ? "Warning" : "Behind";
 
             var time = TimeSpan.FromSeconds(student.ProgressList.Sum(x => x.ActiveSeconds));
             studentData.Add(new StudentAnalysis
@@ -228,9 +226,16 @@ public class LessonController : Controller
                 Email = student.Email,
                 PhotoUrl = student.PhotoUrl,
                 Time = time.ToString(@"hh\:mm\:ss"), //account for greater than one day, maybe 4 days
-                Current = "L" + current?.Order + ": " + current?.Name, //might want to format this Unit1 Lesson2 etc.
-                Status = status
+                Current = "L" + current?.Order + ": " + current?.Name, //might want to format this Unit1 Lesson2 etc.,
+                Order = current?.Order ?? 0,
             });
+        });
+
+        var expectedCurrent = studentData.ToList().OrderBy(x => x.Order).ToArray()[(int)Math.Floor(studentData.Count * 0.8f)].Order;
+
+        Parallel.ForEach(studentData, student =>
+        {
+            student.Status = student.Order >= expectedCurrent ? "OnTrack" : student.Order + 2 >= expectedCurrent ? "Warning" : "Behind";
         });
 
         return studentData.OrderBy(x => x.Current).ThenBy(x => x.Status == "Warning").ThenBy(x => x.Status == "Behind").ToList();

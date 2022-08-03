@@ -81,7 +81,6 @@ public class ClassController : Controller
                 Period = period,
                 TeacherEmail = identity.Email(),
                 Code = CreateRandomCode(),
-                StartDate = DateTime.Now,
                 Users = new List<string>() { identity.Email() }
             });
     }

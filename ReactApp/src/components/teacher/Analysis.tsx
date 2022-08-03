@@ -52,7 +52,7 @@ const Dashboard = (props: any) => {
   }
 
   useMemo(() => {
-        props.selectedCourse?.courseSlug && LessonApi.getStudentAnalysis(props.selectedCourse?.courseSlug, props.selectedCourse?.startDate, props.selectedCourse?.users)
+        props.selectedCourse?.courseSlug && LessonApi.getStudentAnalysis(props.selectedCourse?.courseSlug, props.selectedCourse?.users)
         .then((response) => {
           console.log(response.data)
             setAnalysis(response.data)

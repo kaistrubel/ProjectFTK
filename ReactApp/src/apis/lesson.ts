@@ -10,8 +10,8 @@ const getLesson = (lessonId: string) => {
   return http.get<ILesson>(`lesson/GetLesson/?lessonId=${lessonId}`);
   };
 
-const getStudentAnalysis = (courseSlug: string, startDate: string, emails: string[]) => {
-  return http.post<IStudentAnalysis[]>(`lesson/GetAnalysis/?courseSlug=${courseSlug}&startDate=${startDate}`, emails);
+const getStudentAnalysis = (courseSlug: string, emails: string[]) => {
+  return http.post<IStudentAnalysis[]>(`lesson/GetAnalysis/?courseSlug=${courseSlug}`, emails);
 }
 
 const addProblem = (lessonId: string, url: string, level: number) => {

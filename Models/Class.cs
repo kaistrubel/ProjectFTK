@@ -17,8 +17,6 @@ public class Class : Course
 
 	public List<string> Users { get; set; }
 
-	public DateTime StartDate { get; set; }
-
 	public int UserCount() => Users.Count();
 }
 
