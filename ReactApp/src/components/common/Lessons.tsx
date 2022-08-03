@@ -56,7 +56,7 @@ const Lessons = (props: any) => {
     var progress = props.user.progressList?.find((x: { lessonId: string; }) => x.lessonId == lessonId);
     if(progress)
     {
-      if((lessonId == "e0de78ce-4fb7-4db5-993a-14d11868f489" && progress.level > 1) || (progress.level > 9))
+      if((lessonId == "fc6d7c75-b20a-4a88-a632-920395c3211e" && progress.level > 1) || (progress.level > 9))
       {
         return true;
       }

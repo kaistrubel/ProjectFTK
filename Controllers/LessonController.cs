@@ -219,7 +219,7 @@ public class LessonController : Controller
             var current = courseProg?.LastOrDefault() ?? new LessonInfo() { Order = 0, Name = "Has Not Starated" };
             var studentDays = courseProg?.Sum(x => x.Days) ?? 0;
 
-            var time = TimeSpan.FromSeconds(student.ProgressList.Sum(x => x.ActiveSeconds));
+            var time = TimeSpan.FromSeconds(student.ProgressList.Where(x => courseLessonIds.Contains(x.LessonId)).Sum(x => x.ActiveSeconds));
             studentData.Add(new StudentAnalysis
             {
                 Name = student.Name,

@@ -44,6 +44,21 @@ const OpenProblems = (props: any) => {
     .catch((e: Error) => {
       console.log(e);
     });
+
+    setInterval(() => {
+      --inactivetyCount.current
+      if(inactivetyCount.current > 0)
+      {
+        ++activeSeconds.current
+      }
+    }, 1000);
+  
+    setInterval(() => {
+      if(inactivetyCount.current > 0)
+      {
+        UserApi.updateUserProgress(props.user.progressList, new Progress(props.lessonId, currLevel, activeSeconds.current, attempts.current))
+      }
+    }, 100000);
   }, [props.lessonId, props.user]);
 
   function levelDone(e: Event)
@@ -93,24 +108,9 @@ const OpenProblems = (props: any) => {
     UserApi.updateUserProgress(props.user.progressList, new Progress(props.lessonId, currLevel, activeSeconds.current, attempts.current))
   }
 
-  var intervalId = window.setInterval(function(){
-    --inactivetyCount.current
-    if(inactivetyCount.current > 0)
-    {
-      ++activeSeconds.current
-    }
-  }, 1000);
-
-  var intervalId = window.setInterval(function(){
-    if(inactivetyCount.current > 0)
-    {
-      UserApi.updateUserProgress(props.user.progressList, new Progress(props.lessonId, currLevel, activeSeconds.current, attempts.current))
-    }
-  }, 180000);
-
   function resetTimer()
   {
-    inactivetyCount.current = 180;
+    inactivetyCount.current = 120;
   }
 
   function setButtonListen()
