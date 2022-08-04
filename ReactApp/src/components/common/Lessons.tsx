@@ -153,10 +153,10 @@ const Lessons = (props: any) => {
         }
         </div>
       {
-        props.loading == true
+        props.loading == true || props.selectedCourse?.id == null
         ? <Loading />
         :
-        !props.selectedCourse?.id
+        props.selectedCourse?.id == ""
         ? <NoClasses isTeacher={props.user.isTeacher}/>
         :
         <>

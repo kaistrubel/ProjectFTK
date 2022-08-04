@@ -156,7 +156,7 @@ const OpenProblems = (props: any) => {
       list.push(
       <li onClick={()=>{ i <= progress.level || props.user?.isTeacher === true ? changeCurrentLevel(i) : void 0}} 
       key = {i}
-      className= {(props.user?.isTeacher === true ? "cursor-pointer " : "") + (progress.level > i ? "active cursor-pointer " : "") + (currLevel == i ? "current cursor-pointer" : progress.level == i ? "currentmax cursor-pointer" : "") } 
+      className= {(props.user?.isTeacher === true ? "cursor-pointer " : "") + (progress.level > i ? "active cursor-pointer " : "") + (currLevel == i ? "current cursor-pointer" : progress.level == i ? " cursor-pointer" : (props.user?.isTeacher != true && i > progress.level) ? "next" : "") } 
       style = {{width: ((1/totLevels)*100) + "%"}}></li>
       );
     }

@@ -66,10 +66,10 @@ const Dashboard = (props: any) => {
     }, [props.selectedCourse])
 
     return (
-      props.loading == true
+      props.loading == true || props.selectedCourse?.id == null
       ? <Loading />
       :
-      !props.selectedCourse?.id
+      props.selectedCourse?.id == ""
       ? <NoClasses isTeacher={true}/>
       :
       <>
