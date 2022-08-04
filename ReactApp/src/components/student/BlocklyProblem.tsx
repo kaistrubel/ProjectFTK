@@ -4,11 +4,13 @@ import UserApi from "../../apis/user";
 import { ILecture, IProblem } from "../../types/Lesson";
 import {Progress } from "../../types/User";
 import AddLectures from "../teacher/AddLectures";
+import {ChevronDoubleRightIcon,ChevronDoubleLeftIcon } from '@heroicons/react/solid';
 
 const OpenProblems = (props: any) => {
 
   const [isProbleminFrame, setisProbleminFrame] = useState<boolean>(true);
   const [videoUrl, setVideoUrl] = useState<string>();
+  const [videoIdx, setVideoIdx] = useState<number>(0);
   const [notes, setNotes] = useState<ILecture[]>();
   const [videos, setVideos] = useState<ILecture[]>();
   const [problems, setProblems] = useState<IProblem[]>();
@@ -37,6 +39,7 @@ const OpenProblems = (props: any) => {
       setNotes(response.data.notes)
       setProblemUrl(response.data.problems[0].url + "?level=" + capLevel)
       setVideoUrl(response.data.videos[0].url)
+      setVideoIdx(0);
 
       activeSeconds.current = userProg?.activeSeconds ?? 0;
       attempts.current = userProg?.attempts ?? 0;
@@ -115,6 +118,12 @@ const OpenProblems = (props: any) => {
 
   function setButtonListen()
   {
+    var videoFrame = document.getElementById('VideoFrame') as HTMLIFrameElement;
+    if(videoFrame?.contentWindow?.document)
+    {
+      videoFrame.contentWindow.document.onclick = () => console.log("Beep");
+    }
+
     var problemFrame = document.getElementById('ProblemFrame') as HTMLIFrameElement;
     if(problemFrame?.contentWindow?.document)
     {
@@ -171,8 +180,23 @@ const OpenProblems = (props: any) => {
             { (props.lessonId != "fc6d7c75-b20a-4a88-a632-920395c3211e" && props.lessonId != "996f8891-1e82-42d4-9f0f-c3f92ddea9cc") ? renderProgress() : void 0}
           </ul>
         </div>
+        
         <iframe id="ProblemFrame" src={problemUrl} title="Problem" onLoad={setButtonListen} ></iframe>
-        <iframe id="VideoFrame" className="hidden" src={videoUrl} title="Video" hidden></iframe>
+        
+        <div id="VideoFrameDiv" className="hidden" >
+          <button onClick={() => {
+            setVideoIdx(videoIdx-1) 
+            setVideoUrl(videos && videos[videoIdx-1].url)}
+            } className={"w-20 h-20 text-white float-left self-center hover:text-yellow-500 " + (videoIdx == 0 ? " invisible" : "")}><ChevronDoubleLeftIcon aria-hidden="true" /></button>
+            <div id="VideoFrame" onClick={() => console.log("Plaued")}>
+              <iframe src={videoUrl} title="Video" className="center"></iframe>
+            </div>
+          <button onClick={() => {
+            setVideoIdx(videoIdx+1) 
+            setVideoUrl(videos && videos[videoIdx+1].url)}
+            } className={"w-20 h-20 text-white float-right self-center hover:text-yellow-500" + (videoIdx == (videos && videos?.length-1) ? " invisible" : "")}><ChevronDoubleRightIcon aria-hidden="true" /></button>
+        </div>
+      
       </div>
 
       {props.user?.isTeacher != true ? 
@@ -181,13 +205,13 @@ const OpenProblems = (props: any) => {
             onClick={() =>
             {
               var problemFrame = document.getElementById("ProblemFrame");
-              var videoFrame = document.getElementById("VideoFrame");
+              var videoFrame = document.getElementById("VideoFrameDiv");
               if(problemFrame && videoFrame)
               {
                 if(isProbleminFrame)
                 {
                   problemFrame.className = "hidden"
-                  videoFrame.className = ""
+                  videoFrame.className = "flex"
                 }
                 else
                 {

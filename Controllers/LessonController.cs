@@ -37,6 +37,11 @@ public class LessonController : Controller
     [Authorize(Roles = CustomRoles.Teacher)]
     public async Task AddProblem(string lessonId, string url, int level)
     {
+        var lesson = await GetLesson(lessonId);
+        if (lesson.Problems.Select(x => x.Url).Contains(url))
+        {
+            throw new Exception($"This Problem has already been added");
+        }
 
         var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
         var problem = new Problem()
@@ -77,6 +82,12 @@ public class LessonController : Controller
             url = url.Replace("/watch?v=", "/embed/");
         }
 
+        var lesson = await GetLesson(lessonId);
+        if (lesson.Videos.Select(x=>x.Url).Contains(url))
+        {
+            throw new Exception($"This Video has already been added");
+        }
+
         var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
         var video = new Lecture()
         {
@@ -88,6 +99,18 @@ public class LessonController : Controller
         };
 
         await container.PatchItemAsync<Lesson>(lessonId, PartitionKey.None, new[] { PatchOperation.Add("/Videos/-", video) });
+    }
+
+    [HttpPost]
+    public async Task UpdateVideoData(string lessonId, string url, bool isCorrect)
+    {
+        var lesson = await GetLesson(lessonId);
+        var video = lesson.Videos.Where(x => x.Url == url).Single();
+        video.Gain = ((video.Gain * video.Views) + (isCorrect ? 1: 0)) / (video.Views + 1);
+        video.Views += 1;
+
+        var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
+        await container.PatchItemAsync<Lesson>(lessonId, PartitionKey.None, new[] { PatchOperation.Replace("/Videos", lesson.Videos) });
     }
 
     [HttpPost]
@@ -105,6 +128,11 @@ public class LessonController : Controller
     [Authorize(Roles = CustomRoles.Teacher)]
     public async Task AddNotes(string lessonId, string url, int level)
     {
+        var lesson = await GetLesson(lessonId);
+        if (lesson.Notes.Select(x => x.Url).Contains(url))
+        {
+            throw new Exception($"This Note has already been added");
+        }
 
         var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
         var notes = new Lecture()
@@ -117,6 +145,18 @@ public class LessonController : Controller
         };
 
         await container.PatchItemAsync<Lesson>(lessonId, PartitionKey.None, new[] { PatchOperation.Add("/Notes/-", notes) });
+    }
+
+    [HttpPost]
+    public async Task UpdateNotesData(string lessonId, string url, bool isCorrect)
+    {
+        var lesson = await GetLesson(lessonId);
+        var notes = lesson.Notes.Where(x => x.Url == url).Single();
+        notes.Gain = ((notes.Gain * notes.Views) + (isCorrect ? 1 : 0)) / (notes.Views + 1);
+        notes.Views += 1;
+
+        var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
+        await container.PatchItemAsync<Lesson>(lessonId, PartitionKey.None, new[] { PatchOperation.Replace("/Notes", lesson.Notes) });
     }
 
     [HttpPost]
@@ -155,10 +195,14 @@ public class LessonController : Controller
     public async Task<Lesson> GetLesson(string lessonId)
     {
         var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
-        var lesson = await container.ReadItemAsync<Lesson>(lessonId, PartitionKey.None);
+        var lessonResp = await container.ReadItemAsync<Lesson>(lessonId, PartitionKey.None);
         //take 10 items from each lecture/problem for each level?
+        var lesson = lessonResp.Resource;
+        lesson.Problems = lesson.Problems.OrderByDescending(x => x.Gain).ToList();
+        lesson.Videos = lesson.Videos.OrderByDescending(x => x.Gain).ToList();
+        lesson.Notes = lesson.Notes.OrderByDescending(x => x.Gain).ToList();
 
-        return lesson.Resource;
+        return lesson;
     }
 
     [HttpGet]
