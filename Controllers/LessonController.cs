@@ -198,9 +198,9 @@ public class LessonController : Controller
         var lessonResp = await container.ReadItemAsync<Lesson>(lessonId, PartitionKey.None);
         //take 10 items from each lecture/problem for each level?
         var lesson = lessonResp.Resource;
-        lesson.Problems = lesson.Problems.OrderByDescending(x => x.Gain).ToList();
-        lesson.Videos = lesson.Videos.OrderByDescending(x => x.Gain).ToList();
-        lesson.Notes = lesson.Notes.OrderByDescending(x => x.Gain).ToList();
+        lesson.Problems = lesson.Problems.OrderByDescending(x => x.Gain).ThenByDescending(x=>x.Attempts).ToList();
+        lesson.Videos = lesson.Videos.OrderByDescending(x => x.Gain).ThenByDescending(x => x.Views).ToList();
+        lesson.Notes = lesson.Notes.OrderByDescending(x => x.Gain).ThenByDescending(x => x.Views).ToList();
 
         return lesson;
     }
