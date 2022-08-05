@@ -7,7 +7,7 @@ function Landing(props: any) {
   return (
     <>
     {
-        props.user?.isAuthenticated == false
+        props.user?.isAuthenticated != true
         ? <SignUp />
         : props.user?.isTeacher
         ? navigate('/dashboard')
