@@ -16,6 +16,10 @@ const OpenProblems = (props: any) => {
   const [problems, setProblems] = useState<IProblem[]>();
   const [problemUrl, setProblemUrl] = useState<string>();
 
+  const [notesUrl, setNotesUrl] = useState<string>();
+  const [notesIdx, setNotesIdx] = useState<number>(0)
+  const notesViweed = useRef("");
+
   const [progress, setProgress] = useState<Progress>();
   const [currLevel, setCurrLevel] = useState<number>(1);
   const attempts = useRef(0);
@@ -38,8 +42,12 @@ const OpenProblems = (props: any) => {
       setVideos(response.data.videos)
       setNotes(response.data.notes)
       setProblemUrl(response.data.problems[0].url + "?level=" + capLevel)
+      
       setVideoUrl(response.data.videos[0].url)
       setVideoIdx(0);
+
+      setNotesUrl(response.data.notes[0].url)
+      setNotesIdx(0);
 
       activeSeconds.current = userProg?.activeSeconds ?? 0;
       attempts.current = userProg?.attempts ?? 0;
@@ -207,40 +215,90 @@ const OpenProblems = (props: any) => {
             setVideoUrl(videos && videos[videoIdx+1].url)}
             } className={"w-20 h-20 text-white float-right self-center hover:text-yellow-500" + (videoIdx == (videos && videos?.length-1) ? " invisible" : "")}><ChevronDoubleRightIcon aria-hidden="true" /></button>
         </div>
+
+        <div id="NotesFrame" className="hidden" >
+          <button onClick={() => {
+            setNotesIdx(notesIdx-1) 
+            setNotesUrl(notes && notes[notesIdx-1].url)}
+            } className={"w-20 h-20 text-white float-left self-center hover:text-yellow-500 " + (notesIdx == 0 ? " invisible" : "")}><ChevronDoubleLeftIcon aria-hidden="true" /></button>
+            <div onMouseEnter={() => notesViweed.current = notesUrl ?? ""}>
+              <iframe src={notesUrl} title="Notes" className="center"></iframe>
+            </div>
+          <button onClick={() => {
+            setVideoIdx(notesIdx+1) 
+            setVideoUrl(notes && notes[notesIdx+1].url)}
+            } className={"w-20 h-20 text-white float-right self-center hover:text-yellow-500" + (notesIdx == (notes && notes?.length-1) ? " invisible" : "")}><ChevronDoubleRightIcon aria-hidden="true" /></button>
+        </div>
       
       </div>
 
-      {props.user?.isTeacher != true ? 
-        <div className="px-4 text-center sm:px-6">
-          <button
-            onClick={() =>
-            {
-              var problemFrame = document.getElementById("ProblemFrame");
-              var progressBar = document.getElementById("ProgressBar");
-              var videoFrame = document.getElementById("VideoFrame");
-              if(problemFrame && videoFrame && progressBar)
+      {props.user?.isTeacher != true ?
+        <div className="flex center">
+          <div className={videos && videos.length > 0 ? "px-4 text-center sm:px-6" : "hidden"}>
+            <button
+              onClick={() =>
               {
-                if(isProbleminFrame)
-                {
-                  problemFrame.className = "hidden"
-                  progressBar.className = "invisible"
-                  videoFrame.className = "flex"
-                }
-                else
-                {
-                  problemFrame.className = ""
-                  progressBar.className = "progressbarparent pb-3";
-                  videoFrame.className = "hidden"
-                }
-                setisProbleminFrame(!isProbleminFrame);
-              }
+                var problemFrame = document.getElementById("ProblemFrame");
+                var progressBar = document.getElementById("ProgressBar");
+                var videoFrame = document.getElementById("VideoFrame");
+                var notesFrame = document.getElementById("NotesFrame");
 
-            }}
-            type="submit"
-            className="text-black bubble bubble--highlight hover:bg-indigo-700 hover:text-white"
-          >
-            Show {isProbleminFrame? "Video" : "Problem"}
-          </button>
+                if(problemFrame && videoFrame && progressBar && notesFrame)
+                {
+                  if(isProbleminFrame)
+                  {
+                    problemFrame.className = "hidden"
+                    progressBar.className = "invisible"
+                    videoFrame.className = "flex"
+                  }
+                  else
+                  {
+                    problemFrame.className = ""
+                    progressBar.className = "progressbarparent pb-3";
+                    videoFrame.className = "hidden"
+                    notesFrame.className = "hidden"
+                  }
+                  setisProbleminFrame(!isProbleminFrame);
+                }
+
+              }}
+              type="submit"
+              className="text-black bubble bubble--highlight hover:bg-indigo-700 hover:text-white"
+            >
+              Show {isProbleminFrame? "Video" : "Problem"}
+            </button>
+          </div>
+          <div className={(isProbleminFrame && notes && notes.length > 0 ) ? "px-4 text-center sm:px-6" : "hidden"}>
+            <button
+              onClick={() =>
+              {
+                var problemFrame = document.getElementById("ProblemFrame");
+                var progressBar = document.getElementById("ProgressBar");
+                var notesFrame = document.getElementById("NotesFrame");
+                if(problemFrame && notesFrame && progressBar)
+                {
+                  if(isProbleminFrame)
+                  {
+                    problemFrame.className = "hidden"
+                    progressBar.className = "invisible"
+                    notesFrame.className = "flex"
+                  }
+                  else
+                  {
+                    problemFrame.className = ""
+                    progressBar.className = "progressbarparent pb-3";
+                    notesFrame.className = "hidden"
+                  }
+                  setisProbleminFrame(!isProbleminFrame);
+                }
+
+              }}
+              type="submit"
+              className="text-black bubble bubble--highlight hover:bg-indigo-700 hover:text-white"
+            >
+              Show {isProbleminFrame? "Notes" : "Problem"}
+            </button>
+          </div>
         </div>
         :
         <AddLectures problems={problems} user={props.user} videos={videos} notes={notes} lessonId={props.lessonId} level={currLevel}/>
