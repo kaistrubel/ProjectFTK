@@ -312,7 +312,8 @@ function LectureTable(type: string, user: IUser, lessonId:string, level:number, 
 
 const AddLectures = (props: any) => {
 
-  const tabs = [`Video`,`Note`, `Problem`]
+  //const tabs = [`Video`,`Note`, `Problem`]
+  const tabs = [`Video`,`Note`] // add problems by changing to line above
     return (
         <>
           <div className="w-3/4 m-auto px-2 py-16 sm:px-0">
