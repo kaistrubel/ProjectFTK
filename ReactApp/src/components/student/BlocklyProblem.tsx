@@ -56,7 +56,7 @@ const OpenProblems = (props: any) => {
     setInterval(() => {
       if(inactivetyCount.current > 0)
       {
-        UserApi.updateUserProgress(props.user.progressList, new Progress(props.lessonId, currLevel, activeSeconds.current, attempts.current))
+        UserApi.updateUserProgress(props.user.progressList, new Progress(props.lessonId, Math.max(currLevel, progress.level), activeSeconds.current, attempts.current))
       }
     }, 100000);
   }, [props.lessonId, props.user]);
@@ -105,7 +105,7 @@ const OpenProblems = (props: any) => {
   function resetHit()
   {
     ++attempts.current
-    UserApi.updateUserProgress(props.user.progressList, new Progress(props.lessonId, currLevel, activeSeconds.current, attempts.current))
+    UserApi.updateUserProgress(props.user.progressList, new Progress(props.lessonId, Math.max(currLevel, progress.level), activeSeconds.current, attempts.current))
   }
 
   function resetTimer()
