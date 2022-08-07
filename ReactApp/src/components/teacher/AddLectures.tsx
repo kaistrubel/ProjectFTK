@@ -127,7 +127,7 @@ function LectureTable(type: string, user: IUser, lessonId:string, level:number, 
                       <button onClick={() => {
                         setFrameUrl(problem.url)
                         setIframeModalIsOpen(true)
-                        }} className="text-md">{problem.url}</button>
+                        }} className="text-md hover:text-blue-500">{problem.url}</button>
                     </TableCell>
                     <TableCell>{problem.gain}</TableCell>
                     <TableCell>
@@ -143,7 +143,7 @@ function LectureTable(type: string, user: IUser, lessonId:string, level:number, 
                       <button onClick={() => {
                         setFrameUrl(lecture.url)
                         setIframeModalIsOpen(true)
-                        }} className="text-md">{lecture.url}</button>
+                        }} className="text-md hover:text-blue-500">{lecture.url}</button>
                     </TableCell>
                     <TableCell>{lecture.gain}</TableCell>
                     <TableCell>
@@ -175,7 +175,7 @@ function LectureTable(type: string, user: IUser, lessonId:string, level:number, 
                       <button onClick={() => {
                         setFrameUrl(problem.url)
                         setIframeModalIsOpen(true)
-                        }} className="text-md">{problem.url}</button>
+                        }} className="text-md hover:text-blue-500">{problem.url}</button>
                     </TableCell>
                     <TableCell>{problem.gain}</TableCell>
                     <TableCell>
@@ -188,14 +188,9 @@ function LectureTable(type: string, user: IUser, lessonId:string, level:number, 
                   :Array.from(type=="Video" ? videos ?? [] : notes ?? []).filter(x=>x.author != user.email).map((lecture: ILecture, idx:number) => (
                     <TableRow key={lecture.url} className='bg-zinc-900 text-white'>
                     <TableCell>
-                      <button className="text-md">{lecture.url}</button>
+                      <button className="text-md hover:text-blue-500">{lecture.url}</button>
                     </TableCell>
                     <TableCell>{lecture.gain}</TableCell>
-                    <TableCell>
-                      <button onClick={() => void 0} className="float-right" aria-label="Delete">
-                        <TrashIcon className="w-5 h-5" aria-hidden="true" />
-                      </button>
-                    </TableCell>
                   </TableRow>
                 ))}
                 </TableBody>
