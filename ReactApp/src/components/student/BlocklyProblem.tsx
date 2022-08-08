@@ -225,8 +225,8 @@ const OpenProblems = (props: any) => {
               <iframe src={notesUrl} title="Notes" className="center"></iframe>
             </div>
           <button onClick={() => {
-            setVideoIdx(notesIdx+1) 
-            setVideoUrl(notes && notes[notesIdx+1].url)}
+            setNotesIdx(notesIdx+1) 
+            setNotesUrl(notes && notes[notesIdx+1].url)}
             } className={"w-20 h-20 text-white float-right self-center hover:text-yellow-500" + (notesIdx == (notes && notes?.length-1) ? " invisible" : "")}><ChevronDoubleRightIcon aria-hidden="true" /></button>
         </div>
       
