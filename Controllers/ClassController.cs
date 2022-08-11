@@ -53,7 +53,8 @@ public class ClassController : Controller
                 Email = identity.Email(),
                 PhotoUrl = identity.PictureUrl(),
                 ClassIds = new List<string>() { newGuid },
-                ProgressList = new List<Progress>()
+                ProgressList = new List<Progress>(),
+                LabProgList = new List<LabProg>()
             });
         }
 
@@ -192,7 +193,8 @@ public class ClassController : Controller
                     Email = identity.Email(),
                     PhotoUrl = identity.PictureUrl(),
                     ClassIds = new List<string>() { classMatch.Id },
-                    ProgressList = new List<Progress>()
+                    ProgressList = new List<Progress>(),
+                    LabProgList = new List<LabProg>()
                 });
         }
 

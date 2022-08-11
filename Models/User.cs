@@ -15,6 +15,8 @@ public class User
 	public List<string> ClassIds { get; set; }
 
 	public List<Progress> ProgressList { get; set; }
+
+	public List<LabProg> LabProgList { get; set; }
 }
 
 public class Progress
@@ -50,4 +52,25 @@ public class StudentAnalysis
 	public string Status { get; set; }
 
 	public string Time { get; set; }
+}
+
+public class Submission
+{
+    public string Url { get; set; }
+
+    public string State { get; set; }
+}
+
+public class LabProg
+{
+    public string Name { get; set; }
+
+    public List<Submission> Submissions { get; set; }
+}
+
+public class UpdateLabProgResponse
+{
+    public List<LabProg> LabProgList { get; set; }
+
+    public LabProg UpdatedLabProg { get; set; }
 }

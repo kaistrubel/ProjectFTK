@@ -43,6 +43,7 @@ public class UserController : Controller
             Email = identity.Email(),
             PictureUrl = identity.PictureUrl(),
             user?.ProgressList,
+            user?.LabProgList,
             identity.IsAuthenticated,
             isTeacher = identity.IsInRole(CustomRoles.Teacher)
         });
@@ -87,6 +88,30 @@ public class UserController : Controller
         progressList.Add(data.UpdatedProgress);
 
         await studentsContainer.PatchItemAsync<Models.User>(identity.Email(), PartitionKey.None, new[] {PatchOperation.Replace("/ProgressList", progressList)});
+    }
+
+    [HttpPost]
+    public async Task UpdateUserLabProg([FromBody] UpdateLabProgResponse data)
+    {
+        //should be able to use patch operation similar to Lesson/AddProblem
+        var identity = User.Identity;
+
+        if (data == null)
+        {
+            return;
+        }
+
+        var studentsContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
+        var progressList = data.LabProgList ?? new List<LabProg>();
+        var oldProgress = progressList.FirstOrDefault(x => x.Name == data.UpdatedLabProg.Name);
+
+        if (oldProgress != null)
+        {
+            progressList.Remove(oldProgress);
+        }
+        progressList.Add(data.UpdatedLabProg);
+
+        await studentsContainer.PatchItemAsync<Models.User>(identity.Email(), PartitionKey.None, new[] { PatchOperation.Replace("/LabProgList", progressList) });
     }
 }
 
