@@ -15,6 +15,9 @@ import Dashboard from './components/teacher/Analysis';
 import Sandbox from './components/common/Sandbox';
 import Lessons from './components/common/Lessons';
 import AddLectures from './components/teacher/AddLectures';
+import Labs from './components/student/Labs';
+import Lab from './components/student/Lab';
+import { ILab } from './types/Lab';
 
 function App() {
   const [user, setUser] = useState<IUser>();
@@ -24,6 +27,7 @@ function App() {
   const [loading, setLoading] = useState<boolean>(true)
 
   const [lessonId, setLessonId] = useLocalStorage<string>("lessonId");
+  const [selectedLab, setSelectedLab] = useLocalStorage<ILab>("selectedLab");
 
   useMemo(() => {
     UserApi.currentUser()
@@ -55,6 +59,8 @@ function App() {
         <Route path="/joinClass" element={<JoinClass setCourses={setCourses} setSelectedCourse={setSelectedCourse} loading={loading} />} />
         <Route path="/blockly" element={<BlocklyProblem user={user} lessonId={lessonId}/>} />
         <Route path="/dashboard" element={<Dashboard setSelectedCourse={setSelectedCourse} selectedCourse={selectedCourse} loading={loading}/>} />
+        <Route path="/labs" element={<Labs user={user} selectedCourse={selectedCourse} setSelectedLab={setSelectedLab} loading={loading}/>} />
+        <Route path="/lab" element={<Lab user={user} selectedCourse={selectedCourse} selectedLab={selectedLab} loading={loading}/>} />
         <Route path="/sandbox" element={<Sandbox />} />
         </Routes>
     </>

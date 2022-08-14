@@ -3,12 +3,16 @@
     "Unit": "Blockly",
     "Name": "Intro",
     "Order": 1,
+    "ManualUrl": "https://docs.google.com/document/d/1XlHufFtpNCUJpwqPMQ25QtYjnZEb-WmFFYUkoM2hmLY/edit?usp=sharing",
+    "VideoUrl": "",
     "Submissions": [ "Phase 1", "Phase 2" ]
   },
   {
     "Unit": "Blockly",
     "Name": "Lab 2",
     "Order": 2,
+    "ManualUrl": "",
+    "VideoUrl": "",
     "Submissions": [ "Phase 1", "Phase 2" ]
   }
 ]

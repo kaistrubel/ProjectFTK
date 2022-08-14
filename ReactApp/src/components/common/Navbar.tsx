@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 
 let navigation: any[] = [
   { name: 'Lessons', href: '/lessons' },
+  { name: 'Labs', href: '/labs' },
   { name: 'Sandbox', href: '/sandbox' },
 ]
 

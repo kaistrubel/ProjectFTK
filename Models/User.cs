@@ -72,5 +72,9 @@ public class UpdateLabProgResponse
 {
     public List<LabProg> LabProgList { get; set; }
 
-    public LabProg UpdatedLabProg { get; set; }
+    public string CurrentLabName { get; set; }
+
+    public int SubmissionIdx { get; set; }
+
+	public string SubmissionUrl { get; set; }
 }

@@ -103,13 +103,27 @@ public class UserController : Controller
 
         var studentsContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
         var progressList = data.LabProgList ?? new List<LabProg>();
-        var oldProgress = progressList.FirstOrDefault(x => x.Name == data.UpdatedLabProg.Name);
+        var progress = progressList.FirstOrDefault(x => x.Name == data.CurrentLabName);
 
-        if (oldProgress != null)
+        if (progress != null)
         {
-            progressList.Remove(oldProgress);
+            progressList.Remove(progress);
         }
-        progressList.Add(data.UpdatedLabProg);
+
+        if (progress == null)
+        {
+            progress = new LabProg() { Name = data.CurrentLabName, Submissions = new List<Submission>() { new Submission() { Url = data.SubmissionUrl, State = "NeedsGrading" } } };
+        }
+        else if (progress.Submissions.Count < data.SubmissionIdx)
+        {
+            progress.Submissions.Add(new Submission() { Url = data.SubmissionUrl, State = "NeedsGrading" });
+        }
+        else
+        {
+            progress.Submissions[data.SubmissionIdx].Url = data.SubmissionUrl;
+        }
+
+        progressList.Add(progress);
 
         await studentsContainer.PatchItemAsync<Models.User>(identity.Email(), PartitionKey.None, new[] { PatchOperation.Replace("/LabProgList", progressList) });
     }

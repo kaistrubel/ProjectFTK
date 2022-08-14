@@ -4,6 +4,7 @@ export default interface IUser {
   pictureUrl: string,
   classIds: string[],
   progressList: Progress[],
+  labProgList: LabProg[],
   isAuthenticated: boolean,
   isTeacher: boolean,
 }
@@ -23,5 +24,17 @@ export class Progress {
     this.level = level;
     this.activeSeconds = activeSeconds;
     this.attempts = attempts;
+  }
+}
+
+export interface ISubmissions{
+  url: string,
+  state: string,
+}
+
+export class LabProg {
+  constructor(public name: string, public submissions: ISubmissions[]) {
+    this.name = name;
+    this.submissions = submissions;
   }
 }

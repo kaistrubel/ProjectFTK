@@ -1,5 +1,5 @@
 import http from "../http";
-import IUser, { Progress } from "../types/User";
+import IUser, { LabProg, Progress } from "../types/User";
 
 const currentUser = () => {
     return http.get<IUser>(`user/CurrentUser/`);
@@ -18,10 +18,22 @@ const updateUserProgress = (progressList: Progress[], updatedProgress: Progress)
     return http.post<string>('user/UpdateUserProgress/', data);
     };
 
+const updateUserLabProg = (progressList: LabProg[], currentLabName: string, submissionIdx: number, submissionUrl:string) => {
+
+    var data = {
+        progressList: progressList,
+        currentLabName: currentLabName,
+        submissionIdx: submissionIdx,
+        submissionUrl: submissionUrl,
+    };
+    return http.post<string>('user/UpdateUserLabProg/', data);
+    };
+
 const UserApi = {
     currentUser,
     getUser,
-    updateUserProgress
+    updateUserProgress,
+    updateUserLabProg
   };
   
   export default UserApi;
