@@ -77,4 +77,6 @@ public class UpdateLabProgResponse
     public int SubmissionIdx { get; set; }
 
 	public string SubmissionUrl { get; set; }
+
+	public string State { get; set; }
 }

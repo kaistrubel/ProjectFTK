@@ -3,21 +3,22 @@ import {TableContainer,Table,TableHeader,TableBody,TableRow,TableCell, Button } 
 import {Dialog, Transition  } from '@headlessui/react'
 import UserApi from "../../apis/user";
 import {LabProg} from "../../types/User";
-import {PlusCircleIcon, PencilIcon } from '@heroicons/react/solid';
+import {PlusCircleIcon, XCircleIcon, ExclamationCircleIcon, CheckCircleIcon } from '@heroicons/react/solid';
 
 const Lab = (props: any) => {
 
   let [modalIsOpen, setModalIsOpen] = useState(false)
   let [iframeModalIsOpen, setIframeModalIsOpen] = useState(false)
   let [frameUrl, setFrameUrl] = useState<string>("")
+  let [frameLoaded, setFrameLoaded] = useState<boolean>(false)
   let [url, setUrl] = useState<string>("")
   const [manualUrl, setManualUrl] = useState<string>();
   const [submissionName, setSubmissionName] = useState<string>();
   const [submissionIdx, setSubmissionIdx] = useState<number>(0);
   const [labProg, setLabProg] = useState<LabProg>();
 
-  function addOrUpdateSubmission() {
-    props.user?.labProgList && labProg && UserApi.updateUserLabProg(props.user.labProgList, labProg.name, submissionIdx, url)
+  function addOrUpdateSubmission(state: string) {
+    props.user?.labProgList && labProg && UserApi.updateUserLabProg(props.user.labProgList, labProg.name, submissionIdx, url, state)
       .then((response) => 
       {
         if(response.status !== 200){
@@ -62,13 +63,23 @@ const Lab = (props: any) => {
                         setIframeModalIsOpen(true)
                         }} className="text-md hover:text-blue-500">{labProg?.submissions[idx].url}
                     </button>
+                    {labProg.submissions[idx].state == "NeedsGrading" ? 
                     <button onClick={() => {
                         setSubmissionIdx(idx)
                         setSubmissionName(submission)
                         setModalIsOpen(true)
-                        }} className="float-right" aria-label="Edit">
-                        <PencilIcon className="w-5 h-5" aria-hidden="true" />
+                        }} className="pl-1 align-middle text-orange-500" aria-label="Edit">
+                        <ExclamationCircleIcon className="w-5 h-5 float-left" aria-hidden="true" /> (waiting to be graded)
                     </button>
+                    :
+                    <button onClick={() => {
+                        setSubmissionIdx(idx)
+                        setSubmissionName(submission)
+                        setModalIsOpen(true)
+                        }} className="pl-1 align-middle text-red-500" aria-label="Edit">
+                        <XCircleIcon className="w-5 h-5 float-left" aria-hidden="true" /> (needs to be fixed)
+                    </button>
+                    }
                     </TableCell>
                     :
                     <TableCell> 
@@ -135,7 +146,7 @@ const Lab = (props: any) => {
                   </div>
                 <div className="py-3 text-right">
                 <button
-                  onClick={() => addOrUpdateSubmission()}
+                  onClick={() => addOrUpdateSubmission("NeedsGraded")}
                   type="submit"
                   className="text-black bubble bubble--highlight hover:bg-indigo-700 hover:text-white"
                 >
@@ -150,7 +161,11 @@ const Lab = (props: any) => {
       </Transition>
 
     <Transition appear show={iframeModalIsOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={() => setIframeModalIsOpen(false)}>
+        <Dialog as="div" className="relative z-10" onClose={() => 
+            {
+                setIframeModalIsOpen(false)
+                setFrameLoaded(false)
+            }}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -175,7 +190,16 @@ const Lab = (props: any) => {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-fit transform overflow-hidden rounded-2xl align-middle shadow-xl transition-all">
-                  <iframe className='m-auto' id="iframe" src={frameUrl} title="Lecture" hidden></iframe>
+                  <iframe className='m-auto' src={frameUrl} title="Lecture" hidden onLoad={() => setFrameLoaded(true)}></iframe>
+                  {props.user?.isTeacher && frameLoaded ?
+                    <div className="h-16 flex pt-2 gap-2">
+                        <div className="w-1/2 bg-green-500 center cursor-pointer" onClick={() => alert('here')}><CheckCircleIcon className="w-10 h-10" aria-hidden="true" /></div>
+                        <div className="w-1/2 bg-red-500 center cursor-pointer" onClick={() => alert('here')}><XCircleIcon className="w-10 h-10" aria-hidden="true" /></div>
+                    </div>
+                    :
+                    <></>
+                  }
+
                 </Dialog.Panel>
               </Transition.Child>
             </div>

@@ -93,7 +93,6 @@ public class UserController : Controller
     [HttpPost]
     public async Task UpdateUserLabProg([FromBody] UpdateLabProgResponse data)
     {
-        //should be able to use patch operation similar to Lesson/AddProblem
         var identity = User.Identity;
 
         if (data == null)
