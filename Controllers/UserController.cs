@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProjectFTK.Models;
 using Microsoft.Azure.Cosmos;
 using ProjectFTK.Services;
+using System.Runtime.InteropServices;
 
 namespace ProjectFTK.Controllers;
 
@@ -93,12 +94,12 @@ public class UserController : Controller
     [HttpPost]
     public async Task UpdateUserLabProg([FromBody] UpdateLabProgResponse data)
     {
-        var identity = User.Identity;
-
         if (data == null)
         {
             return;
         }
+
+        var identity = User.Identity;
 
         var studentsContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
         var progressList = data.LabProgList ?? new List<LabProg>();
@@ -113,13 +114,14 @@ public class UserController : Controller
         {
             progress = new LabProg() { Name = data.CurrentLabName, Submissions = new List<Submission>() { new Submission() { Url = data.SubmissionUrl, State = "NeedsGrading" } } };
         }
-        else if (progress.Submissions.Count < data.SubmissionIdx)
+        else if (data.SubmissionIdx >= progress.Submissions.Count)
         {
             progress.Submissions.Add(new Submission() { Url = data.SubmissionUrl, State = "NeedsGrading" });
         }
         else
         {
             progress.Submissions[data.SubmissionIdx].Url = data.SubmissionUrl;
+            progress.Submissions[data.SubmissionIdx].State = data.State;
         }
 
         progressList.Add(progress);

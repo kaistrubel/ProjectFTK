@@ -18,10 +18,10 @@ const updateUserProgress = (progressList: Progress[], updatedProgress: Progress)
     return http.post<string>('user/UpdateUserProgress/', data);
     };
 
-const updateUserLabProg = (progressList: LabProg[], currentLabName: string, submissionIdx: number, submissionUrl: string, state: string) => {
+const updateUserLabProg = (labProgList: LabProg[], currentLabName: string, submissionIdx: number, submissionUrl: string, state: string) => {
 
     var data = {
-        progressList: progressList,
+        labProgList: labProgList,
         currentLabName: currentLabName,
         submissionIdx: submissionIdx,
         submissionUrl: submissionUrl,

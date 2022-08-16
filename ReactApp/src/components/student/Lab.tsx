@@ -2,23 +2,26 @@ import { Fragment, useMemo, useState } from "react";
 import {TableContainer,Table,TableHeader,TableBody,TableRow,TableCell, Button } from '@windmill/react-ui'
 import {Dialog, Transition  } from '@headlessui/react'
 import UserApi from "../../apis/user";
-import {LabProg} from "../../types/User";
+import IUser, {LabProg} from "../../types/User";
 import {PlusCircleIcon, XCircleIcon, ExclamationCircleIcon, CheckCircleIcon } from '@heroicons/react/solid';
+import LabApi from "../../apis/lab";
 
 const Lab = (props: any) => {
 
   let [modalIsOpen, setModalIsOpen] = useState(false)
   let [iframeModalIsOpen, setIframeModalIsOpen] = useState(false)
-  let [frameUrl, setFrameUrl] = useState<string>("")
+  let [labProg, setLabProg] = useState<LabProg>()
+  let [frameUser, setFrameUser] = useState<IUser>()
   let [frameLoaded, setFrameLoaded] = useState<boolean>(false)
   let [url, setUrl] = useState<string>("")
   const [manualUrl, setManualUrl] = useState<string>();
   const [submissionName, setSubmissionName] = useState<string>();
   const [submissionIdx, setSubmissionIdx] = useState<number>(0);
-  const [labProg, setLabProg] = useState<LabProg>();
+
+  const [users, setUsers] = useState<IUser[]>();
 
   function addOrUpdateSubmission(state: string) {
-    props.user?.labProgList && labProg && UserApi.updateUserLabProg(props.user.labProgList, labProg.name, submissionIdx, url, state)
+    props.user?.labProgList && UserApi.updateUserLabProg(props.user.labProgList, props.selectedLab.name, submissionIdx, url, state)
       .then((response) => 
       {
         if(response.status !== 200){
@@ -32,10 +35,97 @@ const Lab = (props: any) => {
       })
     }
 
+    function gradeLab(state: string) {
+        frameUser && labProg && LabApi.gradeLab(frameUser.email, labProg?.name, submissionIdx, state, frameUser.labProgList)
+          .then((response) => 
+          {
+            if(response.status !== 200){
+              window.alert('An Error Occured')
+            }
+            else
+            {
+              window.location.href = "/lab";
+            }
+          })
+        }
+
+    function StudentTable(user: IUser, idx: number, submission: string)
+    {
+        let labProg = user?.labProgList?.find((x: { name: string; }) => x.name == props.selectedLab.name) ?? new LabProg(props.selectedLab.name, [])
+        return(
+            <TableRow className='bg-zinc-900 text-white'>
+            { labProg?.submissions && labProg?.submissions?.length > idx ?
+            <TableCell>
+            <button onClick={() => {
+                setLabProg(labProg)
+                setFrameUser(user)
+                setSubmissionIdx(idx)
+                setIframeModalIsOpen(true)
+                }} className="text-md hover:text-blue-500">{labProg?.submissions[idx].url}
+            </button>
+            {labProg.submissions[idx].state == "NeedsGrading" ? 
+            <button onClick={() => {
+                if(props.user?.isTeacher != true)
+                {
+                    setSubmissionIdx(idx)
+                    setSubmissionName(submission)
+                    setModalIsOpen(true)
+                }
+                }} className="pl-1 align-middle text-orange-500" aria-label="Edit">
+                <ExclamationCircleIcon className="w-5 h-5 float-left" aria-hidden="true" /> (waiting to be graded)
+            </button>
+            :
+            labProg.submissions[idx].state == "Done" ? 
+            <button onClick={() => {
+                }} className="pl-1 align-middle text-green-500 cursor-default" aria-label="Done">
+                <CheckCircleIcon className="w-5 h-5 float-left" aria-hidden="true" />
+            </button>
+            :
+            <button onClick={() => {
+                if(props.user?.isTeacher != true)
+                {
+                    setSubmissionIdx(idx)
+                    setSubmissionName(submission)
+                    setModalIsOpen(true)
+                }
+                }} className="pl-1 align-middle text-red-500" aria-label="Error">
+                <XCircleIcon className="w-5 h-5 float-left" aria-hidden="true" /> (needs to be fixed)
+            </button>
+            }
+            </TableCell>
+            :
+            user?.isTeacher == false ? 
+            <TableCell> 
+              <Button onClick={() => {
+                setSubmissionIdx(idx)
+                setSubmissionName(submission)
+                setModalIsOpen(true)
+                }} className="bg-white hover:bg-black hover:text-white float-left" layout="link" size="small" aria-label="Add">
+              <PlusCircleIcon className="w-5 h-5 pr-5" aria-hidden="true" /> Add Submission
+              </Button>
+            </TableCell>
+            :<></>
+            }
+          </TableRow>
+        )
+    }
+
   useMemo(() => {
-  var userProg = props.user?.labProgList?.find((x: { name: string; }) => x.name == props.selectedLab.name);
-  console.log(props.user)
-  setLabProg(userProg ?? new LabProg(props.selectedLab.name, []))
+  //var userProg = props.user?.labProgList?.find((x: { name: string; }) => x.name == props.selectedLab.name);
+  //console.log(props.user)
+  if(props.user?.isTeacher == true)
+  {
+    LabApi.getStudents(props.selectedCourse?.courseSlug, props.selectedCourse?.users)
+    .then((response) => 
+        setUsers(response.data)
+    )
+  }
+  else
+  {
+    setUsers([props.user])
+  }
+    //setUsersProg(props.user.map((x: IUser) => (x.email, x.labProgList?.find((x: { name: string; }) => x.name == props.selectedLab.name))))
+  //setLabProg(userProg ?? new LabProg(props.selectedLab.name, []))
   setManualUrl(props.selectedLab.manualUrl)
 
   }, [props.selectedLab, props.user]);
@@ -55,44 +145,11 @@ const Lab = (props: any) => {
                 </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow className='bg-zinc-900 text-white'>
-                    { labProg?.submissions && labProg?.submissions?.length > idx ?
-                    <TableCell>
-                    <button onClick={() => {
-                        setFrameUrl(labProg?.submissions[idx].url)
-                        setIframeModalIsOpen(true)
-                        }} className="text-md hover:text-blue-500">{labProg?.submissions[idx].url}
-                    </button>
-                    {labProg.submissions[idx].state == "NeedsGrading" ? 
-                    <button onClick={() => {
-                        setSubmissionIdx(idx)
-                        setSubmissionName(submission)
-                        setModalIsOpen(true)
-                        }} className="pl-1 align-middle text-orange-500" aria-label="Edit">
-                        <ExclamationCircleIcon className="w-5 h-5 float-left" aria-hidden="true" /> (waiting to be graded)
-                    </button>
-                    :
-                    <button onClick={() => {
-                        setSubmissionIdx(idx)
-                        setSubmissionName(submission)
-                        setModalIsOpen(true)
-                        }} className="pl-1 align-middle text-red-500" aria-label="Edit">
-                        <XCircleIcon className="w-5 h-5 float-left" aria-hidden="true" /> (needs to be fixed)
-                    </button>
+                    {
+                    Array.from(users ?? []).map((user: IUser) => (
+                        StudentTable(user, idx, submission)
+                    ))
                     }
-                    </TableCell>
-                    :
-                    <TableCell> 
-                      <Button onClick={() => {
-                        setSubmissionIdx(idx)
-                        setSubmissionName(submission)
-                        setModalIsOpen(true)
-                        }} className="bg-white hover:bg-black hover:text-white float-left" layout="link" size="small" aria-label="Add">
-                      <PlusCircleIcon className="w-5 h-5 pr-5" aria-hidden="true" /> Add Submission
-                      </Button>
-                    </TableCell>
-                    }
-                  </TableRow>
                 </TableBody>
             </Table>
         </TableContainer>
@@ -190,11 +247,11 @@ const Lab = (props: any) => {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-fit transform overflow-hidden rounded-2xl align-middle shadow-xl transition-all">
-                  <iframe className='m-auto' src={frameUrl} title="Lecture" hidden onLoad={() => setFrameLoaded(true)}></iframe>
+                  <iframe className='m-auto' src={labProg?.submissions[submissionIdx].url} title="Lecture" hidden onLoad={() => setFrameLoaded(true)}></iframe>
                   {props.user?.isTeacher && frameLoaded ?
                     <div className="h-16 flex pt-2 gap-2">
-                        <div className="w-1/2 bg-green-500 center cursor-pointer" onClick={() => alert('here')}><CheckCircleIcon className="w-10 h-10" aria-hidden="true" /></div>
-                        <div className="w-1/2 bg-red-500 center cursor-pointer" onClick={() => alert('here')}><XCircleIcon className="w-10 h-10" aria-hidden="true" /></div>
+                        <div className="w-1/2 bg-green-500 center cursor-pointer" onClick={() => frameUser && gradeLab("Done")}><CheckCircleIcon className="w-10 h-10" aria-hidden="true" /></div>
+                        <div className="w-1/2 bg-red-500 center cursor-pointer" onClick={() => frameUser && gradeLab("Error")}><XCircleIcon className="w-10 h-10" aria-hidden="true" /></div>
                     </div>
                     :
                     <></>

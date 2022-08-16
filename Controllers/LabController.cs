@@ -30,6 +30,7 @@ public class LabController : Controller
     public LabController(ILogger<LessonController> logger, CosmosClient cosmosClient, CosmosServices cosmosServices)
     {
         _logger = logger;
+        _cosmosClient = cosmosClient;
     }
 
     [HttpGet]
@@ -39,5 +40,39 @@ public class LabController : Controller
         var labs = JsonConvert.DeserializeObject<List<Lab>>(labJson);
 
         return labs;
+    }
+
+    [HttpPost]
+    [Authorize(Roles = CustomRoles.Teacher)]
+    public async Task<List<Models.User>> GetStudents(string courseSlug, [FromBody] List<string> studentEmails)
+    {
+        var usersContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
+        List<(string, PartitionKey)> studenQueries = studentEmails
+            .Where(x => x != User.Identity.Email())
+            .Select(x => (x, PartitionKey.None))
+            .ToList();
+
+        var courseLessons = GetLabInfo(courseSlug);
+        var courseLessonIds = courseLessons.Select(x => x.Name);
+        var studentsData = await usersContainer.ReadManyItemsAsync<Models.User>(studenQueries);
+        return studentsData.Resource.ToList();
+    }
+
+    [HttpPost]
+    [Authorize(Roles = CustomRoles.Teacher)]
+    public async Task GradeLab(string studentEmail, string labName, int idx, string state, [FromBody] List<LabProg> labProgList)
+    {
+        var studentsContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
+        var labProg = labProgList.FirstOrDefault(x => x.Name == labName);
+
+        if (labProg != null)
+        {
+            labProgList.Remove(labProg);
+        }
+
+        labProg.Submissions[idx].State = state;
+        labProgList.Add(labProg);
+
+        await studentsContainer.PatchItemAsync<Models.User>(studentEmail, PartitionKey.None, new[] { PatchOperation.Replace("/LabProgList", labProgList) });
     }
 }
