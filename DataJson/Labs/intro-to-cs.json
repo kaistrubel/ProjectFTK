@@ -4,15 +4,15 @@
     "Name": "Intro",
     "Order": 1,
     "ManualUrl": "https://docs.google.com/document/d/1XlHufFtpNCUJpwqPMQ25QtYjnZEb-WmFFYUkoM2hmLY/edit?usp=sharing",
-    "VideoUrl": "",
+    "VideoUrl": "https://www.youtube.com/embed/Rs1GZjbNY4E",
     "Submissions": [ "Phase 1", "Phase 2" ]
   },
   {
     "Unit": "Blockly",
     "Name": "Lab 2",
     "Order": 2,
-    "ManualUrl": "",
-    "VideoUrl": "",
-    "Submissions": [ "Phase 1", "Phase 2" ]
+    "ManualUrl": "https://docs.google.com/document/d/1XlHufFtpNCUJpwqPMQ25QtYjnZEb-WmFFYUkoM2hmLY/edit?usp=sharing",
+    "VideoUrl": "https://www.youtube.com/embed/Rs1GZjbNY4E",
+    "Submissions": [ "Phase 11", "Phase 22" ]
   }
 ]

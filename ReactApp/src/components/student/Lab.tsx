@@ -14,6 +14,7 @@ const Lab = (props: any) => {
   let [frameUser, setFrameUser] = useState<IUser>()
   let [frameLoaded, setFrameLoaded] = useState<boolean>(false)
   let [url, setUrl] = useState<string>("")
+  const [isManualInFrame, setIsManulaInFrame] = useState<boolean>(true)
   const [manualUrl, setManualUrl] = useState<string>();
   const [submissionName, setSubmissionName] = useState<string>();
   const [submissionIdx, setSubmissionIdx] = useState<number>(0);
@@ -132,9 +133,22 @@ const Lab = (props: any) => {
 
   return (
     <>
-      <div className="grid place-items-center pt-16 pb-10">
+      <div className="grid place-items-center pt-16">
         <iframe id="LabManual" src={manualUrl} title="LabManual" ></iframe>
       </div>
+      <div className="center">
+        <button
+            onClick={() =>
+            {
+            setManualUrl(isManualInFrame ? props.selectedLab.videoUrl : props.selectedLab.manualUrl);
+            setIsManulaInFrame(!isManualInFrame)
+            }}
+            type="submit"
+            className="text-black bubble bubble--highlight hover:bg-indigo-700 hover:text-white"
+        >
+            Show {isManualInFrame? "Video" : "Manual"}
+        </button>
+        </div>
       {Array.from(props.selectedLab.submissions as string[] ?? []).map((submission:string, idx: number) => (
       <div key={submission} className='center pt-5'>
         <TableContainer className='w-3/4'>

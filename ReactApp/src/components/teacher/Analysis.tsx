@@ -14,8 +14,10 @@ const Dashboard = (props: any) => {
 
   const [analysis, setAnalysis] = useState<IStudentAnalysis[]>([]);
   const [statusData, setStatusData] = useState<number[]>();
-  const [currentLabels, setCurrentLabels] = useState<string[]>();
-  const [currentData, setCurrentData] = useState<number[]>();
+  const [lessonLabels, setLessonLabels] = useState<string[]>();
+  const [lessonData, setLessonData] = useState<number[]>();
+  const [labLabels, setLabLabels] = useState<string[]>();
+  const [labData, setLabData] = useState<number[]>();
   const statusOptions = {
     plugins: {
       legend: {
@@ -57,8 +59,10 @@ const Dashboard = (props: any) => {
           console.log(response.data)
             setAnalysis(response.data)
             setStatusData([response.data.filter(x=>x.status == "Behind").length, response.data.filter(x=>x.status == "Warning").length, response.data.filter(x=>x.status == "OnTrack").length])
-            setCurrentLabels(Object.keys(response.data.reduce((a, c) => (a[c.current] = (a[c.current] || 0) + 1, a), Object.create(null))))
-            setCurrentData(Object.values(response.data.reduce((a, c) => (a[c.current] = (a[c.current] || 0) + 1, a), Object.create(null))))
+            setLessonLabels(Object.keys(response.data.reduce((a, c) => (a[c.lesson] = (a[c.lesson] || 0) + 1, a), Object.create(null))))
+            setLessonData(Object.values(response.data.reduce((a, c) => (a[c.lesson] = (a[c.lesson] || 0) + 1, a), Object.create(null))))
+            setLabLabels(Object.keys(response.data.reduce((a, c) => (a[c.lab] = (a[c.lab] || 0) + 1, a), Object.create(null))))
+            setLabData(Object.values(response.data.reduce((a, c) => (a[c.lab] = (a[c.lab] || 0) + 1, a), Object.create(null))))
         })
         .catch((e: Error) => {
           console.log(e);
@@ -74,33 +78,49 @@ const Dashboard = (props: any) => {
       :
       <>
       <div className="grid pt-10 gap-20 center">
-        <div className="w-1/4 p-4 bg-white rounded-lg shadow-xs bg-zinc-900">
-            <p className=" center mb-4 font-semibold text-gray-800 dark:text-gray-300">Status</p>
-            <Doughnut data={{
-                datasets: [
-                    {
-                    data: statusData,
-                    /**
-                     * These colors come from Tailwind CSS palette
-                     * https://tailwindcss.com/docs/customizing-colors/#default-color-palette
-                     */
-                    backgroundColor: ['#991b1b', '#f97316', '#166534'],
-                    label: 'Split',
-                    },
-                ],
-                labels: ['Behind', 'Warning', 'OnTrack'],
-            }} options={statusOptions}/>
-        </div>
-        <div className="w-1/2 p-4 bg-white rounded-lg shadow-xs bg-zinc-900">
-            <p className=" center mb-4 font-semibold text-gray-800 dark:text-gray-300">Current</p>
+      <div className="p-4 bg-white rounded-lg shadow-xs bg-zinc-900">
+        <p className=" center mb-4 font-semibold text-gray-800 dark:text-gray-300">Status</p>
+        <Doughnut data={{
+            datasets: [
+                {
+                data: statusData,
+                /**
+                 * These colors come from Tailwind CSS palette
+                 * https://tailwindcss.com/docs/customizing-colors/#default-color-palette
+                 */
+                backgroundColor: ['#991b1b', '#f97316', '#166534'],
+                label: 'Split',
+                },
+            ],
+            labels: ['Behind', 'Warning', 'OnTrack'],
+        }} options={statusOptions}/>
+      </div>
+      </div>
+      <div className="grid pt-10 gap-10 center">
+        <div className="w-5/12 p-4 bg-white rounded-lg shadow-xs bg-zinc-900">
+            <p className=" center mb-4 font-semibold text-gray-800 dark:text-gray-300">Lessons</p>
             <Bar data={{
-                    labels: currentLabels,
+                    labels: lessonLabels,
                     datasets: [
                       {
-                        backgroundColor: '#a434eb',
+                        backgroundColor: '#550bb3',
                         borderWidth: 2,
                         borderColor: '#fff',
-                        data: currentData,
+                        data: lessonData,
+                      },
+                    ],
+            }} options={currentOptions}/>
+        </div>
+        <div className="w-5/12 p-4 bg-white rounded-lg shadow-xs bg-zinc-900">
+            <p className=" center mb-4 font-semibold text-gray-800 dark:text-gray-300">Labs</p>
+            <Bar data={{
+                    labels: labLabels,
+                    datasets: [
+                      {
+                        backgroundColor: '#3878a8',
+                        borderWidth: 2,
+                        borderColor: '#fff',
+                        data: labData,
                       },
                     ],
             }} options={currentOptions}/>
@@ -113,7 +133,8 @@ const Dashboard = (props: any) => {
                 <TableRow className='bg-zinc-900 text-white text-sm'>
                     <TableCell>Student</TableCell>
                     <TableCell>Status</TableCell>
-                    <TableCell>Current</TableCell>
+                    <TableCell>Current Lesson</TableCell>
+                    <TableCell>Current Lab</TableCell>
                     <TableCell>Time Spent</TableCell>
                     <TableCell></TableCell>
                 </TableRow>
@@ -135,7 +156,10 @@ const Dashboard = (props: any) => {
                         }>{student.status}</Badge>
                     </TableCell>
                     <TableCell>
-                        <span className="text-md">{student.current}</span>
+                        <span className="text-md">{student.lesson}</span>
+                    </TableCell>
+                    <TableCell>
+                        <span className="text-md">{student.lab}</span>
                     </TableCell>
                     <TableCell>
                         <span className="text-md">{student.time}</span>

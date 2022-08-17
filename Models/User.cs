@@ -45,7 +45,9 @@ public class StudentAnalysis
 
 	public string PhotoUrl { get; set; }
 
-	public string Current { get; set; }
+	public string Lesson { get; set; }
+
+	public string Lab { get; set; }
 
 	public int Order { get; set; }
 

@@ -216,6 +216,7 @@ public class LessonController : Controller
 
     [HttpPost]
     [Authorize(Roles = CustomRoles.Teacher)]
+    [ResponseCache(Duration = 60)]
     public async Task<List<StudentAnalysis>> GetAnalysis(string courseSlug, [FromBody] List<string> studentEmails)
     {
         var studentData = new ConcurrentBag<StudentAnalysis>();
@@ -228,6 +229,11 @@ public class LessonController : Controller
 
         var courseLessons = GetLessonsInfo(courseSlug);
         var courseLessonIds = courseLessons.Select(x => x.LessonId);
+
+        var labJson = System.IO.File.ReadAllText($"DataJson/Labs/{courseSlug}.json");
+        var courseLabs = JsonConvert.DeserializeObject<List<Lab>>(labJson);
+        var courseLabNames = courseLabs.Select(x=>x.Name);
+
         var studentsData = await usersContainer.ReadManyItemsAsync<Models.User>(studenQueries);
         students = studentsData.Resource.ToList();
 
@@ -247,7 +253,8 @@ public class LessonController : Controller
                     Name = student.Name,
                     PhotoUrl = student.PhotoUrl,
                     Time = TimeSpan.Zero.ToString(@"hh\:mm\:ss"), //account for greater than one day, maybe 4 days
-                    Current = "L0: Has Not Started", //might want to format this Unit1 Lesson2 etc.
+                    Lesson = "L0: Has Not Started", //might want to format this Unit1 Lesson2 etc.
+                    Lab = "L0: Has Not Started", //might want to format this Unit1 Lesson2 etc.
                     Status = "Behind"
                 });
 
@@ -259,9 +266,15 @@ public class LessonController : Controller
                             .Select(x => x.LessonId)
                             .Contains(y.LessonId))
                             .OrderBy(x => x.Order);
+            var currLesson = courseProg?.LastOrDefault() ?? new LessonInfo() { Order = 0, Name = "Has Not Starated" };
 
-            var current = courseProg?.LastOrDefault() ?? new LessonInfo() { Order = 0, Name = "Has Not Starated" };
-            var studentDays = courseProg?.Sum(x => x.Days) ?? 0;
+            var labProg = courseLabs
+                .Where(y => student.LabProgList
+                .Select(x => x.Name)
+                .Contains(y.Name))
+                .OrderBy(x => x.Order);
+
+            var currLab = labProg?.LastOrDefault() ?? new Lab() { Order = 0, Name = "Has Not Starated" };
 
             var time = TimeSpan.FromSeconds(student.ProgressList.Where(x => courseLessonIds.Contains(x.LessonId)).Sum(x => x.ActiveSeconds));
             studentData.Add(new StudentAnalysis
@@ -270,8 +283,9 @@ public class LessonController : Controller
                 Email = student.Email,
                 PhotoUrl = student.PhotoUrl,
                 Time = time.ToString(@"hh\:mm\:ss"), //account for greater than one day, maybe 4 days
-                Current = "L" + current?.Order + ": " + current?.Name, //might want to format this Unit1 Lesson2 etc.,
-                Order = current?.Order ?? 0,
+                Lesson = "L" + currLesson?.Order + ": " + currLesson?.Name, //might want to format this Unit1 Lesson2 etc.,
+                Lab = "L" + currLab?.Order + ": " + currLab?.Name, //might want to format this Unit1 Lesson2 etc.,
+                Order = currLesson?.Order ?? 0 + currLab?.Order ?? 0,
             });
         });
 
@@ -282,7 +296,7 @@ public class LessonController : Controller
             student.Status = student.Order >= expectedCurrent ? "OnTrack" : student.Order + 2 >= expectedCurrent ? "Warning" : "Behind";
         });
 
-        return studentData.OrderBy(x => x.Current).ThenBy(x => x.Status == "Warning").ThenBy(x => x.Status == "Behind").ToList();
+        return studentData.OrderBy(x => x.Lesson).ThenBy(x=>x.Lab).ThenBy(x => x.Status == "Warning").ThenBy(x => x.Status == "Behind").ToList();
     }
 
     private int SchoolDaysDifference(DateTime startDate, DateTime endDate, List<DateTime> holidays)

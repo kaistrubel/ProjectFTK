@@ -13,7 +13,8 @@ export interface IStudentAnalysis{
   name: string,
   email: string,
   photoUrl: string,
-  current: string,
+  lesson: string,
+  lab: string,
   status: string,
   time: string,
 }
