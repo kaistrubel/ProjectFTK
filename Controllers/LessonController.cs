@@ -192,15 +192,28 @@ public class LessonController : Controller
     }
 
     [HttpGet]
+    [ResponseCache(Duration = 60)]
     public async Task<Lesson> GetLesson(string lessonId)
     {
         var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
         var lessonResp = await container.ReadItemAsync<Lesson>(lessonId, PartitionKey.None);
         //take 10 items from each lecture/problem for each level?
         var lesson = lessonResp.Resource;
-        lesson.Problems = lesson.Problems.OrderByDescending(x => x.Gain).ThenByDescending(x=>x.Attempts).ToList();
-        lesson.Videos = lesson.Videos.OrderByDescending(x => x.Gain).ThenByDescending(x => x.Views).ToList();
-        lesson.Notes = lesson.Notes.OrderByDescending(x => x.Gain).ThenByDescending(x => x.Views).ToList();
+        var rand = new Random();
+        var randomChance = rand.Next(100) > 80;
+
+        lesson.Problems = lesson.Problems.OrderByDescending(x => x.Gain).ThenByDescending(x => x.Attempts).ToList();
+        if (randomChance)
+        {
+            var randomConcept = rand.Next(2); //make 3 when randomizing problems too. Need to in the future not for blocklu
+            lesson.Notes = randomConcept == 0 ? lesson.Notes.OrderBy(a => Guid.NewGuid()).ToList() : lesson.Notes.OrderByDescending(x => x.Gain).ThenByDescending(x => x.Views).ToList();
+            lesson.Videos = randomConcept == 1 ? lesson.Videos.OrderBy(a => Guid.NewGuid()).ToList() : lesson.Videos.OrderByDescending(x => x.Gain).ThenByDescending(x => x.Views).ToList();
+        }
+        else
+        {
+            lesson.Videos = lesson.Videos.OrderByDescending(x => x.Gain).ThenByDescending(x => x.Views).ToList();
+            lesson.Notes = lesson.Notes.OrderByDescending(x => x.Gain).ThenByDescending(x => x.Views).ToList();
+        }
 
         return lesson;
     }

@@ -188,7 +188,10 @@ function LectureTable(type: string, user: IUser, lessonId:string, level:number, 
                   :Array.from(type=="Video" ? videos ?? [] : notes ?? []).filter(x=>x.author != user.email).map((lecture: ILecture, idx:number) => (
                     <TableRow key={lecture.url} className='bg-zinc-900 text-white'>
                     <TableCell>
-                      <button className="text-md hover:text-blue-500">{lecture.url}</button>
+                      <button onClick={() => {
+                        setFrameUrl(lecture.url)
+                        setIframeModalIsOpen(true)
+                        }} className="text-md hover:text-blue-500">{lecture.url}</button>
                     </TableCell>
                     <TableCell>{lecture.gain}</TableCell>
                   </TableRow>
