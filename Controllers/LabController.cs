@@ -60,7 +60,7 @@ public class LabController : Controller
 
     [HttpPost]
     [Authorize(Roles = CustomRoles.Teacher)]
-    public async Task GradeLab(string studentEmail, string labName, int idx, string state, [FromBody] List<LabProg> labProgList)
+    public async Task GradeLab(string studentEmail, string labName, int idx, string state, string details, [FromBody] List<LabProg> labProgList)
     {
         var studentsContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
         var labProg = labProgList.FirstOrDefault(x => x.Name == labName);
@@ -71,6 +71,7 @@ public class LabController : Controller
         }
 
         labProg.Submissions[idx].State = state;
+        labProg.Submissions[idx].Details = details;
         labProgList.Add(labProg);
 
         await studentsContainer.PatchItemAsync<Models.User>(studentEmail, PartitionKey.None, new[] { PatchOperation.Replace("/LabProgList", labProgList) });

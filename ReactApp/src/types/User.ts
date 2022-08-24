@@ -31,6 +31,7 @@ export class Progress {
 export interface ISubmissions{
   url: string,
   state: string,
+  details: string,
 }
 
 export class LabProg {

@@ -10,8 +10,8 @@ const getStudents = (courseSlug: string, emails: string[]) => {
     return http.post<IUser[]>(`lab/GetStudents/?courseSlug=${courseSlug}`, emails);
     };
 
-const gradeLab = (studentEmail: string, labName: string, idx: number, state: string, labProgList: LabProg[]) => {
-    return http.post<IUser[]>(`lab/GradeLab/?studentEmail=${studentEmail}&labName=${labName}&idx=${idx}&state=${state}`, labProgList);
+const gradeLab = (studentEmail: string, labName: string, idx: number, state: string, details: string, labProgList: LabProg[]) => {
+    return http.post<IUser[]>(`lab/GradeLab/?studentEmail=${studentEmail}&labName=${labName}&idx=${idx}&state=${state}&details=${details}`, labProgList);
     };
 
 const LabApi = {

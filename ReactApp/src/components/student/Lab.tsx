@@ -1,5 +1,5 @@
 import { Fragment, useMemo, useState } from "react";
-import {TableContainer,Table,TableHeader,TableBody,TableRow,TableCell, Button } from '@windmill/react-ui'
+import {TableContainer,Table,TableHeader,TableBody,TableRow,TableCell, Button, Alert } from '@windmill/react-ui'
 import {Dialog, Transition  } from '@headlessui/react'
 import UserApi from "../../apis/user";
 import IUser, {LabProg} from "../../types/User";
@@ -18,11 +18,13 @@ const Lab = (props: any) => {
   const [manualUrl, setManualUrl] = useState<string>();
   const [submissionName, setSubmissionName] = useState<string>();
   const [submissionIdx, setSubmissionIdx] = useState<number>(0);
+  const [details, setDetails] = useState<string>("");
+  const [trySetError, setTrySetError] = useState<boolean>(false);
 
   const [users, setUsers] = useState<IUser[]>();
 
   function addOrUpdateSubmission(state: string) {
-    props.user?.labProgList && UserApi.updateUserLabProg(props.user.labProgList, props.selectedLab.name, submissionIdx, url, state)
+      props.user?.labProgList && UserApi.updateUserLabProg(props.user.labProgList, props.selectedLab.name, submissionIdx, url, state)
       .then((response) => 
       {
         if(response.status !== 200){
@@ -37,7 +39,10 @@ const Lab = (props: any) => {
     }
 
     function gradeLab(state: string) {
-        frameUser && labProg && LabApi.gradeLab(frameUser.email, labProg?.name, submissionIdx, state, frameUser.labProgList)
+      if(details.length > 0 || state == "Done")
+      {
+        setTrySetError(false)
+        frameUser && labProg && LabApi.gradeLab(frameUser.email, labProg?.name, submissionIdx, state, details, frameUser.labProgList)
           .then((response) => 
           {
             if(response.status !== 200){
@@ -48,7 +53,12 @@ const Lab = (props: any) => {
               window.location.href = "/lab";
             }
           })
-        }
+      }
+      else
+      {
+        setTrySetError(true)
+      }
+    }
 
     function StudentTable(user: IUser, idx: number, submission: string)
     {
@@ -56,6 +66,7 @@ const Lab = (props: any) => {
         return(
             <TableRow className='bg-zinc-900 text-white'>
             { labProg?.submissions && labProg?.submissions?.length > idx ?
+            <>
             <TableCell>
             <button onClick={() => {
                 setLabProg(labProg)
@@ -94,8 +105,13 @@ const Lab = (props: any) => {
             </button>
             }
             </TableCell>
+            <TableCell>
+            {labProg?.submissions[idx]?.details}
+          </TableCell>
+          </>
             :
-            user?.isTeacher == false ? 
+            user?.isTeacher == false ?
+            <>
             <TableCell> 
               <Button onClick={() => {
                 setSubmissionIdx(idx)
@@ -105,6 +121,9 @@ const Lab = (props: any) => {
               <PlusCircleIcon className="w-5 h-5 pr-5" aria-hidden="true" /> Add Submission
               </Button>
             </TableCell>
+            <TableCell>
+            </TableCell>
+            </>
             :<></>
             }
           </TableRow>
@@ -156,6 +175,7 @@ const Lab = (props: any) => {
                 <TableHeader>
                 <TableRow className='bg-zinc-900 text-white text-sm'>
                     <TableCell>{submission}</TableCell>
+                    <TableCell>Details</TableCell>
                 </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -263,10 +283,22 @@ const Lab = (props: any) => {
                 <Dialog.Panel className="w-fit transform overflow-hidden rounded-2xl align-middle shadow-xl transition-all">
                   <iframe className='m-auto' src={labProg?.submissions[submissionIdx].url} title="Lecture" hidden onLoad={() => setFrameLoaded(true)}></iframe>
                   {props.user?.isTeacher && frameLoaded ?
-                    <div className="h-16 flex pt-2 gap-2">
+                    <>
+                    <Alert className="mt-1 bg-red-400" hidden={!trySetError} type="danger">Details required for a bad submission</Alert>
+                    <input
+                      required
+                      type="text"
+                      name="Details"
+                      id="Details"
+                      placeholder="Details"
+                      onChange={(e) => setDetails(e.target.value)}
+                      className="h-16 mt-1 pl-2 w-full"
+                    />
+                    <div className="h-16 flex pt-1 gap-2">
                         <div className="w-1/2 bg-green-500 center cursor-pointer" onClick={() => frameUser && gradeLab("Done")}><CheckCircleIcon className="w-10 h-10" aria-hidden="true" /></div>
                         <div className="w-1/2 bg-red-500 center cursor-pointer" onClick={() => frameUser && gradeLab("Error")}><XCircleIcon className="w-10 h-10" aria-hidden="true" /></div>
                     </div>
+                    </>
                     :
                     <></>
                   }

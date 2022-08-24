@@ -30,8 +30,8 @@ const Labs = (props: any) => {
 
   function isDone(labName: string)
   {
-    var progress = props.user.labProgList?.find((x: { labName: string; }) => x.labName == labName);
-    if(progress?.length == labs.find(x=>x.name == labName)?.submissions.length)
+    var progress = props.user.labProgList?.find((x: { name: string; }) => x.name == labName);
+    if(progress?.submissions?.length == labs.find(x=>x.name == labName)?.submissions.length)
     {
         return true;
     }

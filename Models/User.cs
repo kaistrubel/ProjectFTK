@@ -61,6 +61,8 @@ public class Submission
     public string Url { get; set; }
 
     public string State { get; set; }
+
+    public string? Details { get; set; }
 }
 
 public class LabProg
@@ -81,4 +83,6 @@ public class UpdateLabProgResponse
 	public string SubmissionUrl { get; set; }
 
 	public string State { get; set; }
+
+	public string Details { get; set; }
 }
