@@ -192,7 +192,6 @@ public class LessonController : Controller
     }
 
     [HttpGet]
-    [ResponseCache(Duration = 60)]
     public async Task<Lesson> GetLesson(string lessonId)
     {
         var container = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.LessonsContainer);
