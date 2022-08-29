@@ -77,9 +77,9 @@ const Dashboard = (props: any) => {
       ? <NoClasses isTeacher={true}/>
       :
       <>
-      <div className="grid pt-10 gap-20 center">
-      <div className="p-4 bg-white rounded-lg shadow-xs bg-zinc-900">
-        <p className=" center mb-4 font-semibold text-gray-800 dark:text-gray-300">Status</p>
+      <div className="grid pt-10 center">
+      <div className="w-5/6 grid p-4 center bg-zinc-900">
+      <div className="w-2/6 p-4 bg-white shadow-xs bg-zinc-900 border-r-2 border-white">
         <Doughnut data={{
             datasets: [
                 {
@@ -94,9 +94,15 @@ const Dashboard = (props: any) => {
             ],
             labels: ['Behind', 'Warning', 'OnTrack'],
         }} options={statusOptions}/>
+      
+      
+      </div>
+      <div className="w-4/6 p-4 bg-white rounded-lg shadow-xs bg-zinc-900 h-full">
+        <p className="font-semibold text-gray-800 dark:text-gray-300">Recs</p>
       </div>
       </div>
-      <div className="grid pt-10 gap-10 center">
+      </div>
+      <div className="grid pt-10 gap-5 center">
         <div className="w-5/12 p-4 bg-white rounded-lg shadow-xs bg-zinc-900">
             <p className=" center mb-4 font-semibold text-gray-800 dark:text-gray-300">Lessons</p>
             <Bar data={{
@@ -126,8 +132,8 @@ const Dashboard = (props: any) => {
             }} options={currentOptions}/>
         </div>
       </div>
-      <div className='center py-20'>
-        <TableContainer className='w-3/4'>
+      <div className='center py-10'>
+        <TableContainer className='w-5/6'>
             <Table>
                 <TableHeader>
                 <TableRow className='bg-zinc-900 text-white text-sm'>
