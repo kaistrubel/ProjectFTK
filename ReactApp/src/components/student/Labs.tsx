@@ -119,7 +119,7 @@ const Labs = (props: any) => {
         :
         <>
           {
-          labs == []
+          labs === undefined || labs.length == 0
           ? <Loading />
           :
             labs?.sort(l=>l.order).filter(l => l.unit == selectedunit)?.map((lab: ILab, idx: number) => (
