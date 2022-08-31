@@ -37,6 +37,17 @@ public class UpdateResponse
 	public Progress UpdatedProgress { get; set; }
 }
 
+public class StudentAnalysisResponse
+{
+	public string Status { get; set; }
+
+	public string Recommendation { get; set; }
+
+	public string NeedsAttentions { get; set; }
+
+	public List<StudentAnalysis> Students { get; set; }
+}
+
 public class StudentAnalysis
 {
 	public string Name { get; set; }

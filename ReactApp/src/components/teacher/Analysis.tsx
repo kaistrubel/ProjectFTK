@@ -18,6 +18,11 @@ const Dashboard = (props: any) => {
   const [lessonData, setLessonData] = useState<number[]>();
   const [labLabels, setLabLabels] = useState<string[]>();
   const [labData, setLabData] = useState<number[]>();
+
+  const [status, setStatus] = useState<string>();
+  const [recommendation, setRecommendation] = useState<string>();
+  const [needsAttentions, setNeedsAttentions] = useState<string>();
+
   const statusOptions = {
     plugins: {
       legend: {
@@ -56,13 +61,15 @@ const Dashboard = (props: any) => {
   useMemo(() => {
         props.selectedCourse?.courseSlug && LessonApi.getStudentAnalysis(props.selectedCourse?.courseSlug, props.selectedCourse?.users)
         .then((response) => {
-          console.log(response.data)
-            setAnalysis(response.data)
-            setStatusData([response.data.filter(x=>x.status == "Behind").length, response.data.filter(x=>x.status == "Warning").length, response.data.filter(x=>x.status == "OnTrack").length])
-            setLessonLabels(Object.keys(response.data.reduce((a, c) => (a[c.lesson] = (a[c.lesson] || 0) + 1, a), Object.create(null))))
-            setLessonData(Object.values(response.data.reduce((a, c) => (a[c.lesson] = (a[c.lesson] || 0) + 1, a), Object.create(null))))
-            setLabLabels(Object.keys(response.data.reduce((a, c) => (a[c.lab] = (a[c.lab] || 0) + 1, a), Object.create(null))))
-            setLabData(Object.values(response.data.reduce((a, c) => (a[c.lab] = (a[c.lab] || 0) + 1, a), Object.create(null))))
+            setAnalysis(response.data.students)
+            setStatus(response.data.status)
+            setRecommendation(response.data.recommendation)
+            setNeedsAttentions(response.data.needsAttentions)
+            setStatusData([response.data.students.filter(x=>x.status == "Behind").length, response.data.students.filter(x=>x.status == "Warning").length, response.data.students.filter(x=>x.status == "OnTrack").length])
+            setLessonLabels(Object.keys(response.data.students.reduce((a, c) => (a[c.lesson] = (a[c.lesson] || 0) + 1, a), Object.create(null))))
+            setLessonData(Object.values(response.data.students.reduce((a, c) => (a[c.lesson] = (a[c.lesson] || 0) + 1, a), Object.create(null))))
+            setLabLabels(Object.keys(response.data.students.reduce((a, c) => (a[c.lab] = (a[c.lab] || 0) + 1, a), Object.create(null))))
+            setLabData(Object.values(response.data.students.reduce((a, c) => (a[c.lab] = (a[c.lab] || 0) + 1, a), Object.create(null))))
         })
         .catch((e: Error) => {
           console.log(e);
@@ -77,9 +84,9 @@ const Dashboard = (props: any) => {
       ? <NoClasses isTeacher={true}/>
       :
       <>
-      <div className="grid pt-10 center">
-      <div className="w-5/6 grid p-4 center bg-zinc-900">
-      <div className="w-2/6 p-4 bg-white shadow-xs bg-zinc-900 border-r-2 border-white">
+      <div className="grid pt-10 place-items-center">
+      <div className="w-5/6 grid p-4 center rounded-lg bg-zinc-900">
+      <div className="w-2/6 p-4 shadow-xs bg-zinc-900 border-r-2 border-white">
         <Doughnut data={{
             datasets: [
                 {
@@ -97,14 +104,16 @@ const Dashboard = (props: any) => {
       
       
       </div>
-      <div className="w-4/6 p-4 bg-white rounded-lg shadow-xs bg-zinc-900 h-full">
-        <p className="font-semibold text-gray-800 dark:text-gray-300">Recs</p>
+      <div className="w-4/6 pl-10 rounded-lg shadow-xs bg-zinc-900">
+        <p className="text-lg text-gray-800 dark:text-gray-300"><strong>Status: </strong>{status}</p>
+        <p className="text-lg text-gray-800 dark:text-gray-300"><strong>Recommendation: </strong>{recommendation}</p>
+        <p className="text-lg text-gray-800 dark:text-gray-300"><strong>Needs Attention: </strong>{needsAttentions}</p>
       </div>
       </div>
       </div>
       <div className="grid pt-10 gap-5 center">
-        <div className="w-5/12 p-4 bg-white rounded-lg shadow-xs bg-zinc-900">
-            <p className=" center mb-4 font-semibold text-gray-800 dark:text-gray-300">Lessons</p>
+        <div className="w-5/12 p-4 rounded-lg shadow-xs bg-zinc-900">
+            <p className="center mb-4 font-semibold text-gray-800 dark:text-gray-300">Lessons</p>
             <Bar data={{
                     labels: lessonLabels,
                     datasets: [
@@ -117,8 +126,8 @@ const Dashboard = (props: any) => {
                     ],
             }} options={currentOptions}/>
         </div>
-        <div className="w-5/12 p-4 bg-white rounded-lg shadow-xs bg-zinc-900">
-            <p className=" center mb-4 font-semibold text-gray-800 dark:text-gray-300">Labs</p>
+        <div className="w-5/12 p-4 rounded-lg shadow-xs bg-zinc-900">
+            <p className="center mb-4 font-semibold text-gray-800 dark:text-gray-300">Labs</p>
             <Bar data={{
                     labels: labLabels,
                     datasets: [

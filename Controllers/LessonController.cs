@@ -229,7 +229,7 @@ public class LessonController : Controller
     [HttpPost]
     [Authorize(Roles = CustomRoles.Teacher)]
     [ResponseCache(Duration = 60)]
-    public async Task<List<StudentAnalysis>> GetAnalysis(string courseSlug, [FromBody] List<string> studentEmails)
+    public async Task<StudentAnalysisResponse> GetAnalysis(string courseSlug, [FromBody] List<string> studentEmails)
     {
         var studentData = new ConcurrentBag<StudentAnalysis>();
         var usersContainer = _cosmosClient.GetContainer(Constants.GlobalDb, Constants.ClassUsersContainer);
@@ -308,7 +308,47 @@ public class LessonController : Controller
             student.Status = student.Order >= expectedCurrent ? "OnTrack" : student.Order + 2 >= expectedCurrent ? "Warning" : "Behind";
         });
 
-        return studentData.OrderBy(x => x.Lesson).ThenBy(x=>x.Lab).ThenBy(x => x.Status == "Warning").ThenBy(x => x.Status == "Behind").ToList();
+        var behindCount = (float)studentData.Count(x => x.Status == "Behind") / studentData.Count();
+
+        var analysisResponse = new StudentAnalysisResponse()
+        {
+            Status = behindCount > 0.2f ? "OnTrack" : behindCount < 0.4f ? "Warning" : "Behind",
+            Students = studentData.OrderBy(x => x.Lesson).ThenBy(x => x.Lab).ThenBy(x => x.Status == "Warning").ThenBy(x => x.Status == "Behind").ToList()
+        };
+
+        analysisResponse.Recommendation = GetRecommendation(analysisResponse.Status, studentData.Select(x=>x.Lesson), studentData.Select(x=>x.Lab));
+        analysisResponse.NeedsAttentions = string.Join(", ",analysisResponse.Students.Where(x => x.Status != "OnTrack").Select(x=>x.Name).Take(3));
+
+        return analysisResponse;
+    }
+
+    private string GetRecommendation(string status, IEnumerable<string> lessons, IEnumerable<string> labs)
+    {
+        if (status == "OnTrack")
+        {
+            return "The class is on track, work with students listed below";
+        }
+        else
+        {
+            var lesson = lessons.GroupBy(x => x);
+            var lab = labs.GroupBy(x => x);
+
+            if (lab?.Count() > 0 && lesson?.Count() > 0)
+            {
+                if (lesson?.OrderBy(x => x.Count()).First().Count() >= lab?.OrderBy(x => x.Count()).First().Count())
+                {
+                    return "Review lesson " + lesson.First().Key;
+                }
+                else
+                {
+                    return "Work on lab " + lab.First().Key;
+                }
+            }
+            else
+            {
+                return "Continue with your lesson plan";
+            }
+        }
     }
 
     private int SchoolDaysDifference(DateTime startDate, DateTime endDate, List<DateTime> holidays)

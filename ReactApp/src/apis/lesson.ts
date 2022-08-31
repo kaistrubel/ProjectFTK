@@ -1,6 +1,6 @@
 import http from "../http";
 import ILesson, { ILessonInfo, IProblem } from "../types/Lesson";
-import { IStudentAnalysis } from "../types/User";
+import { IStudentAnalysisResponse } from "../types/User";
 
 const getLessonsInfo = (courseSlug: string) => {
 return http.get<ILessonInfo[]>(`lesson/GetLessonsInfo/?courseSlug=${courseSlug}`);
@@ -11,7 +11,7 @@ const getLesson = (lessonId: string) => {
   };
 
 const getStudentAnalysis = (courseSlug: string, emails: string[]) => {
-  return http.post<IStudentAnalysis[]>(`lesson/GetAnalysis/?courseSlug=${courseSlug}`, emails);
+  return http.post<IStudentAnalysisResponse>(`lesson/GetAnalysis/?courseSlug=${courseSlug}`, emails);
 }
 
 const addProblem = (lessonId: string, url: string, level: number) => {

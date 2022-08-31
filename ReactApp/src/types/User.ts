@@ -9,6 +9,13 @@ export default interface IUser {
   isTeacher: boolean,
 }
 
+export interface IStudentAnalysisResponse{
+  status: string,
+  recommendation: string,
+  needsAttentions: string,
+  students: IStudentAnalysis[],
+}
+
 export interface IStudentAnalysis{
   name: string,
   email: string,

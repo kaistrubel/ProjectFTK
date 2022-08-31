@@ -31,7 +31,6 @@ const OpenProblems = (props: any) => {
   useMemo(() => {
   var userProg = props.user?.progressList?.find((x: { lessonId: string; }) => x.lessonId == props.lessonId);
   setProgress(userProg ?? new Progress(props.lessonId, 1, 0, 0))
-  
   LessonApi.getLesson(props.lessonId)
     .then((response) => {
       var capLevel = Math.min(10, userProg?.level ?? 1);
@@ -42,7 +41,6 @@ const OpenProblems = (props: any) => {
       setVideos(response.data.videos)
       setNotes(response.data.notes)
       setProblemUrl(response.data.problems[0].url + "?level=" + capLevel)
-      
       setVideoUrl(response.data.videos[0].url)
       setVideoIdx(0);
 
