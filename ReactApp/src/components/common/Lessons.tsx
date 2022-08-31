@@ -161,7 +161,7 @@ const Lessons = (props: any) => {
         :
         <>
           {
-          lessons == []
+          lessons === undefined || lessons.length == 0
           ? <Loading />
           :
             lessons?.sort(l=>l.order).filter(l => l.unit == selectedunit)?.map((lesson: ILessonInfo, idx: number) => (
