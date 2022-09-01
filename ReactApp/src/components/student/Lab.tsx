@@ -175,7 +175,7 @@ const Lab = (props: any) => {
       }
 
       {Array.from(props.selectedLab.submissions as string[] ?? []).map((submission:string, idx: number) => (
-      <div key={submission} className='center pt-5'>
+      <div key={submission} className='center pt-5 pb-10'>
         <TableContainer className='w-3/4'>
             <Table>
                 <TableHeader>

@@ -35,7 +35,6 @@ const Labs = (props: any) => {
     {
         return true;
     }
-
     return false;
   }
 
