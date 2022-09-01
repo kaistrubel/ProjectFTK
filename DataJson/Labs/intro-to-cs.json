@@ -3,16 +3,35 @@
     "Unit": "Blockly",
     "Name": "Intro",
     "Order": 1,
-    "ManualUrl": "https://docs.google.com/document/d/1XlHufFtpNCUJpwqPMQ25QtYjnZEb-WmFFYUkoM2hmLY/edit?usp=sharing",
-    "VideoUrl": "https://www.youtube.com/embed/Rs1GZjbNY4E",
-    "Submissions": [ "Phase 1", "Phase 2" ]
+    "ManualUrl": "https://docs.google.com/document/d/1rTSaEZWt-KQjaHl690saaPomEUGzOCsf5Go0UUAAkos/edit?usp=sharing",
+    "Submissions": [ "Submission" ]
   },
   {
     "Unit": "Blockly",
-    "Name": "Lab 2",
+    "Name": "Conditionals",
+    "Order": 2,
+    "ManualUrl": "https://docs.google.com/document/d/1yo2Pi8sBmi7Cdt4pY1C01AoEQ1Wg_5T6ifLDH45rI6c/edit?usp=sharing",
+    "Submissions": [ "Submission" ]
+  },
+  {
+    "Unit": "Blockly",
+    "Name": "Loops",
     "Order": 2,
     "ManualUrl": "https://docs.google.com/document/d/1XlHufFtpNCUJpwqPMQ25QtYjnZEb-WmFFYUkoM2hmLY/edit?usp=sharing",
-    "VideoUrl": "https://www.youtube.com/embed/Rs1GZjbNY4E",
-    "Submissions": [ "Phase 11", "Phase 22" ]
+    "Submissions": [ "Task 1", "Task 2", "Task 3", "Task 4" ]
+  },
+  {
+    "Unit": "Blockly",
+    "Name": "Functions",
+    "Order": 2,
+    "ManualUrl": "https://docs.google.com/document/d/1n9Pm6tzjeETupQs4VnnAdReHEm8XkR_T_tVo3LcLS44/edit?usp=sharing",
+    "Submissions": [ "Task 1", "Task 2", "Task 3", "Task 4", "Task 5" ]
+  },
+  {
+    "Unit": "Blockly",
+    "Name": "Final Project",
+    "Order": 2,
+    "ManualUrl": "https://docs.google.com/document/d/1kU_N7SvQC_icGTnY4x7Uwsuql2OWEPBNQi7Cn6EEwF8/edit?usp=sharing",
+    "Submissions": [ "Submission 1", "Submission 2", "Submission 3" ]
   }
 ]

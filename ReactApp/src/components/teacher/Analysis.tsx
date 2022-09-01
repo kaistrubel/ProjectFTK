@@ -27,16 +27,19 @@ const Dashboard = (props: any) => {
     plugins: {
       legend: {
         position: 'bottom' as const,
+        labels: {
+          color: "white",
+        },
       },
     }
   }
 
-    const currentOptions = {
+  const currentOptions = {
     plugins: {
       legend: {
-        display: false
+        display: false,
       },
-    }
+    },
   }
 
   function removeStudent(studentEmail: string)
@@ -105,15 +108,15 @@ const Dashboard = (props: any) => {
       
       </div>
       <div className="w-4/6 pl-10 rounded-lg shadow-xs bg-zinc-900">
-        <p className="text-lg text-gray-800 dark:text-gray-300"><strong>Status: </strong>{status}</p>
-        <p className="text-lg text-gray-800 dark:text-gray-300"><strong>Recommendation: </strong>{recommendation}</p>
-        <p className="text-lg text-gray-800 dark:text-gray-300"><strong>Needs Attention: </strong>{needsAttentions}</p>
+        <p className="text-lg text-white"><strong>Status: </strong>{status}</p>
+        <p className="text-lg text-white"><strong>Recommendation: </strong>{recommendation}</p>
+        <p className="text-lg text-white"><strong>Needs Attention: </strong>{needsAttentions}</p>
       </div>
       </div>
       </div>
       <div className="grid pt-10 gap-5 center">
         <div className="w-5/12 p-4 rounded-lg shadow-xs bg-zinc-900">
-            <p className="center mb-4 font-semibold text-gray-800 dark:text-gray-300">Lessons</p>
+            <p className="center mb-4 font-semibold text-white">Lessons</p>
             <Bar data={{
                     labels: lessonLabels,
                     datasets: [

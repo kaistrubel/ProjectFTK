@@ -155,7 +155,9 @@ const Lab = (props: any) => {
       <div className="grid place-items-center pt-16">
         <iframe id="LabManual" src={manualUrl} title="LabManual" ></iframe>
       </div>
-      <div className="center">
+
+      {props.selectedLab.videoUrl ?
+        <div className="center">
         <button
             onClick={() =>
             {
@@ -168,6 +170,10 @@ const Lab = (props: any) => {
             Show {isManualInFrame? "Video" : "Manual"}
         </button>
         </div>
+      :
+      <></>
+      }
+
       {Array.from(props.selectedLab.submissions as string[] ?? []).map((submission:string, idx: number) => (
       <div key={submission} className='center pt-5'>
         <TableContainer className='w-3/4'>
