@@ -18,9 +18,9 @@ const Labs = (props: any) => {
     props.selectedCourse?.courseSlug && LabApi.getLabInfo(props.selectedCourse?.courseSlug)
     .then((response) => {
       setLabs(response.data)
-      if(props.selectedLab == null)
+      if(selectedunit == null)
       {
-        response.data[0] && props.setSelectedLab(response.data[0]) //need to update this to current unit based on userData store
+        response.data[0]?.unit && setSelectedUnit(response.data[0].unit) //need to update this to current unit based on userData store
       }
     })
     .catch((e: Error) => {
@@ -31,7 +31,7 @@ const Labs = (props: any) => {
   function isDone(labName: string)
   {
     var progress = props.user.labProgList?.find((x: { name: string; }) => x.name == labName);
-    if(progress?.submissions?.length == labs.find(x=>x.name == labName)?.submissions.length)
+    if(props.user.isTeacher != true && progress?.submissions?.length == labs.find(x=>x.name == labName)?.submissions.length)
     {
         return true;
     }
