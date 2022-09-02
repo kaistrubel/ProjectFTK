@@ -335,13 +335,13 @@ public class LessonController : Controller
 
             if (lab?.Count() > 0 && lesson?.Count() > 0)
             {
-                if (lesson?.OrderBy(x => x.Count()).First().Count() >= lab?.OrderBy(x => x.Count()).First().Count())
+                if (lesson.OrderByDescending(x => x.Count()).First().Count() >= lab.OrderByDescending(x => x.Count()).First().Count())
                 {
-                    return "Review lesson " + lesson.First().Key;
+                    return "Review lesson " + lesson.OrderByDescending(x => x.Count()).First().Key;
                 }
                 else
                 {
-                    return "Work on lab " + lab.First().Key;
+                    return "Work on lab " + lab.OrderByDescending(x => x.Count()).First().Key;
                 }
             }
             else
