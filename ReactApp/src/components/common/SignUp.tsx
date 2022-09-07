@@ -1,4 +1,5 @@
 import GoogleButton from 'react-google-button'
+import { ChevronDoubleDownIcon } from '@heroicons/react/outline'
 
 const Signup = () => {
   return (
@@ -30,33 +31,55 @@ const Signup = () => {
               <GoogleButton style={{backgroundColor: `black`, width:360, fontSize: 23, fontFamily: "Dekko"}} className='outline outline-2' onClick={() => {window.location.href = '/Auth/GoogleLogin' }}/>
             </div>
           </div>
+          <div className="absolute bottom-0 center w-full flex">
+          <ChevronDoubleDownIcon className="h-5 w-5 inline-block" aria-hidden="true"/>
+          <div className="text-2xl p-5">New Teachers</div>
+          <ChevronDoubleDownIcon className="h-5 w-5 flex" aria-hidden="true"/>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-gray-700 border-t-8 w-full z-50 text-white center flex-col  p-6 bg-black">
+          <div className="text-xl w-fit text-4xl tex-center"><strong>Sign up as a teacher</strong></div>
+          <div className="text-xl w-fit pt-10"> Please email <strong className='text-green-500'>projectftk2022@gmail.com</strong> with your email to get verified as a teacher</div>
+      </section>
+
+      <section className="   flex-col sm:flex-row h-full  flex  border-gray-700 border-t-8  min-half-screen  w-full z-50 text-white   bg-black">
+        <div className="flex my-auto h-full justify-center   items-center  flex-col sm:w-1/2 w-full p-12">
+          <div className="text-xl w-fit text-4xl"><strong>The FTK platform provides a place for teachers to share educational content, indexed to structured curriculums</strong></div>
+          <div className="text-xl w-fit pt-10"> FTK enables teachers to match labs, problems and lectures to concepts and the content is then ranked based on student success. As students progress through lessons, they will always be prompted with the best problem lecture combo available.</div>
+        </div>
+        <div className="flex my-auto  h-full justify-center   items-center  flex-col sm:w-1/2 w-full p-12">
+        <div className="flex-1 w-full bg-[url('assets/images/lesson.png')] comic-border bg-center bg-contain">
+            <div className="grid grid-rows-[100px_minmax(200px,_1fr)_100px] place-items-center">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="   flex-col sm:flex-row h-full  flex  border-gray-700 border-t-8  min-half-screen  w-full z-50 text-white   bg-black">
+        <div className="flex my-auto  h-full justify-center   items-center  flex-col sm:w-1/2 w-full p-12">
+          <div className="flex-1 w-full bg-[url('assets/images/dashboard.png')] comic-border bg-center bg-contain">
+            <div className="grid grid-rows-[100px_minmax(200px,_1fr)_100px] place-items-center">
+            </div>
+          </div>
+        </div>
+        <div className="flex my-auto h-full justify-center   items- center  flex-col sm:w-1/2 w-full p-12">
+        <div className="text-xl w-fit text-4xl"> <strong>The FTK platform presents data insights to provide teachers real time feedback on the classroom’s progression</strong></div>
+          <div className="text-xl w-fit pt-10"> With our analysis, a teacher walks into the classroom armed with actionable insights. For example, the dashboard may advise a teacher to cover a specific example problem that the majority of the class struggled on, or provide a list of students at risk of falling behind or becoming disengaged.</div>
         </div>
       </section>
 
       <section className="   flex-col sm:flex-row h-full  flex  border-gray-700 border-t-8  min-half-screen  w-full z-50 text-white   bg-black">
         <div className="flex my-auto h-full justify-center   items-center  flex-col sm:w-1/2 w-full p-12">
-          <div className="text-xl w-fit"> <strong>A complete student success platform, offering analysis of the classroom progress and performance with suggestions for topics to cover in class and individual student suggestions.</strong></div>
-          <div className="text-xl w-fit pt-10"> <strong>Bring your own problems and videos, mix and match with the best content from the community. Benefit from the curated content, organized to meet state standards.</strong></div>
+          <div className="text-xl w-fit text-4xl"><strong>The FTK platform enables real time project collaboration between teachers and students</strong></div>
+          <div className="text-xl w-fit pt-10">Project lab manuals are stored in the cloud and receive live updates. Students can submit samples for quick feedback from the teacher.</div>
         </div>
         <div className="flex my-auto  h-full justify-center   items-center  flex-col sm:w-1/2 w-full p-12">
-        <div className="flex-1 w-full bg-[url('assets/images/teacher_signin.png')] comic-border bg-center bg-auto">
+        <div className="flex-1 w-full bg-[url('assets/images/lab.png')] comic-border bg-center bg-contain">
             <div className="grid grid-rows-[100px_minmax(200px,_1fr)_100px] place-items-center">
-              <div className="relative title">Teachers</div>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section className="   flex-col sm:flex-row h-full  flex  border-gray-700 border-t-8  min-half-screen  w-full z-50 text-white   bg-black">
-        <div className="flex my-auto  h-full justify-center   items-center  flex-col sm:w-1/2 w-full p-12">
-        <div className="flex-1 w-full bg-[url('assets/images/student_signin.png')] comic-border bg-center bg-auto">
-            <div className="grid grid-rows-[100px_minmax(200px,_1fr)_100px] place-items-center">
-              <div className="relative title">Students</div>
-            </div>
-          </div>
-        </div>
-        <div className="flex my-auto h-full justify-center   items- center  flex-col sm:w-1/2 w-full p-12">
-          <div className="text-xl w-fit"><strong>Personalized learning so students can progress at a dynamic pace, according to their abilities and knowledge gaps.</strong></div>
         </div>
       </section>
     </div>
