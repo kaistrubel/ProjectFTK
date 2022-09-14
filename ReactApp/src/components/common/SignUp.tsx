@@ -33,7 +33,6 @@ const Signup = () => {
               <GoogleButton style={{backgroundColor: `black`, width:360, fontSize: 23, fontFamily: "Dekko"}} className='outline outline-2' onClick={() => {window.location.href = '/Auth/GoogleLogin' }}/>
             </div>
           </div>
-          <a href='https://youtu.be/F0jkg-LUfaU' target="_blank" className=" text-blue-700 text-2xl absolute center bottom-0 pb-20 w-full">Watch the Demo</a>
           <div className="absolute bottom-0 center w-full">
           <ChevronDoubleDownIcon className="h-5 w-5 inline-block" aria-hidden="true"/>
           <div className="text-2xl p-5">New Teachers</div>
