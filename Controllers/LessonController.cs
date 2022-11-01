@@ -273,22 +273,30 @@ public class LessonController : Controller
                 return;
             }
 
-            var courseProg = courseLessons
-                            .Where(y => student.ProgressList
-                            .Select(x => x.LessonId)
-                            .Contains(y.LessonId))
-                            .OrderBy(x => x.Order);
-            var currLesson = courseProg?.LastOrDefault() ?? new LessonInfo() { Order = 0, Name = "Has Not Starated" };
+            var currLesson = new LessonInfo() { Order = 0, Name = "Has Not Starated" };
+            if (student.ProgressList != null && student.ProgressList.Count > 0)
+            {
+                var courseProg = courseLessons
+                .Where(y => student.ProgressList
+                .Select(x => x.LessonId)
+                .Contains(y.LessonId))
+                .OrderBy(x => x.Order);
+                currLesson = courseProg?.LastOrDefault() ?? new LessonInfo() { Order = 0, Name = "Has Not Starated" };
+            }
 
-            var labProg = courseLabs
+            var currLab = new Lab() { Order = 0, Name = "Has Not Starated" };
+            if (student.LabProgList != null && student.LabProgList.Count > 0)
+            {
+                var labProg = courseLabs
                 .Where(y => student.LabProgList
                 .Select(x => x.Name)
                 .Contains(y.Name))
                 .OrderBy(x => x.Order);
 
-            var currLab = labProg?.LastOrDefault() ?? new Lab() { Order = 0, Name = "Has Not Starated" };
+                currLab = labProg?.LastOrDefault() ?? new Lab() { Order = 0, Name = "Has Not Starated" };
+            }
 
-            var time = TimeSpan.FromSeconds(student.ProgressList.Where(x => courseLessonIds.Contains(x.LessonId)).Sum(x => x.ActiveSeconds));
+            var time = student.ProgressList?.Count > 0 ? TimeSpan.FromSeconds(student.ProgressList.Where(x => courseLessonIds.Contains(x.LessonId)).Sum(x => x.ActiveSeconds)) : TimeSpan.Zero;
             studentData.Add(new StudentAnalysis
             {
                 Name = student.Name,

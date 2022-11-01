@@ -108,6 +108,9 @@ const Lab = (props: any) => {
             <TableCell>
             {labProg?.submissions[idx]?.details}
           </TableCell>
+          <TableCell>
+            {user?.name}
+          </TableCell>
           </>
             :
             user?.isTeacher == false ?
@@ -120,6 +123,8 @@ const Lab = (props: any) => {
                 }} className="bg-white hover:bg-black hover:text-white float-left" layout="link" size="small" aria-label="Add">
               <PlusCircleIcon className="w-5 h-5 pr-5" aria-hidden="true" /> Add Submission
               </Button>
+            </TableCell>
+            <TableCell>
             </TableCell>
             <TableCell>
             </TableCell>
@@ -182,6 +187,7 @@ const Lab = (props: any) => {
                 <TableRow className='bg-zinc-900 text-white text-sm'>
                     <TableCell>{submission}</TableCell>
                     <TableCell>Details</TableCell>
+                    <TableCell>Student</TableCell>
                 </TableRow>
                 </TableHeader>
                 <TableBody>
