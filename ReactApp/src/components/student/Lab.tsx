@@ -293,7 +293,7 @@ const Lab = (props: any) => {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-fit transform overflow-hidden rounded-2xl align-middle shadow-xl transition-all">
-                  <iframe className='m-auto' src={labProg?.submissions[submissionIdx].url} title="Lecture" hidden onLoad={() => setFrameLoaded(true)}></iframe>
+                  <iframe className='m-auto' src={labProg?.submissions[submissionIdx].url} title="Lecture" onLoad={() => setFrameLoaded(true)}></iframe>
                   {props.user?.isTeacher && frameLoaded ?
                     <>
                     <Alert className="mt-1 bg-red-400" hidden={!trySetError} type="danger">Details required for a bad submission</Alert>

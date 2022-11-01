@@ -299,7 +299,7 @@ public class LessonController : Controller
         var analysisResponse = new StudentAnalysisResponse()
         {
             Status = behindCount > 0.2f ? "OnTrack" : behindCount < 0.4f ? "Warning" : "Behind",
-            Students = studentData.OrderBy(x => x.Lesson).ThenBy(x => x.Lab).ThenBy(x => x.Status == "Warning").ThenBy(x => x.Status == "Behind").ToList()
+            Students = studentData.OrderBy(x => x.Lab).ThenBy(x => x.Lesson).ThenBy(x => x.Status == "Warning").ThenBy(x => x.Status == "Behind").ToList()
         };
 
         analysisResponse.Recommendation = GetRecommendation(analysisResponse.Status, studentData.Select(x=>x.Lesson), studentData.Select(x=>x.Lab));
