@@ -22,15 +22,36 @@
   },
   {
     "Unit": "Blockly",
-    "Name": "Functions",
+    "Name": "Career Exploration",
     "Order": 4,
+    "ManualUrl": "https://docs.google.com/document/d/1U2tYshTZct8_MA10eXWCaBNSsgRU3S_HbDdLGJR971w/edit?usp=sharing",
+    "Submissions": [ "Submission" ]
+  },
+  {
+    "Unit": "Blockly",
+    "Name": "Functions",
+    "Order": 5,
     "ManualUrl": "https://docs.google.com/document/d/1n9Pm6tzjeETupQs4VnnAdReHEm8XkR_T_tVo3LcLS44/edit?usp=sharing",
     "Submissions": [ "Task 1", "Task 2", "Task 3", "Task 4", "Task 5" ]
   },
   {
     "Unit": "Blockly",
+    "Name": "Project 1",
+    "Order": 6,
+    "ManualUrl": "https://docs.google.com/document/d/1d5UG2YTcg8FLNBRUBIUw10_MvimgQI45IbFQX6uJ2GY/edit?usp=sharing",
+    "Submissions": [ "Submission"]
+  },
+  {
+    "Unit": "Blockly",
+    "Name": "Javascript",
+    "Order": 7,
+    "ManualUrl": "https://docs.google.com/document/d/1JVRtNJFa-FohyiaYsgp665152lilTm2oUg_BEp-tyAQ/edit?usp=sharing",
+    "Submissions": [ "Submission"]
+  },
+  {
+    "Unit": "Blockly",
     "Name": "Final Project",
-    "Order": 5,
+    "Order": 8,
     "ManualUrl": "https://docs.google.com/document/d/1kU_N7SvQC_icGTnY4x7Uwsuql2OWEPBNQi7Cn6EEwF8/edit?usp=sharing",
     "Submissions": [ "Submission 1", "Submission 2", "Submission 3" ]
   }
