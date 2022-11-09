@@ -282,7 +282,7 @@ public class LessonController : Controller
                 PhotoUrl = student.PhotoUrl,
                 Time = time.ToString(@"hh\:mm\:ss"), //account for greater than one day, maybe 4 days
                 Lesson = "L" + currLesson?.Order + ": " + currLesson?.Name, //might want to format this Unit1 Lesson2 etc.,
-                Lab = "L" + currLab?.Order + ": " + currLab?.Name + " (" + currLab.Submissions.Count(x=> string.Equals(x,"Error") == false) + ")", //might want to format this Unit1 Lesson2 etc.,
+                Lab = "L" + currLab?.Order + ": " + currLab?.Name + " (" + currLab?.Submissions?.Count(x=> string.Equals(x,"Error") == false) + ")", //might want to format this Unit1 Lesson2 etc.,
                 Order = currLab?.Order ?? 0,
             });
         });
