@@ -249,7 +249,7 @@ public class LessonController : Controller
         var studentsData = await usersContainer.ReadManyItemsAsync<Models.User>(studenQueries);
         students = studentsData.Resource.ToList();
 
-        Parallel.ForEach(students, student =>
+        Parallel.ForEach(students.Where(x => Constants.ValidateTeacherEmail(x.Email) == false), student =>
         {
             var currLesson = new LessonInfo() { Order = 0, Name = "Has Not Starated" };
             if (student.ProgressList != null && student.ProgressList.Count > 0)
@@ -282,8 +282,8 @@ public class LessonController : Controller
                 PhotoUrl = student.PhotoUrl,
                 Time = time.ToString(@"hh\:mm\:ss"), //account for greater than one day, maybe 4 days
                 Lesson = "L" + currLesson?.Order + ": " + currLesson?.Name, //might want to format this Unit1 Lesson2 etc.,
-                Lab = "L" + currLab?.Order + ": " + currLab?.Name, //might want to format this Unit1 Lesson2 etc.,
-                Order = currLesson?.Order ?? 0 + currLab?.Order ?? 0,
+                Lab = "L" + currLab?.Order + ": " + currLab?.Name + " (" + currLab.Submissions.Count(x=> string.Equals(x,"Error") == false) + ")", //might want to format this Unit1 Lesson2 etc.,
+                Order = currLab?.Order ?? 0,
             });
         });
 

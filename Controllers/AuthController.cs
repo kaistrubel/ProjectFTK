@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ProjectFTK.Extensions;
+using ProjectFTK.Services;
 
 namespace ProjectFTK.Controllers;
 
@@ -37,7 +38,7 @@ public class AuthController : Controller
         claimsIdentity.AddClaim(authenticateResult.Principal.FindFirst(ClaimTypes.Email));
         claimsIdentity.AddClaim(authenticateResult.Principal.FindFirst(GoogleClaims.PictureUrl));
 
-        if (ValidateTeacherEmail(authenticateResult.Principal.FindFirst(ClaimTypes.Email).Value))
+        if (Constants.ValidateTeacherEmail(authenticateResult.Principal.FindFirst(ClaimTypes.Email).Value))
         {
             claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, CustomRoles.Teacher));
         }
@@ -54,13 +55,5 @@ public class AuthController : Controller
     {
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
         return LocalRedirect("/");
-    }
-
-    private bool ValidateTeacherEmail(string email)
-    {
-        var json = System.IO.File.ReadAllText("DataJson/teachers.json");
-        List<string> validatedTeachers = JsonConvert.DeserializeObject<List<string>>(json);
-
-        return validatedTeachers.Contains(email);
     }
 }

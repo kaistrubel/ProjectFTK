@@ -14,6 +14,14 @@ public static class Constants
         return subjects;
     }
 
+    public static bool ValidateTeacherEmail(string email)
+    {
+        var json = System.IO.File.ReadAllText("DataJson/teachers.json");
+        List<string> validatedTeachers = JsonConvert.DeserializeObject<List<string>>(json);
+
+        return validatedTeachers.Contains(email);
+    }
+
     /*
     public static readonly string PPHS = "PPHS";
     public static readonly string LessonsDbName = "Lessons";

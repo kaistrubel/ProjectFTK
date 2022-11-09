@@ -126,7 +126,7 @@ const Labs = (props: any) => {
               <Link to= {"/lab"}  onClick={() => {
                                             props.setSelectedLab(lab);
                                           }}>
-                <button disabled={isFutureLesson(idx == 0 ? null : labs[idx-1].name)} className={"bubble bubble-card" + (isDone(lab.name) ? " bubble-green hover:bg-indigo-700 hover:text-white" : (isFutureLesson(idx == 0 ? null : labs[idx-1].name) ? " bubble-gray" : " hover:bg-indigo-700 hover:text-white"))}>
+                <button className={"bubble bubble-card" + (isDone(lab.name) ? " bubble-green hover:bg-indigo-700 hover:text-white" : " hover:bg-indigo-700 hover:text-white")}>
                     {lab.name}
                 </button>
               </Link>
